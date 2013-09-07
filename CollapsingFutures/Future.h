@@ -91,12 +91,18 @@
 
 @end
 
+/// @abstract The type of block passed to future 'finallyDo'.
 typedef void (^FutureCompletionHandler)(Future * completed);
+/// @abstract The type of block passed to future 'thenDo'.
 typedef void (^FutureResultHandler)(id value);
+/// @abstract The type of block passed to future 'catchDo'.
 typedef void (^FutureFailureHandler)(id failure);
 
+/// @abstract The type of block passed to future 'finally'.
 typedef id (^FutureCompletionContinuation)(Future * completed);
+/// @abstract The type of block passed to future 'then'.
 typedef id (^FutureResultContinuation)(id value);
+/// @abstract The type of block passed to future 'catch'.
 typedef id (^FutureFailureContinuation)(id failure);
 
 /// @abstract A FutureSource is a future that can be manually given a result or failure.
