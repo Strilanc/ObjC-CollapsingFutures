@@ -1,5 +1,5 @@
 #import <SenTestingKit/SenTestingKit.h>
 
-@interface CollapsingFuturesTests : SenTestCase
+@interface FutureTest : SenTestCase
 
 @end
