@@ -208,7 +208,6 @@
              isUnwiring:false];
 }
 
-
 -(NSString*) description {
     @synchronized(self) {
         if (hasBeenSet && state == FUTURE_STATE_INCOMPLETE) return @"Incomplete Future [Set]";

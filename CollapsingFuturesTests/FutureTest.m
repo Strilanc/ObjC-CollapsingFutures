@@ -5,12 +5,12 @@
 @implementation FutureTest
 
 -(void)testFailedFuture {
-    Future* f = [Future futureWithFailure:@""];
+    Future* f = [Future futureWithFailure:@"X"];
 
     test(![f isIncomplete]);
     test([f hasFailed]);
     test(![f hasResult]);
-    test([[f forceGetFailure] isEqual:@""]);
+    test([[f forceGetFailure] isEqual:@"X"]);
     testThrows([f forceGetResult]);
     test([f description] != nil);
     
@@ -18,17 +18,17 @@
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
 
-    testFutureHasFailure([f then:^(id result) { return @2; }], @"");
+    testFutureHasFailure([f then:^(id result) { return @2; }], @"X");
     testFutureHasResult([f catch:^(id result) { return @3; }], @3);
     testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testSucceededFuture {
-    Future* f = [Future futureWithResult:@""];
+    Future* f = [Future futureWithResult:@"X"];
     
     test(![f isIncomplete]);
     test(![f hasFailed]);
     test([f hasResult]);
-    test([[f forceGetResult] isEqual:@""]);
+    test([[f forceGetResult] isEqual:@"X"]);
     testThrows([f forceGetFailure]);
     test([f description] != nil);
     
@@ -37,18 +37,18 @@
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
     testFutureHasResult([f then:^(id result) { return @2; }], @2);
-    testFutureHasResult([f catch:^(id result) { return @3; }], @"");
+    testFutureHasResult([f catch:^(id result) { return @3; }], @"X");
     testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 
 -(void)testFailedFutureSource {
     FutureSource* f = [FutureSource new];
-    test([f trySetFailure:@""]);
+    test([f trySetFailure:@"X"]);
     
     test(![f isIncomplete]);
     test([f hasFailed]);
     test(![f hasResult]);
-    test([[f forceGetFailure] isEqual:@""]);
+    test([[f forceGetFailure] isEqual:@"X"]);
     testThrows([f forceGetResult]);
     test([f description] != nil);
     
@@ -56,18 +56,18 @@
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
-    testFutureHasFailure([f then:^(id result) { return @2; }], @"");
+    testFutureHasFailure([f then:^(id result) { return @2; }], @"X");
     testFutureHasResult([f catch:^(id result) { return @3; }], @3);
     testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testSucceededFutureSource {
     FutureSource* f = [FutureSource new];
-    test([f trySetResult:@""]);
+    test([f trySetResult:@"X"]);
     
     test(![f isIncomplete]);
     test(![f hasFailed]);
     test([f hasResult]);
-    test([[f forceGetResult] isEqual:@""]);
+    test([[f forceGetResult] isEqual:@"X"]);
     testThrows([f forceGetFailure]);
     test([f description] != nil);
     
@@ -76,7 +76,7 @@
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
     testFutureHasResult([f then:^(id result) { return @2; }], @2);
-    testFutureHasResult([f catch:^(id result) { return @3; }], @"");
+    testFutureHasResult([f catch:^(id result) { return @3; }], @"X");
     testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testIncompleteFutureSource {
@@ -100,12 +100,12 @@
 
 -(void)testCollapsedFailedFutureSource {
     FutureSource* f = [FutureSource new];
-    test([f trySetResult:[Future futureWithFailure:@""]]);
+    test([f trySetResult:[Future futureWithFailure:@"X"]]);
     
     test(![f isIncomplete]);
     test([f hasFailed]);
     test(![f hasResult]);
-    test([[f forceGetFailure] isEqual:@""]);
+    test([[f forceGetFailure] isEqual:@"X"]);
     testThrows([f forceGetResult]);
     test([f description] != nil);
     
@@ -113,18 +113,18 @@
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
-    testFutureHasFailure([f then:^(id result) { return @2; }], @"");
+    testFutureHasFailure([f then:^(id result) { return @2; }], @"X");
     testFutureHasResult([f catch:^(id result) { return @3; }], @3);
     testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testCollapsedSucceededFutureSource {
     FutureSource* f = [FutureSource new];
-    test([f trySetResult:[Future futureWithResult:@""]]);
+    test([f trySetResult:[Future futureWithResult:@"X"]]);
     
     test(![f isIncomplete]);
     test(![f hasFailed]);
     test([f hasResult]);
-    test([[f forceGetResult] isEqual:@""]);
+    test([[f forceGetResult] isEqual:@"X"]);
     testThrows([f forceGetFailure]);
     test([f description] != nil);
     
@@ -133,7 +133,7 @@
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
     testFutureHasResult([f then:^(id result) { return @2; }], @2);
-    testFutureHasResult([f catch:^(id result) { return @3; }], @"");
+    testFutureHasResult([f catch:^(id result) { return @3; }], @"X");
     testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testCollapsedIncompleteFutureSource {
@@ -164,75 +164,75 @@
 
 -(void)testDeferredResultThenDo {
     FutureSource* f = [FutureSource new];
-    testDoesNotHitTarget([f thenDo:^(id value) { test([value isEqual:@""]); hitTarget; }]);
-    testHitsTarget([f trySetResult:@""]);
+    testDoesNotHitTarget([f thenDo:^(id value) { test([value isEqual:@"X"]); hitTarget; }]);
+    testHitsTarget([f trySetResult:@"X"]);
 }
 -(void)testDeferredFailThenDo {
     FutureSource* f = [FutureSource new];
     testDoesNotHitTarget([f thenDo:^(id value) { test(false); hitTarget; }]);
-    testDoesNotHitTarget([f trySetFailure:@""]);
+    testDoesNotHitTarget([f trySetFailure:@"X"]);
 }
 -(void)testDeferredResultCatchDo {
     FutureSource* f = [FutureSource new];
     testDoesNotHitTarget([f catchDo:^(id value) { test(false); hitTarget; }]);
-    testDoesNotHitTarget([f trySetResult:@""]);
+    testDoesNotHitTarget([f trySetResult:@"X"]);
 }
 -(void)testDeferredFailCatchDo {
     FutureSource* f = [FutureSource new];
-    testDoesNotHitTarget([f catchDo:^(id value) { test([value isEqual:@""]); hitTarget; }]);
-    testHitsTarget([f trySetFailure:@""]);
+    testDoesNotHitTarget([f catchDo:^(id value) { test([value isEqual:@"X"]); hitTarget; }]);
+    testHitsTarget([f trySetFailure:@"X"]);
 }
 -(void)testDeferredResultFinallyDo {
     FutureSource* f = [FutureSource new];
     testDoesNotHitTarget([f finallyDo:^(Future* value) { test(value == f); hitTarget; }]);
-    testHitsTarget([f trySetResult:@""]);
+    testHitsTarget([f trySetResult:@"X"]);
 }
 -(void)testDeferredFailFinallyDo {
     FutureSource* f = [FutureSource new];
     testDoesNotHitTarget([f finallyDo:^(Future* value) { test(value == f); hitTarget; }]);
-    testHitsTarget([f trySetFailure:@""]);
+    testHitsTarget([f trySetFailure:@"X"]);
 }
 
 -(void)testDeferredResultThen {
     FutureSource* f = [FutureSource new];
-    Future* f2 = [f then:^(id value) { test([value isEqual:@""]); return @2; }];
+    Future* f2 = [f then:^(id value) { test([value isEqual:@"X"]); return @2; }];
     test([f2 isIncomplete]);
-    [f trySetResult:@""];
+    [f trySetResult:@"X"];
     testFutureHasResult(f2, @2);
 }
 -(void)testDeferredFailThen {
     FutureSource* f = [FutureSource new];
     Future* f2 = [f then:^(id value) { test(false); return @2; }];
     test([f2 isIncomplete]);
-    [f trySetFailure:@""];
-    testFutureHasFailure(f2, @"");
+    [f trySetFailure:@"X"];
+    testFutureHasFailure(f2, @"X");
 }
 -(void)testDeferredResultCatch {
     FutureSource* f = [FutureSource new];
     Future* f2 = [f catch:^(id value) { test(false); return @2; }];
     test([f2 isIncomplete]);
-    [f trySetResult:@""];
-    testFutureHasResult(f2, @"");
+    [f trySetResult:@"X"];
+    testFutureHasResult(f2, @"X");
 }
 -(void)testDeferredFailCatch {
     FutureSource* f = [FutureSource new];
-    Future* f2 = [f catch:^(id value) { test([value isEqual:@""]); return @2; }];
+    Future* f2 = [f catch:^(id value) { test([value isEqual:@"X"]); return @2; }];
     test([f2 isIncomplete]);
-    [f trySetFailure:@""];
+    [f trySetFailure:@"X"];
     testFutureHasResult(f2, @2);
 }
 -(void)testDeferredResultFinally {
     FutureSource* f = [FutureSource new];
-    Future* f2 = [f finally:^(id value) { testFutureHasResult(value, @""); return @2; }];
+    Future* f2 = [f finally:^(id value) { testFutureHasResult(value, @"X"); return @2; }];
     test([f2 isIncomplete]);
-    [f trySetResult:@""];
+    [f trySetResult:@"X"];
     testFutureHasResult(f2, @2);
 }
 -(void)testDeferredFailFinally {
     FutureSource* f = [FutureSource new];
-    Future* f2 = [f finally:^(id value) { testFutureHasFailure(value, @""); return @2; }];
+    Future* f2 = [f finally:^(id value) { testFutureHasFailure(value, @"X"); return @2; }];
     test([f2 isIncomplete]);
-    [f trySetFailure:@""];
+    [f trySetFailure:@"X"];
     testFutureHasResult(f2, @2);
 }
 -(void)testTrySetMany1 {
