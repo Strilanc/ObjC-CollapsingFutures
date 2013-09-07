@@ -13,7 +13,7 @@
 		A19E0C4E17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
 		A19E0C5117DBB27B00A5FD69 /* libCollapsingFutures.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3817DBB27B00A5FD69 /* libCollapsingFutures.a */; };
 		A19E0C5717DBB27B00A5FD69 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A19E0C5517DBB27B00A5FD69 /* InfoPlist.strings */; };
-		A19E0C5A17DBB27B00A5FD69 /* CollapsingFuturesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0C5917DBB27B00A5FD69 /* CollapsingFuturesTests.m */; };
+		A19E0C5A17DBB27B00A5FD69 /* FutureTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0C5917DBB27B00A5FD69 /* FutureTest.m */; };
 		A19E0C6517DBB34C00A5FD69 /* TestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0C6417DBB34C00A5FD69 /* TestUtil.m */; };
 		A19E0C6C17DBB48D00A5FD69 /* Future.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0C6B17DBB48D00A5FD69 /* Future.m */; };
 		A19E0C6D17DBB48D00A5FD69 /* Future.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0C6B17DBB48D00A5FD69 /* Future.m */; };
@@ -49,8 +49,8 @@
 		A19E0C4C17DBB27B00A5FD69 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		A19E0C5417DBB27B00A5FD69 /* CollapsingFuturesTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CollapsingFuturesTests-Info.plist"; sourceTree = "<group>"; };
 		A19E0C5617DBB27B00A5FD69 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		A19E0C5817DBB27B00A5FD69 /* CollapsingFuturesTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollapsingFuturesTests.h; sourceTree = "<group>"; };
-		A19E0C5917DBB27B00A5FD69 /* CollapsingFuturesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CollapsingFuturesTests.m; sourceTree = "<group>"; };
+		A19E0C5817DBB27B00A5FD69 /* FutureTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FutureTest.h; sourceTree = "<group>"; };
+		A19E0C5917DBB27B00A5FD69 /* FutureTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FutureTest.m; sourceTree = "<group>"; };
 		A19E0C6317DBB34B00A5FD69 /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
 		A19E0C6417DBB34C00A5FD69 /* TestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtil.m; sourceTree = "<group>"; };
 		A19E0C6A17DBB48D00A5FD69 /* Future.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Future.h; sourceTree = "<group>"; };
@@ -121,11 +121,11 @@
 		A19E0C5217DBB27B00A5FD69 /* CollapsingFuturesTests */ = {
 			isa = PBXGroup;
 			children = (
+				A19E0C5817DBB27B00A5FD69 /* FutureTest.h */,
+				A19E0C5917DBB27B00A5FD69 /* FutureTest.m */,
+				A19E0C5317DBB27B00A5FD69 /* Supporting Files */,
 				A19E0C6317DBB34B00A5FD69 /* TestUtil.h */,
 				A19E0C6417DBB34C00A5FD69 /* TestUtil.m */,
-				A19E0C5817DBB27B00A5FD69 /* CollapsingFuturesTests.h */,
-				A19E0C5917DBB27B00A5FD69 /* CollapsingFuturesTests.m */,
-				A19E0C5317DBB27B00A5FD69 /* Supporting Files */,
 			);
 			path = CollapsingFuturesTests;
 			sourceTree = "<group>";
@@ -245,7 +245,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A19E0C5A17DBB27B00A5FD69 /* CollapsingFuturesTests.m in Sources */,
+				A19E0C5A17DBB27B00A5FD69 /* FutureTest.m in Sources */,
 				A19E0C6517DBB34C00A5FD69 /* TestUtil.m in Sources */,
 				A19E0C6D17DBB48D00A5FD69 /* Future.m in Sources */,
 			);
@@ -314,7 +314,6 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = YES;
-				GCC_WARN_PEDANTIC = YES;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
@@ -323,7 +322,6 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				ONLY_ACTIVE_ARCH = YES;
@@ -366,7 +364,6 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = YES;
-				GCC_WARN_PEDANTIC = YES;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
@@ -375,7 +372,6 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
