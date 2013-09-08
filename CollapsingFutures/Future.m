@@ -151,7 +151,10 @@
 @implementation FutureSource
 
 -(FutureSource*) init {
-    completionHandlers = [NSMutableArray array];
+    self = [super init];
+    if (self) {
+        self->completionHandlers = [NSMutableArray array];
+    }
     return self;
 }
 

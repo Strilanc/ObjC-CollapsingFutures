@@ -6,7 +6,7 @@ int testTargetHits;
 
 #define test(expressionExpectedToBeTrue) STAssertTrue(expressionExpectedToBeTrue, @"")
 #define testThrows(expressionExpectedToThrow) STAssertThrows(expressionExpectedToThrow, @"")
-#define testCompletesConcurrently(future) test(testCompletesConcurrently_helper(future, 5.0))
+#define testCompletesConcurrently(future) test(testCompletesConcurrently_helper(future, 2.0))
 #define testDoesNotCompleteConcurrently(future) test(!testCompletesConcurrently_helper(future, 0.01))
 #define testHitsTarget(expression) testTargetHits = 0; \
                                    expression; \

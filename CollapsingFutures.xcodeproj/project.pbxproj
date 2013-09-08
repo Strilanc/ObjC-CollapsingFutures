@@ -17,6 +17,9 @@
 		A19E0C6517DBB34C00A5FD69 /* TestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0C6417DBB34C00A5FD69 /* TestUtil.m */; };
 		A19E0C6C17DBB48D00A5FD69 /* Future.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0C6B17DBB48D00A5FD69 /* Future.m */; };
 		A19E0C6D17DBB48D00A5FD69 /* Future.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0C6B17DBB48D00A5FD69 /* Future.m */; };
+		A19E0CAE17DBE9D600A5FD69 /* FutureExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0CAD17DBE9D600A5FD69 /* FutureExtra.m */; };
+		A19E0CAF17DBE9D600A5FD69 /* FutureExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0CAD17DBE9D600A5FD69 /* FutureExtra.m */; };
+		A19E0CB217DBF77800A5FD69 /* FutureExtraTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A19E0CB117DBF77800A5FD69 /* FutureExtraTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +58,10 @@
 		A19E0C6417DBB34C00A5FD69 /* TestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtil.m; sourceTree = "<group>"; };
 		A19E0C6A17DBB48D00A5FD69 /* Future.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Future.h; sourceTree = "<group>"; };
 		A19E0C6B17DBB48D00A5FD69 /* Future.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Future.m; sourceTree = "<group>"; };
+		A19E0CAC17DBE9D600A5FD69 /* FutureExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FutureExtra.h; sourceTree = "<group>"; };
+		A19E0CAD17DBE9D600A5FD69 /* FutureExtra.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureExtra.m; sourceTree = "<group>"; };
+		A19E0CB017DBF77800A5FD69 /* FutureExtraTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FutureExtraTest.h; sourceTree = "<group>"; };
+		A19E0CB117DBF77800A5FD69 /* FutureExtraTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureExtraTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +121,8 @@
 			children = (
 				A19E0C6A17DBB48D00A5FD69 /* Future.h */,
 				A19E0C6B17DBB48D00A5FD69 /* Future.m */,
+				A19E0CAC17DBE9D600A5FD69 /* FutureExtra.h */,
+				A19E0CAD17DBE9D600A5FD69 /* FutureExtra.m */,
 			);
 			path = CollapsingFutures;
 			sourceTree = "<group>";
@@ -121,6 +130,8 @@
 		A19E0C5217DBB27B00A5FD69 /* CollapsingFuturesTests */ = {
 			isa = PBXGroup;
 			children = (
+				A19E0CB017DBF77800A5FD69 /* FutureExtraTest.h */,
+				A19E0CB117DBF77800A5FD69 /* FutureExtraTest.m */,
 				A19E0C5817DBB27B00A5FD69 /* FutureTest.h */,
 				A19E0C5917DBB27B00A5FD69 /* FutureTest.m */,
 				A19E0C5317DBB27B00A5FD69 /* Supporting Files */,
@@ -238,6 +249,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A19E0C6C17DBB48D00A5FD69 /* Future.m in Sources */,
+				A19E0CAE17DBE9D600A5FD69 /* FutureExtra.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +260,8 @@
 				A19E0C5A17DBB27B00A5FD69 /* FutureTest.m in Sources */,
 				A19E0C6517DBB34C00A5FD69 /* TestUtil.m in Sources */,
 				A19E0C6D17DBB48D00A5FD69 /* Future.m in Sources */,
+				A19E0CAF17DBE9D600A5FD69 /* FutureExtra.m in Sources */,
+				A19E0CB217DBF77800A5FD69 /* FutureExtraTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,6 +461,7 @@
 				A19E0C5F17DBB27B00A5FD69 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A19E0C6017DBB27B00A5FD69 /* Build configuration list for PBXNativeTarget "CollapsingFuturesTests" */ = {
 			isa = XCConfigurationList;
@@ -455,6 +470,7 @@
 				A19E0C6217DBB27B00A5FD69 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
