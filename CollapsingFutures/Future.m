@@ -9,7 +9,11 @@
                                        reason:[NSString stringWithFormat:@"!require(%@)", (@#expr)] \
                                      userInfo:nil])
 
-@implementation Future
+@implementation Future {
+@protected NSMutableArray* completionHandlers;
+@protected int state;
+@protected id value;
+}
 
 +(Future *)futureWithResult:(id)resultValue {
     if ([resultValue isKindOfClass:[Future class]]) {
@@ -44,15 +48,11 @@
     }
 }
 -(id)forceGetResult {
-    @synchronized(self) {
-        require(state == FUTURE_STATE_SUCCEEDED);
-    }
+    require([self hasResult]);
     return value;
 }
 -(id)forceGetFailure {
-    @synchronized(self) {
-        require(state == FUTURE_STATE_FAILED);
-    }
+    require([self hasFailed]);
     return value;
 }
 
@@ -148,7 +148,9 @@
 
 @end
 
-@implementation FutureSource
+@implementation FutureSource {
+@private bool hasBeenSet;
+}
 
 -(FutureSource*) init {
     self = [super init];

@@ -29,7 +29,7 @@
 /// @abstract Takes an array of futures and returns a future that, when they've all completed with a result, succeeds with an array of those results.
 /// @param futures The array of futures. Must not be nil, and must contain only non-nil instances of Future.
 /// @discussion If any of the futures fails, the returned future will fail with the array of futures once they've all completed.
-/// Passing in an empty array results in an immediatelly-succeeded future containing an empty array.
+/// Passing in an empty array results in an immediately-succeeded future containing an empty array.
 +(Future*) whenAll:(NSArray*)futures;
 
 @end

@@ -13,11 +13,7 @@
 /// A future that would have had a future result will instead match that future result's failure or result.
 ///
 /// Use the FutureSource class to create and set your own futures.
-@interface Future : NSObject {
-@protected NSMutableArray* completionHandlers;
-@protected int state;
-@protected id value;
-}
+@interface Future : NSObject
 
 /// @abstract Creates and returns a future that has already completed with the given result value.
 /// @param resultValue The result the future should end up with.
@@ -112,9 +108,7 @@ typedef id (^FutureFailureContinuation)(id failure);
 /// Use trySetResult and trySetFailure to cause the source's future to complete.
 /// Giving a future to trySetResult triggers automatic collapse: the source's future to become 'the same', matching the given future's result or failure.
 /// Giving a future to trySetFailure does not trigger automatic collapse.
-@interface FutureSource : Future {
-@protected bool hasBeenSet;
-}
+@interface FutureSource : Future
 
 /// @abstract Attempts to set the source's future to complete with the given result value, unwrapping the value if it's a future.
 ///

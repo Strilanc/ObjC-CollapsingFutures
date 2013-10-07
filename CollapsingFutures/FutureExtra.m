@@ -71,6 +71,7 @@
 
 +(NSArray*) orderedByCompletion:(NSArray*)futures {
     require(futures != nil);
+    futures = [futures copy]; // remove volatility (i.e. ensure not externally mutable)
     for (Future* item in futures) {
         require([item isKindOfClass:[Future class]]);
     }
@@ -99,7 +100,7 @@
 
 +(Future*) whenAll:(NSArray*)futures {
     require(futures != nil);
-    futures = [futures copy]; // remove volatility
+    futures = [futures copy]; // remove volatility (i.e. ensure not externally mutable)
     for (Future* item in futures) {
         require([item isKindOfClass:[Future class]]);
     }
