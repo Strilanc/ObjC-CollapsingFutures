@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "TOCFutures"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "Futures without nesting issues."
   s.description  = <<-DESC
                    Makes representing and consuming asynchronous results simpler.
@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/Strilanc/ObjC-CollapsingFutures"
   s.license      = { :type => 'BSD', :file => 'License.txt' }
   s.author       = { "Craig Gidney" => "craig.gidney@gmail.com" }
-  s.source       = { :git => "https://github.com/Strilanc/ObjC-CollapsingFutures.git", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/Strilanc/ObjC-CollapsingFutures.git", :tag => "v0.0.2" }
   s.source_files  = 'src', 'src/**/*.{h,m}'
   s.exclude_files = 'Classes/Exclude'
   s.public_header_files = 'src/header'
