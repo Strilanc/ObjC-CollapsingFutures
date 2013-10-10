@@ -3,6 +3,8 @@ Collapsing Futures for Objective-C
 
 This is a bare bones library implementing futures that automatically flatten when nested. A Future containing a Future containing an NSNumber CAN NOT happen, because it transparently flattens into a Future just containing an NSNumber.
 
+Usage is discussed in [this blog post](http://twistedoakstudios.com/blog/Post7149_collapsing-futures-in-objective-c).
+
 Installation
 ============
 
@@ -11,6 +13,7 @@ Clone the repo and copy the four source files in the CollapsingFutures folder in
 (required)
 - Future.h
 - Future.m
+
 (optional, just some utility methods)
 - FutureExtra.h
 - FutureExtra.m
