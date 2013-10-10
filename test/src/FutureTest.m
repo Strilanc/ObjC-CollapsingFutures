@@ -1,6 +1,11 @@
-#import "FutureTest.h"
+#import <SenTestingKit/SenTestingKit.h>
+
 #import "Future.h"
 #import "TestUtil.h"
+
+@interface FutureTest : SenTestCase
+
+@end
 
 @implementation FutureTest
 

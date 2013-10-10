@@ -1,6 +1,14 @@
-#import "FutureExtraTest.h"
+#import <SenTestingKit/SenTestingKit.h>
+
 #import "FutureExtra.h"
 #import "TestUtil.h"
+
+@interface FutureExtraTest : SenTestCase {
+@private NSThread* thread;
+@private NSRunLoop* runLoop;
+}
+
+@end
 
 @implementation FutureExtraTest
 
