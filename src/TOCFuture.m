@@ -1,4 +1,4 @@
-#import "Future.h"
+#import "TOCFuture.h"
 
 #define FUTURE_STATE_INCOMPLETE 0
 #define FUTURE_STATE_SUCCEEDED 1
@@ -9,24 +9,24 @@
                                        reason:[NSString stringWithFormat:@"!require(%@)", (@#expr)] \
                                      userInfo:nil])
 
-@implementation Future {
+@implementation TOCFuture {
 @protected NSMutableArray* completionHandlers;
 @protected int state;
 @protected id value;
 }
 
-+(Future *)futureWithResult:(id)resultValue {
-    if ([resultValue isKindOfClass:[Future class]]) {
++(TOCFuture *)futureWithResult:(id)resultValue {
+    if ([resultValue isKindOfClass:[TOCFuture class]]) {
         return resultValue;
     }
     
-    Future *instance = [[Future alloc] init];
+    TOCFuture *instance = [[TOCFuture alloc] init];
     instance->state = FUTURE_STATE_SUCCEEDED;
     instance->value = resultValue;
     return instance;
 }
-+(Future *)futureWithFailure:(id)failureValue {
-    Future *instance = [[Future alloc] init];
++(TOCFuture *)futureWithFailure:(id)failureValue {
+    TOCFuture *instance = [[TOCFuture alloc] init];
     instance->state = FUTURE_STATE_FAILED;
     instance->value = failureValue;
     return instance;
@@ -56,7 +56,7 @@
     return value;
 }
 
--(void)addOrRunCompletionhandler:(FutureCompletionHandler)completionHandler {
+-(void)addOrRunCompletionhandler:(TOCFutureCompletionHandler)completionHandler {
     @synchronized(self) {
         if (state == FUTURE_STATE_INCOMPLETE) {
             [completionHandlers addObject:[completionHandler copy]];
@@ -67,52 +67,52 @@
     completionHandler(self);
 }
 
--(void)finallyDo:(FutureCompletionHandler)completionHandler {
+-(void)finallyDo:(TOCFutureCompletionHandler)completionHandler {
     require(completionHandler != nil);
     
     [self addOrRunCompletionhandler:completionHandler];
 }
--(void)thenDo:(FutureResultHandler)resultHandler {
+-(void)thenDo:(TOCFutureResultHandler)resultHandler {
     require(resultHandler != nil);
     
-    FutureResultHandler resultHandlerCopy = [resultHandler copy];
+    TOCFutureResultHandler resultHandlerCopy = [resultHandler copy];
 
-    [self addOrRunCompletionhandler:^(Future *completed) {
+    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
         if (completed->state == FUTURE_STATE_SUCCEEDED) {
             resultHandlerCopy(completed->value);
         }
     }];
 }
--(void)catchDo:(FutureFailureHandler)failureHandler {
+-(void)catchDo:(TOCFutureFailureHandler)failureHandler {
     require(failureHandler != nil);
     
-    FutureFailureHandler failureHandlerCopy = [failureHandler copy];
+    TOCFutureFailureHandler failureHandlerCopy = [failureHandler copy];
     
-    [self addOrRunCompletionhandler:^(Future *completed) {
+    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
         if (completed->state == FUTURE_STATE_FAILED) {
             failureHandlerCopy(completed->value);
         }
     }];
 }
 
--(Future *)finally:(FutureCompletionContinuation)completionContinuation {
+-(TOCFuture *)finally:(TOCFutureCompletionContinuation)completionContinuation {
     require(completionContinuation != nil);
     
-    FutureCompletionContinuation completionContinuationCopy = [completionContinuation copy];
-    FutureSource* resultSource = [FutureSource new];
+    TOCFutureCompletionContinuation completionContinuationCopy = [completionContinuation copy];
+    TOCFutureSource* resultSource = [TOCFutureSource new];
     
-    [self addOrRunCompletionhandler:^(Future *completed) {
+    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
         [resultSource trySetResult:completionContinuationCopy(completed)];
     }];
     return resultSource;
 }
--(Future *)then:(FutureResultContinuation)resultContinuation {
+-(TOCFuture *)then:(TOCFutureResultContinuation)resultContinuation {
     require(resultContinuation != nil);
 
-    FutureCompletionContinuation resultContinuationCopy = [resultContinuation copy];
-    FutureSource* resultSource = [FutureSource new];
+    TOCFutureCompletionContinuation resultContinuationCopy = [resultContinuation copy];
+    TOCFutureSource* resultSource = [TOCFutureSource new];
 
-    [self addOrRunCompletionhandler:^(Future *completed) {
+    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
         if (completed->state == FUTURE_STATE_SUCCEEDED) {
             [resultSource trySetResult:resultContinuationCopy(completed->value)];
         } else {
@@ -121,13 +121,13 @@
     }];
     return resultSource;
 }
--(Future *)catch:(FutureFailureContinuation)failureContinuation {
+-(TOCFuture *)catch:(TOCFutureFailureContinuation)failureContinuation {
     require(failureContinuation != nil);
     
-    FutureCompletionContinuation failureContinuationCopy = [failureContinuation copy];
-    FutureSource* resultSource = [FutureSource new];
+    TOCFutureCompletionContinuation failureContinuationCopy = [failureContinuation copy];
+    TOCFutureSource* resultSource = [TOCFutureSource new];
     
-    [self addOrRunCompletionhandler:^(Future *completed) {
+    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
         if (completed->state == FUTURE_STATE_SUCCEEDED) {
             [resultSource trySetResult:completed->value];
         } else {
@@ -140,19 +140,19 @@
 
 -(NSString*) description {
     @synchronized(self) {
-        if (state == FUTURE_STATE_SUCCEEDED) return [NSString stringWithFormat:@"Future with result: %@", value];
-        if (state == FUTURE_STATE_FAILED) return [NSString stringWithFormat:@"Future with failure: %@", value];
-        return @"Incomplete Future";
+        if (state == FUTURE_STATE_SUCCEEDED) return [NSString stringWithFormat:@"TOCFuture with result: %@", value];
+        if (state == FUTURE_STATE_FAILED) return [NSString stringWithFormat:@"TOCFuture with failure: %@", value];
+        return @"Incomplete TOCFuture";
     }
 }
 
 @end
 
-@implementation FutureSource {
+@implementation TOCFutureSource {
 @private bool hasBeenSet;
 }
 
--(FutureSource*) init {
+-(TOCFutureSource*) init {
     self = [super init];
     if (self) {
         self->completionHandlers = [NSMutableArray array];
@@ -175,13 +175,13 @@
         state = finalState;
     }
     
-    for (FutureCompletionHandler handler in completionHandlersAtCompletion) {
+    for (TOCFutureCompletionHandler handler in completionHandlersAtCompletion) {
         handler(self);
     }
     return true;
 }
 
--(bool) trySetWithUnwrap:(Future*)futureFinalResult {
+-(bool) trySetWithUnwrap:(TOCFuture*)futureFinalResult {
     require(futureFinalResult != nil);
     
     @synchronized(self) {
@@ -189,7 +189,7 @@
         hasBeenSet = true;
     }
     
-    [futureFinalResult finallyDo:^(Future *completed) {
+    [futureFinalResult finallyDo:^(TOCFuture *completed) {
         [self trySet:completed->value
                state:completed->state
           isUnwiring:true];
@@ -199,7 +199,7 @@
 }
 
 -(bool) trySetResult:(id)finalResult {
-    if ([finalResult isKindOfClass:[Future class]]) {
+    if ([finalResult isKindOfClass:[TOCFuture class]]) {
         return [self trySetWithUnwrap:finalResult];
     }
     
@@ -215,7 +215,7 @@
 
 -(NSString*) description {
     @synchronized(self) {
-        if (hasBeenSet && state == FUTURE_STATE_INCOMPLETE) return @"Incomplete Future [Set]";
+        if (hasBeenSet && state == FUTURE_STATE_INCOMPLETE) return @"Incomplete TOCFuture [Set]";
         return [super description];
     }
 }

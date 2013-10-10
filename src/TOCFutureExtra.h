@@ -1,16 +1,16 @@
 #import <Foundation/Foundation.h>
-#import "Future.h"
+#import "TOCFuture.h"
 
-@interface Future (FutureExtra)
+@interface TOCFuture (TOCFutureExtra)
 
 /// @abstract Returns a future that completes with the value returned by a function run via grand central dispatch.
-+(Future*) futureWithResultFromOperation:(id (^)(void))operation
++(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
                        dispatchedOnQueue:(dispatch_queue_t)queue;
 
 /// @abstract Returns a future that completes with the value returned by a function invoked on the given thread.
 /// @param operation The function to run. Must not be nil.
 /// @param thread The thread to invoke the function on. Must not be nil.
-+(Future*) futureWithResultFromOperation:(id(^)(void))operation
++(TOCFuture*) futureWithResultFromOperation:(id(^)(void))operation
                          invokedOnThread:(NSThread*)thread;
 
 /// @abstract Returns a future that completes after a given delay (mechanism unspecified [timer, grand central dispatch, whatever]).
@@ -19,17 +19,17 @@
 /// Must not be negative or NaN (raises exception).
 /// A delay of 0 results in a future that's already completed.
 /// A delay of INFINITY results in a future that's never completed.
-+(Future*) futureWithResult:(id)resultValue
++(TOCFuture*) futureWithResult:(id)resultValue
                  afterDelay:(NSTimeInterval)delay;
 
 /// @abstract Takes an array of futures and returns an array of the "same" futures, but with later-completing futures later in the array.
-/// @param futures The array of futures. Must not be nil, and must contain only non-nil instances of Future.
+/// @param futures The array of futures. Must not be nil, and must contain only non-nil instances of TOCFuture.
 +(NSArray*) orderedByCompletion:(NSArray*)futures;
 
 /// @abstract Takes an array of futures and returns a future that, when they've all completed with a result, succeeds with an array of those results.
-/// @param futures The array of futures. Must not be nil, and must contain only non-nil instances of Future.
+/// @param futures The array of futures. Must not be nil, and must contain only non-nil instances of TOCFuture.
 /// @discussion If any of the futures fails, the returned future will fail with the array of futures once they've all completed.
 /// Passing in an empty array results in an immediately-succeeded future containing an empty array.
-+(Future*) whenAll:(NSArray*)futures;
++(TOCFuture*) whenAll:(NSArray*)futures;
 
 @end

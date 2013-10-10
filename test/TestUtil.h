@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "Future.h"
+#import "TOCFuture.h"
 
-bool testCompletesConcurrently_helper(Future* future, NSTimeInterval timeout);
+bool testCompletesConcurrently_helper(TOCFuture* future, NSTimeInterval timeout);
 int testTargetHits;
 
 #define test(expressionExpectedToBeTrue) STAssertTrue(expressionExpectedToBeTrue, @"")
@@ -16,5 +16,5 @@ int testTargetHits;
                                          test(testTargetHits == 0)
 #define hitTarget (testTargetHits++)
 
-#define testFutureHasResult(future, result) test([future hasResult] && [[future forceGetResult] isEqual:result])
-#define testFutureHasFailure(future, failure) test([future hasFailed] && [[future forceGetFailure] isEqual:failure])
+#define testTOCFutureHasResult(future, result) test([future hasResult] && [[future forceGetResult] isEqual:result])
+#define testTOCFutureHasFailure(future, failure) test([future hasFailed] && [[future forceGetFailure] isEqual:failure])

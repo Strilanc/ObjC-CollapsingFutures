@@ -1,4 +1,4 @@
-#import "FutureExtra.h"
+#import "TOCFutureExtra.h"
 
 #define require(expr) \
     if (!(expr)) \
@@ -23,24 +23,24 @@
 -(SEL)runSelector { return @selector(run); }
 @end
 
-@implementation Future (FutureExtra)
+@implementation TOCFuture (TOCFutureExtra)
 
-+(Future*) futureWithResultFromOperation:(id (^)(void))operation
++(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
                        dispatchedOnQueue:(dispatch_queue_t)queue {
     require(operation != nil);
     
-    FutureSource* resultSource = [FutureSource new];
+    TOCFutureSource* resultSource = [TOCFutureSource new];
     
     dispatch_async(queue, ^{ [resultSource trySetResult:operation()]; });
     
     return resultSource;
 }
-+(Future*) futureWithResultFromOperation:(id(^)(void))operation
++(TOCFuture*) futureWithResultFromOperation:(id(^)(void))operation
                          invokedOnThread:(NSThread*)thread {
     require(operation != nil);
     require(thread != nil);
 
-    FutureSource* resultSource = [FutureSource new];
+    TOCFutureSource* resultSource = [TOCFutureSource new];
 
     VoidBlock* block = [VoidBlock voidBlock:^{
         [resultSource trySetResult:operation()];
@@ -53,13 +53,13 @@
     return resultSource;
 }
 
-+(Future*) futureWithResult:(id)resultValue
++(TOCFuture*) futureWithResult:(id)resultValue
                  afterDelay:(NSTimeInterval)delay {
     require(delay >= 0);
     
-    if (delay == 0) return [Future futureWithResult:resultValue];
+    if (delay == 0) return [TOCFuture futureWithResult:resultValue];
     
-    FutureSource* resultSource = [FutureSource new];
+    TOCFutureSource* resultSource = [TOCFutureSource new];
     if (delay == INFINITY) return resultSource;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -72,15 +72,15 @@
 +(NSArray*) orderedByCompletion:(NSArray*)futures {
     require(futures != nil);
     futures = [futures copy]; // remove volatility (i.e. ensure not externally mutable)
-    for (Future* item in futures) {
-        require([item isKindOfClass:[Future class]]);
+    for (TOCFuture* item in futures) {
+        require([item isKindOfClass:[TOCFuture class]]);
     }
     
     NSMutableArray* result = [NSMutableArray array];
     
     __block NSUInteger completedCount = 0;
     NSObject* lock = [NSObject new];
-    FutureCompletionHandler doneHandler = ^(Future *completed) {
+    TOCFutureCompletionHandler doneHandler = ^(TOCFuture *completed) {
         NSUInteger i;
         @synchronized(lock) {
             i = completedCount++;
@@ -88,28 +88,28 @@
         [[result objectAtIndex:i] trySetResult:completed];
     };
     
-    for (Future* item in futures) {
-        [result addObject:[FutureSource new]];
+    for (TOCFuture* item in futures) {
+        [result addObject:[TOCFutureSource new]];
     }
-    for (Future* item in futures) {
+    for (TOCFuture* item in futures) {
         [item finallyDo:doneHandler];
     }
     
     return [result copy];
 }
 
-+(Future*) whenAll:(NSArray*)futures {
++(TOCFuture*) whenAll:(NSArray*)futures {
     require(futures != nil);
     futures = [futures copy]; // remove volatility (i.e. ensure not externally mutable)
-    for (Future* item in futures) {
-        require([item isKindOfClass:[Future class]]);
+    for (TOCFuture* item in futures) {
+        require([item isKindOfClass:[TOCFuture class]]);
     }
     
-    FutureSource* resultSource = [FutureSource new];
+    TOCFutureSource* resultSource = [TOCFutureSource new];
     
     __block NSUInteger remaining = [futures count] + 1;
     NSObject* lock = [NSObject new];
-    FutureCompletionHandler doneHandler = ^(Future *completed) {
+    TOCFutureCompletionHandler doneHandler = ^(TOCFuture *completed) {
         @synchronized(lock) {
             remaining--;
             if (remaining > 0) return;
@@ -118,7 +118,7 @@
         [resultSource trySetFailure:futures];
     };
     
-    for (Future* item in futures) {
+    for (TOCFuture* item in futures) {
         [item finallyDo:doneHandler];
     }
     

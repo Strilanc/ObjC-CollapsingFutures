@@ -11,14 +11,12 @@
 		A19E0C4B17DBB27B00A5FD69 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */; };
 		A19E0C4E17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
 		A19E0C5117DBB27B00A5FD69 /* libCollapsingFutures.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3817DBB27B00A5FD69 /* libCollapsingFutures.a */; };
-		A1A019501807606800A052A6 /* Future.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0194D1807606800A052A6 /* Future.m */; };
-		A1A019511807606800A052A6 /* Future.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0194D1807606800A052A6 /* Future.m */; };
-		A1A019521807606800A052A6 /* FutureExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0194F1807606800A052A6 /* FutureExtra.m */; };
-		A1A019531807606800A052A6 /* FutureExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0194F1807606800A052A6 /* FutureExtra.m */; };
-		A1A0196B1807641000A052A6 /* CollapsingFuturesTests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A1A019631807641000A052A6 /* CollapsingFuturesTests-Info.plist */; };
-		A1A0196C1807641000A052A6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A1A019641807641000A052A6 /* InfoPlist.strings */; };
-		A1A0196D1807641000A052A6 /* FutureExtraTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019671807641000A052A6 /* FutureExtraTest.m */; };
-		A1A0196E1807641000A052A6 /* FutureTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019681807641000A052A6 /* FutureTest.m */; };
+		A1A019501807606800A052A6 /* TOCFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0194D1807606800A052A6 /* TOCFuture.m */; };
+		A1A019511807606800A052A6 /* TOCFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0194D1807606800A052A6 /* TOCFuture.m */; };
+		A1A019521807606800A052A6 /* TOCFutureExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0194F1807606800A052A6 /* TOCFutureExtra.m */; };
+		A1A019531807606800A052A6 /* TOCFutureExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0194F1807606800A052A6 /* TOCFutureExtra.m */; };
+		A1A0196D1807641000A052A6 /* TOCFutureExtraTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019671807641000A052A6 /* TOCFutureExtraTest.m */; };
+		A1A0196E1807641000A052A6 /* TOCFutureTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019681807641000A052A6 /* TOCFutureTest.m */; };
 		A1A0196F1807641000A052A6 /* TestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0196A1807641000A052A6 /* TestUtil.m */; };
 /* End PBXBuildFile section */
 
@@ -49,14 +47,14 @@
 		A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollapsingFuturesTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		A1A0194C1807606800A052A6 /* Future.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Future.h; sourceTree = "<group>"; };
-		A1A0194D1807606800A052A6 /* Future.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Future.m; sourceTree = "<group>"; };
-		A1A0194E1807606800A052A6 /* FutureExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FutureExtra.h; sourceTree = "<group>"; };
-		A1A0194F1807606800A052A6 /* FutureExtra.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureExtra.m; sourceTree = "<group>"; };
+		A1A0194C1807606800A052A6 /* TOCFuture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCFuture.h; sourceTree = "<group>"; };
+		A1A0194D1807606800A052A6 /* TOCFuture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFuture.m; sourceTree = "<group>"; };
+		A1A0194E1807606800A052A6 /* TOCFutureExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCFutureExtra.h; sourceTree = "<group>"; };
+		A1A0194F1807606800A052A6 /* TOCFutureExtra.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureExtra.m; sourceTree = "<group>"; };
 		A1A019631807641000A052A6 /* CollapsingFuturesTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CollapsingFuturesTests-Info.plist"; sourceTree = "<group>"; };
 		A1A019651807641000A052A6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		A1A019671807641000A052A6 /* FutureExtraTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureExtraTest.m; sourceTree = "<group>"; };
-		A1A019681807641000A052A6 /* FutureTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureTest.m; sourceTree = "<group>"; };
+		A1A019671807641000A052A6 /* TOCFutureExtraTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureExtraTest.m; sourceTree = "<group>"; };
+		A1A019681807641000A052A6 /* TOCFutureTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureTest.m; sourceTree = "<group>"; };
 		A1A019691807641000A052A6 /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
 		A1A0196A1807641000A052A6 /* TestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtil.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -114,10 +112,10 @@
 		A1A0194B1807606800A052A6 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				A1A0194C1807606800A052A6 /* Future.h */,
-				A1A0194D1807606800A052A6 /* Future.m */,
-				A1A0194E1807606800A052A6 /* FutureExtra.h */,
-				A1A0194F1807606800A052A6 /* FutureExtra.m */,
+				A1A0194C1807606800A052A6 /* TOCFuture.h */,
+				A1A0194D1807606800A052A6 /* TOCFuture.m */,
+				A1A0194E1807606800A052A6 /* TOCFutureExtra.h */,
+				A1A0194F1807606800A052A6 /* TOCFutureExtra.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -137,8 +135,8 @@
 		A1A019661807641000A052A6 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				A1A019671807641000A052A6 /* FutureExtraTest.m */,
-				A1A019681807641000A052A6 /* FutureTest.m */,
+				A1A019671807641000A052A6 /* TOCFutureExtraTest.m */,
+				A1A019681807641000A052A6 /* TOCFutureTest.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -214,8 +212,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1A0196B1807641000A052A6 /* CollapsingFuturesTests-Info.plist in Resources */,
-				A1A0196C1807641000A052A6 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,8 +238,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1A019501807606800A052A6 /* Future.m in Sources */,
-				A1A019521807606800A052A6 /* FutureExtra.m in Sources */,
+				A1A019501807606800A052A6 /* TOCFuture.m in Sources */,
+				A1A019521807606800A052A6 /* TOCFutureExtra.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,11 +247,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1A019511807606800A052A6 /* Future.m in Sources */,
-				A1A0196D1807641000A052A6 /* FutureExtraTest.m in Sources */,
+				A1A019511807606800A052A6 /* TOCFuture.m in Sources */,
+				A1A0196D1807641000A052A6 /* TOCFutureExtraTest.m in Sources */,
 				A1A0196F1807641000A052A6 /* TestUtil.m in Sources */,
-				A1A0196E1807641000A052A6 /* FutureTest.m in Sources */,
-				A1A019531807606800A052A6 /* FutureExtra.m in Sources */,
+				A1A0196E1807641000A052A6 /* TOCFutureTest.m in Sources */,
+				A1A019531807606800A052A6 /* TOCFutureExtra.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
