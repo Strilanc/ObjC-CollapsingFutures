@@ -1,5 +1,21 @@
 #import <Foundation/Foundation.h>
 
+@class TOCFuture;
+
+/// @abstract The type of block passed to future 'finallyDo'.
+typedef void (^TOCFutureFinallyHandler)(TOCFuture * completed);
+/// @abstract The type of block passed to future 'thenDo'.
+typedef void (^TOCFutureThenHandler)(id value);
+/// @abstract The type of block passed to future 'catchDo'.
+typedef void (^TOCFutureCatchHandler)(id failure);
+
+/// @abstract The type of block passed to future 'finally'.
+typedef id (^TOCFutureFinallyContinuation)(TOCFuture * completed);
+/// @abstract The type of block passed to future 'then'.
+typedef id (^TOCFutureThenContinuation)(id value);
+/// @abstract The type of block passed to future 'catch'.
+typedef id (^TOCFutureCatchContinuation)(id failure);
+
 /// @abstract A TOCFuture is an eventual value. It will eventuall contain a result or a failure.
 ///
 /// @discussion
@@ -55,7 +71,7 @@
 /// When this future completes, the continuation will be run inline.
 /// If this future fails then the continuation is not run, and the failure is propagated to the returned future.
 /// If the continuation returns a future, automatic collapse is triggered and the returned future will match it instead of having it as a result.
--(TOCFuture *)then:(id(^)(id value))resultContinuation;
+-(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation;
 
 /// @abstract Registers a continuation to run when this future fails, exposing the eventual result as a future.
 /// @result A future for the eventual result of running the continuation on this future's failure value.
@@ -64,47 +80,33 @@
 /// When this future fails, the continuation will be run inline.
 /// If this future completes with a result, the continuation is not run and the returned future gets the same result.
 /// If the continuation returns a future, automatic collapse is triggered and the returned future will match it instead of having it as a result.
--(TOCFuture *)catch:(id(^)(id error))failureContinuation;
+-(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation;
 
 /// @abstract Registers a continuation to run when this future fails or completes with a result, exposing the eventual result as a future.
 /// @result A future for the eventual result of running the continuation after this future has completed or failed.
 /// @discussion If this future has already completed or failed, the continuation is run inline.
 /// When this future completes or fails, the continuation will be run inline.
 /// If the continuation returns a future, automatic collapse is triggered and the returned future will match it instead of having it as a result.
--(TOCFuture *)finally:(id(^)(TOCFuture * completed))completionContinuation;
+-(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation;
 
 /// @abstract Registers a handler to run when this future completes with a result.
 /// @discussion If this future has already completed, the handler is run inline.
 /// When this future completes, the handler will be run inline.
 /// If this future fails then the handler is not run.
--(void) thenDo:(void(^)(id result))resultHandler;
+-(void) thenDo:(TOCFutureThenHandler)resultHandler;
 
 /// @abstract Registers a handler to run when this future fails.
 /// @discussion If this future has already failed, the handler is run inline.
 /// When this future fails, the handler will be run inline.
 /// If this future does not fail then the handler is not run.
--(void) catchDo:(void(^)(id error))failureHandler;
+-(void) catchDo:(TOCFutureCatchHandler)failureHandler;
 
 /// @abstract Registers a handler to run when this future completes or fails.
 /// @discussion If this future has already completed or failed, the handler is run inline.
 /// When this future completes or fails, the handler will be run inline.
--(void) finallyDo:(void(^)(TOCFuture * completed))completionHandler;
+-(void) finallyDo:(TOCFutureFinallyHandler)completionHandler;
 
 @end
-
-/// @abstract The type of block passed to future 'finallyDo'.
-typedef void (^TOCFutureCompletionHandler)(TOCFuture * completed);
-/// @abstract The type of block passed to future 'thenDo'.
-typedef void (^TOCFutureResultHandler)(id value);
-/// @abstract The type of block passed to future 'catchDo'.
-typedef void (^TOCFutureFailureHandler)(id failure);
-
-/// @abstract The type of block passed to future 'finally'.
-typedef id (^TOCFutureCompletionContinuation)(TOCFuture * completed);
-/// @abstract The type of block passed to future 'then'.
-typedef id (^TOCFutureResultContinuation)(id value);
-/// @abstract The type of block passed to future 'catch'.
-typedef id (^TOCFutureFailureContinuation)(id failure);
 
 /// @abstract A TOCFutureSource is a future that can be manually given a result or failure.
 ///

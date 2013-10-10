@@ -5,13 +5,13 @@
 
 /// @abstract Returns a future that completes with the value returned by a function run via grand central dispatch.
 +(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
-                       dispatchedOnQueue:(dispatch_queue_t)queue;
+                          dispatchedOnQueue:(dispatch_queue_t)queue;
 
 /// @abstract Returns a future that completes with the value returned by a function invoked on the given thread.
 /// @param operation The function to run. Must not be nil.
 /// @param thread The thread to invoke the function on. Must not be nil.
 +(TOCFuture*) futureWithResultFromOperation:(id(^)(void))operation
-                         invokedOnThread:(NSThread*)thread;
+                            invokedOnThread:(NSThread*)thread;
 
 /// @abstract Returns a future that completes after a given delay (mechanism unspecified [timer, grand central dispatch, whatever]).
 /// @param resultValue The result that the future will succeed with after the given delay.
@@ -20,7 +20,7 @@
 /// A delay of 0 results in a future that's already completed.
 /// A delay of INFINITY results in a future that's never completed.
 +(TOCFuture*) futureWithResult:(id)resultValue
-                 afterDelay:(NSTimeInterval)delay;
+                    afterDelay:(NSTimeInterval)delay;
 
 /// @abstract Takes an array of futures and returns an array of the "same" futures, but with later-completing futures later in the array.
 /// @param futures The array of futures. Must not be nil, and must contain only non-nil instances of TOCFuture.

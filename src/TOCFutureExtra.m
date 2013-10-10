@@ -26,7 +26,7 @@
 @implementation TOCFuture (TOCFutureExtra)
 
 +(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
-                       dispatchedOnQueue:(dispatch_queue_t)queue {
+                          dispatchedOnQueue:(dispatch_queue_t)queue {
     require(operation != nil);
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
@@ -36,12 +36,12 @@
     return resultSource;
 }
 +(TOCFuture*) futureWithResultFromOperation:(id(^)(void))operation
-                         invokedOnThread:(NSThread*)thread {
+                            invokedOnThread:(NSThread*)thread {
     require(operation != nil);
     require(thread != nil);
-
+    
     TOCFutureSource* resultSource = [TOCFutureSource new];
-
+    
     VoidBlock* block = [VoidBlock voidBlock:^{
         [resultSource trySetResult:operation()];
     }];
@@ -54,14 +54,14 @@
 }
 
 +(TOCFuture*) futureWithResult:(id)resultValue
-                 afterDelay:(NSTimeInterval)delay {
+                    afterDelay:(NSTimeInterval)delay {
     require(delay >= 0);
     
     if (delay == 0) return [TOCFuture futureWithResult:resultValue];
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     if (delay == INFINITY) return resultSource;
-
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [resultSource trySetResult:resultValue];
     });
@@ -80,7 +80,7 @@
     
     __block NSUInteger completedCount = 0;
     NSObject* lock = [NSObject new];
-    TOCFutureCompletionHandler doneHandler = ^(TOCFuture *completed) {
+    TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
         NSUInteger i;
         @synchronized(lock) {
             i = completedCount++;
@@ -109,7 +109,7 @@
     
     __block NSUInteger remaining = [futures count] + 1;
     NSObject* lock = [NSObject new];
-    TOCFutureCompletionHandler doneHandler = ^(TOCFuture *completed) {
+    TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
         @synchronized(lock) {
             remaining--;
             if (remaining > 0) return;

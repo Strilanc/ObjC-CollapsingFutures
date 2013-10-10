@@ -56,7 +56,7 @@
     return value;
 }
 
--(void)addOrRunCompletionhandler:(TOCFutureCompletionHandler)completionHandler {
+-(void)addOrRunCompletionhandler:(TOCFutureFinallyHandler)completionHandler {
     @synchronized(self) {
         if (state == FUTURE_STATE_INCOMPLETE) {
             [completionHandlers addObject:[completionHandler copy]];
@@ -67,15 +67,15 @@
     completionHandler(self);
 }
 
--(void)finallyDo:(TOCFutureCompletionHandler)completionHandler {
+-(void)finallyDo:(TOCFutureFinallyHandler)completionHandler {
     require(completionHandler != nil);
     
     [self addOrRunCompletionhandler:completionHandler];
 }
--(void)thenDo:(TOCFutureResultHandler)resultHandler {
+-(void)thenDo:(TOCFutureThenHandler)resultHandler {
     require(resultHandler != nil);
     
-    TOCFutureResultHandler resultHandlerCopy = [resultHandler copy];
+    TOCFutureThenHandler resultHandlerCopy = [resultHandler copy];
 
     [self addOrRunCompletionhandler:^(TOCFuture *completed) {
         if (completed->state == FUTURE_STATE_SUCCEEDED) {
@@ -83,10 +83,10 @@
         }
     }];
 }
--(void)catchDo:(TOCFutureFailureHandler)failureHandler {
+-(void)catchDo:(TOCFutureCatchHandler)failureHandler {
     require(failureHandler != nil);
     
-    TOCFutureFailureHandler failureHandlerCopy = [failureHandler copy];
+    TOCFutureCatchHandler failureHandlerCopy = [failureHandler copy];
     
     [self addOrRunCompletionhandler:^(TOCFuture *completed) {
         if (completed->state == FUTURE_STATE_FAILED) {
@@ -95,10 +95,10 @@
     }];
 }
 
--(TOCFuture *)finally:(TOCFutureCompletionContinuation)completionContinuation {
+-(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation {
     require(completionContinuation != nil);
     
-    TOCFutureCompletionContinuation completionContinuationCopy = [completionContinuation copy];
+    TOCFutureFinallyContinuation completionContinuationCopy = [completionContinuation copy];
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
     [self addOrRunCompletionhandler:^(TOCFuture *completed) {
@@ -106,10 +106,10 @@
     }];
     return resultSource;
 }
--(TOCFuture *)then:(TOCFutureResultContinuation)resultContinuation {
+-(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation {
     require(resultContinuation != nil);
 
-    TOCFutureCompletionContinuation resultContinuationCopy = [resultContinuation copy];
+    TOCFutureFinallyContinuation resultContinuationCopy = [resultContinuation copy];
     TOCFutureSource* resultSource = [TOCFutureSource new];
 
     [self addOrRunCompletionhandler:^(TOCFuture *completed) {
@@ -121,10 +121,10 @@
     }];
     return resultSource;
 }
--(TOCFuture *)catch:(TOCFutureFailureContinuation)failureContinuation {
+-(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation {
     require(failureContinuation != nil);
     
-    TOCFutureCompletionContinuation failureContinuationCopy = [failureContinuation copy];
+    TOCFutureFinallyContinuation failureContinuationCopy = [failureContinuation copy];
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
     [self addOrRunCompletionhandler:^(TOCFuture *completed) {
@@ -175,7 +175,7 @@
         state = finalState;
     }
     
-    for (TOCFutureCompletionHandler handler in completionHandlersAtCompletion) {
+    for (TOCFutureFinallyHandler handler in completionHandlersAtCompletion) {
         handler(self);
     }
     return true;
