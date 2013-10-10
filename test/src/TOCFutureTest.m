@@ -9,7 +9,7 @@
 
 @implementation TOCFutureTest
 
--(void)testFailedTOCFuture {
+-(void)testFailedFuture {
     TOCFuture* f = [TOCFuture futureWithFailure:@"X"];
 
     test(![f isIncomplete]);
@@ -27,7 +27,7 @@
     testTOCFutureHasResult([f catch:^(id result) { return @3; }], @3);
     testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
--(void)testSucceededTOCFuture {
+-(void)testSucceededFuture {
     TOCFuture* f = [TOCFuture futureWithResult:@"X"];
     
     test(![f isIncomplete]);
@@ -46,7 +46,7 @@
     testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 
--(void)testFailedTOCFutureSource {
+-(void)testFailedFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
     test([f trySetFailure:@"X"]);
     
@@ -65,7 +65,7 @@
     testTOCFutureHasResult([f catch:^(id result) { return @3; }], @3);
     testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
--(void)testSucceededTOCFutureSource {
+-(void)testSucceededFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
     test([f trySetResult:@"X"]);
     
@@ -84,7 +84,7 @@
     testTOCFutureHasResult([f catch:^(id result) { return @3; }], @"X");
     testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
--(void)testIncompleteTOCFutureSource {
+-(void)testIncompleteFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
     
     test([f isIncomplete]);
@@ -103,7 +103,7 @@
     test([[f finally:^(id result) { return @4; }]isIncomplete]);
 }
 
--(void)testCollapsedFailedTOCFutureSource {
+-(void)testCollapsedFailedFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
     test([f trySetResult:[TOCFuture futureWithFailure:@"X"]]);
     
@@ -122,7 +122,7 @@
     testTOCFutureHasResult([f catch:^(id result) { return @3; }], @3);
     testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
--(void)testCollapsedSucceededTOCFutureSource {
+-(void)testCollapsedSucceededFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
     test([f trySetResult:[TOCFuture futureWithResult:@"X"]]);
     
@@ -141,7 +141,7 @@
     testTOCFutureHasResult([f catch:^(id result) { return @3; }], @"X");
     testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
--(void)testCollapsedIncompleteTOCFutureSource {
+-(void)testCollapsedIncompleteFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
     test([f trySetResult:[TOCFutureSource new]]);
     
@@ -161,7 +161,7 @@
     test([[f finally:^(id result) { return @4; }]isIncomplete]);
 }
 
--(void)testCyclicCollapsedTOCFutureIsIncomplete {
+-(void)testCyclicCollapsedFutureIsIncomplete {
     TOCFutureSource* f = [TOCFutureSource new];
     test([f trySetResult:f]);
     test([f isIncomplete]);
