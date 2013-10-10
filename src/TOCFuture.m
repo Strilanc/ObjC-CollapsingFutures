@@ -20,13 +20,13 @@
         return resultValue;
     }
     
-    TOCFuture *instance = [[TOCFuture alloc] init];
+    TOCFuture *instance = [TOCFuture new];
     instance->state = FUTURE_STATE_SUCCEEDED;
     instance->value = resultValue;
     return instance;
 }
 +(TOCFuture *)futureWithFailure:(id)failureValue {
-    TOCFuture *instance = [[TOCFuture alloc] init];
+    TOCFuture *instance = [TOCFuture new];
     instance->state = FUTURE_STATE_FAILED;
     instance->value = failureValue;
     return instance;
@@ -140,9 +140,9 @@
 
 -(NSString*) description {
     @synchronized(self) {
-        if (state == FUTURE_STATE_SUCCEEDED) return [NSString stringWithFormat:@"TOCFuture with result: %@", value];
-        if (state == FUTURE_STATE_FAILED) return [NSString stringWithFormat:@"TOCFuture with failure: %@", value];
-        return @"Incomplete TOCFuture";
+        if (state == FUTURE_STATE_SUCCEEDED) return [NSString stringWithFormat:@"Future with Result: %@", value];
+        if (state == FUTURE_STATE_FAILED) return [NSString stringWithFormat:@"Future with Failure: %@", value];
+        return @"Incomplete Future";
     }
 }
 
@@ -215,7 +215,7 @@
 
 -(NSString*) description {
     @synchronized(self) {
-        if (hasBeenSet && state == FUTURE_STATE_INCOMPLETE) return @"Incomplete TOCFuture [Set]";
+        if (hasBeenSet && state == FUTURE_STATE_INCOMPLETE) return @"Incomplete Future [Set]";
         return [super description];
     }
 }
