@@ -1,18 +1,23 @@
 #import <Foundation/Foundation.h>
 
-/// @abstract A TOCFuture is a result that may fail and may not be ready yet.
+/// @abstract A TOCFuture is an eventual value. It will eventuall contain a result or a failure.
 ///
 /// @discussion
-/// Use the then/catch/finally methods to eventually access a future's result or failure.
+/// TOCFuture is thread-safe. It can be accessed from multiple threads concurrently.
 ///
-/// If a future has already completed, you can use the forceGet methods to access its result or failure right away.
+/// Use the then/catch/finally methods to continue with a block once a TOCFuture has a value.
+/// You get a future for the continuation's completion when using then/catch/finally, allowing you to chain computations together.
+/// The continuation block is called either on the thread registering the continuation or on the thread computing the future's result.
 ///
-/// TOCFuture is thread-safe.
+/// You can use isIncomplete/hasResult/hasFailed to determine if the future has already completed or not.
+/// You can use forceGetResult/forceGetFailure to attempt to directly retrieve the future's result or failure.
+/// If the future has not yet completed, using forceGetX will raise an exception.
 ///
-/// TOCFuture is a collapsing type: you never see a future containing a future result.
-/// A future that would have had a future result will instead match that future result's failure or result.
+/// TOCFuture is auto-collapsing/flattening: you will never see a TOCFuture with a result of type TOCFuture because it gets flattened.
+/// For example, [TOCFuture futureWithResult:[TocFuture futureWithResult:@1]] is equivalent to [TocFuture futureWithResult:@1].
+/// Note that automatic flattening does not apply to failures. A TOCFuture's failure may be a TOCFuture.
 ///
-/// Use the TOCFutureSource class to create and set your own futures.
+/// Use the TOCFutureSource class to control your own TOCFuture instances.
 @interface TOCFuture : NSObject
 
 /// @abstract Creates and returns a future that has already completed with the given result value.

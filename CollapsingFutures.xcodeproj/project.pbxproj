@@ -57,6 +57,7 @@
 		A1A019681807641000A052A6 /* TOCFutureTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureTest.m; sourceTree = "<group>"; };
 		A1A019691807641000A052A6 /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
 		A1A0196A1807641000A052A6 /* TestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtil.m; sourceTree = "<group>"; };
+		A1A01972180768E900A052A6 /* TOCFutures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCFutures.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +113,7 @@
 		A1A0194B1807606800A052A6 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A1A01971180768E900A052A6 /* header */,
 				A1A0194C1807606800A052A6 /* TOCFuture.h */,
 				A1A0194D1807606800A052A6 /* TOCFuture.m */,
 				A1A0194E1807606800A052A6 /* TOCFutureExtra.h */,
@@ -139,6 +141,14 @@
 				A1A019681807641000A052A6 /* TOCFutureTest.m */,
 			);
 			path = src;
+			sourceTree = "<group>";
+		};
+		A1A01971180768E900A052A6 /* header */ = {
+			isa = PBXGroup;
+			children = (
+				A1A01972180768E900A052A6 /* TOCFutures.h */,
+			);
+			path = header;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
