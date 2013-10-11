@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name         = "Twisted Oak Collapsing Futures"
+  s.name         = "TwistedOakCollapsingFutures"
   s.version      = "0.0.9"
   s.summary      = "Futures without nesting issues."
   s.description  = <<-DESC
