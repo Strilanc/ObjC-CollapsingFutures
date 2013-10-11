@@ -8,9 +8,11 @@
  *
  * @pre All items in the receiving array must be instances of TOCFuture.
  *
- * @result A future whose result will be an array containing all of the given futures,
+ * @result A future whose result will be an array containing all of the given futures.
  *
  * @discussion Can be thought of as wrapping an Array-of-Futures into a Future-of-Array-of-Completed-Futures.
+ *
+ * The future returned by this method always succeeds with a result. It is guaranteed to not contain a failure.
  */
 -(TOCFuture*) finallyAll;
 
