@@ -23,9 +23,9 @@
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
 
-    testTOCFutureHasFailure([f then:^(id result) { return @2; }], @"X");
-    testTOCFutureHasResult([f catch:^(id result) { return @3; }], @3);
-    testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
+    testFutureHasFailure([f then:^(id result) { return @2; }], @"X");
+    testFutureHasResult([f catch:^(id result) { return @3; }], @3);
+    testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testSucceededFuture {
     TOCFuture* f = [TOCFuture futureWithResult:@"X"];
@@ -41,9 +41,9 @@
     testDoesNotHitTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
-    testTOCFutureHasResult([f then:^(id result) { return @2; }], @2);
-    testTOCFutureHasResult([f catch:^(id result) { return @3; }], @"X");
-    testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
+    testFutureHasResult([f then:^(id result) { return @2; }], @2);
+    testFutureHasResult([f catch:^(id result) { return @3; }], @"X");
+    testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 
 -(void)testFailedFutureSource {
@@ -61,9 +61,9 @@
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
-    testTOCFutureHasFailure([f then:^(id result) { return @2; }], @"X");
-    testTOCFutureHasResult([f catch:^(id result) { return @3; }], @3);
-    testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
+    testFutureHasFailure([f then:^(id result) { return @2; }], @"X");
+    testFutureHasResult([f catch:^(id result) { return @3; }], @3);
+    testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testSucceededFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
@@ -80,9 +80,9 @@
     testDoesNotHitTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
-    testTOCFutureHasResult([f then:^(id result) { return @2; }], @2);
-    testTOCFutureHasResult([f catch:^(id result) { return @3; }], @"X");
-    testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
+    testFutureHasResult([f then:^(id result) { return @2; }], @2);
+    testFutureHasResult([f catch:^(id result) { return @3; }], @"X");
+    testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testIncompleteFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
@@ -118,9 +118,9 @@
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
-    testTOCFutureHasFailure([f then:^(id result) { return @2; }], @"X");
-    testTOCFutureHasResult([f catch:^(id result) { return @3; }], @3);
-    testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
+    testFutureHasFailure([f then:^(id result) { return @2; }], @"X");
+    testFutureHasResult([f catch:^(id result) { return @3; }], @3);
+    testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testCollapsedSucceededFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
@@ -137,9 +137,9 @@
     testDoesNotHitTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
     
-    testTOCFutureHasResult([f then:^(id result) { return @2; }], @2);
-    testTOCFutureHasResult([f catch:^(id result) { return @3; }], @"X");
-    testTOCFutureHasResult([f finally:^(id result) { return @4; }], @4);
+    testFutureHasResult([f then:^(id result) { return @2; }], @2);
+    testFutureHasResult([f catch:^(id result) { return @3; }], @"X");
+    testFutureHasResult([f finally:^(id result) { return @4; }], @4);
 }
 -(void)testCollapsedIncompleteFutureSource {
     TOCFutureSource* f = [TOCFutureSource new];
@@ -203,42 +203,42 @@
     TOCFuture* f2 = [f then:^(id value) { test([value isEqual:@"X"]); return @2; }];
     test([f2 isIncomplete]);
     [f trySetResult:@"X"];
-    testTOCFutureHasResult(f2, @2);
+    testFutureHasResult(f2, @2);
 }
 -(void)testDeferredFailThen {
     TOCFutureSource* f = [TOCFutureSource new];
     TOCFuture* f2 = [f then:^(id value) { test(false); return @2; }];
     test([f2 isIncomplete]);
     [f trySetFailure:@"X"];
-    testTOCFutureHasFailure(f2, @"X");
+    testFutureHasFailure(f2, @"X");
 }
 -(void)testDeferredResultCatch {
     TOCFutureSource* f = [TOCFutureSource new];
     TOCFuture* f2 = [f catch:^(id value) { test(false); return @2; }];
     test([f2 isIncomplete]);
     [f trySetResult:@"X"];
-    testTOCFutureHasResult(f2, @"X");
+    testFutureHasResult(f2, @"X");
 }
 -(void)testDeferredFailCatch {
     TOCFutureSource* f = [TOCFutureSource new];
     TOCFuture* f2 = [f catch:^(id value) { test([value isEqual:@"X"]); return @2; }];
     test([f2 isIncomplete]);
     [f trySetFailure:@"X"];
-    testTOCFutureHasResult(f2, @2);
+    testFutureHasResult(f2, @2);
 }
 -(void)testDeferredResultFinally {
     TOCFutureSource* f = [TOCFutureSource new];
-    TOCFuture* f2 = [f finally:^(id value) { testTOCFutureHasResult(value, @"X"); return @2; }];
+    TOCFuture* f2 = [f finally:^(id value) { testFutureHasResult(value, @"X"); return @2; }];
     test([f2 isIncomplete]);
     [f trySetResult:@"X"];
-    testTOCFutureHasResult(f2, @2);
+    testFutureHasResult(f2, @2);
 }
 -(void)testDeferredFailFinally {
     TOCFutureSource* f = [TOCFutureSource new];
-    TOCFuture* f2 = [f finally:^(id value) { testTOCFutureHasFailure(value, @"X"); return @2; }];
+    TOCFuture* f2 = [f finally:^(id value) { testFutureHasFailure(value, @"X"); return @2; }];
     test([f2 isIncomplete]);
     [f trySetFailure:@"X"];
-    testTOCFutureHasResult(f2, @2);
+    testFutureHasResult(f2, @2);
 }
 -(void)testTrySetMany1 {
     TOCFutureSource* f = [TOCFutureSource new];
@@ -274,7 +274,7 @@
     [f trySetResult:g];
     test([f isIncomplete]);
     [g trySetResult:@1];
-    testTOCFutureHasResult(f, @1);
+    testFutureHasResult(f, @1);
 }
 -(void)testDeferredFailTrySet {
     TOCFutureSource* f = [TOCFutureSource new];
@@ -282,7 +282,21 @@
     [f trySetResult:g];
     test([f isIncomplete]);
     [g trySetFailure:@1];
-    testTOCFutureHasFailure(f, @1);
+    testFutureHasFailure(f, @1);
+}
+-(void) testForceSetResult {
+    TOCFutureSource* f = [TOCFutureSource new];
+    [f forceSetResult:@1];
+    testThrows([f forceSetResult:@1]);
+    testThrows([f forceSetResult:@2]);
+    testThrows([f forceSetFailure:@3]);
+}
+-(void) testForceSetFailure {
+    TOCFutureSource* f = [TOCFutureSource new];
+    [f forceSetFailure:@1];
+    testThrows([f forceSetResult:@1]);
+    testThrows([f forceSetResult:@2]);
+    testThrows([f forceSetFailure:@3]);
 }
 
 @end

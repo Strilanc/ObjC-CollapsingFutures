@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1209B201808696100D6831C /* TOCFutureArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* TOCFutureArrayUtil.m */; };
+		A1209B211808696100D6831C /* TOCFutureArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* TOCFutureArrayUtil.m */; };
+		A1209B2418086A8F00D6831C /* TOCFutureArrayUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */; };
 		A19E0C3C17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
 		A19E0C4B17DBB27B00A5FD69 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */; };
 		A19E0C4E17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
@@ -43,6 +46,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A1209B1E1808696100D6831C /* TOCFutureArrayUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCFutureArrayUtil.h; sourceTree = "<group>"; };
+		A1209B1F1808696100D6831C /* TOCFutureArrayUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureArrayUtil.m; sourceTree = "<group>"; };
+		A1209B221808699700D6831C /* TOCCommonDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOCCommonDefs.h; sourceTree = "<group>"; };
+		A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureArrayUtilTest.m; sourceTree = "<group>"; };
 		A19E0C3817DBB27B00A5FD69 /* libCollapsingFutures.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCollapsingFutures.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollapsingFuturesTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +132,7 @@
 		A1A019661807641000A052A6 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */,
 				A1A019671807641000A052A6 /* TOCFutureExtraTest.m */,
 				A1A019681807641000A052A6 /* TOCFutureTest.m */,
 			);
@@ -134,8 +142,11 @@
 		A1A019C5180774B600A052A6 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A1209B221808699700D6831C /* TOCCommonDefs.h */,
 				A1A019C6180774B600A052A6 /* TOCFuture.h */,
 				A1A019C7180774B600A052A6 /* TOCFuture.m */,
+				A1209B1E1808696100D6831C /* TOCFutureArrayUtil.h */,
+				A1209B1F1808696100D6831C /* TOCFutureArrayUtil.m */,
 				A1A019C8180774B600A052A6 /* TOCFutureExtra.h */,
 				A1A019C9180774B600A052A6 /* TOCFutureExtra.m */,
 				A1A019CA180774B600A052A6 /* TwistedOakCollapsingFutures.h */,
@@ -242,6 +253,7 @@
 			files = (
 				A1A019CD180774B600A052A6 /* TOCFutureExtra.m in Sources */,
 				A1A019CB180774B600A052A6 /* TOCFuture.m in Sources */,
+				A1209B201808696100D6831C /* TOCFutureArrayUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,7 +265,9 @@
 				A1A0196F1807641000A052A6 /* TestUtil.m in Sources */,
 				A1A0196E1807641000A052A6 /* TOCFutureTest.m in Sources */,
 				A1A019CC180774B600A052A6 /* TOCFuture.m in Sources */,
+				A1209B2418086A8F00D6831C /* TOCFutureArrayUtilTest.m in Sources */,
 				A1A019CE180774B600A052A6 /* TOCFutureExtra.m in Sources */,
+				A1209B211808696100D6831C /* TOCFutureArrayUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

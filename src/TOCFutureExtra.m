@@ -1,10 +1,5 @@
 #import "TOCFutureExtra.h"
-
-#define require(expr) \
-    if (!(expr)) \
-        @throw([NSException exceptionWithName:NSInvalidArgumentException \
-                                       reason:[NSString stringWithFormat:@"!require(%@)", (@#expr)] \
-                                     userInfo:nil])
+#import "TOCCommonDefs.h"
 
 @interface VoidBlock : NSObject { @public void (^block)(void); }
 +(VoidBlock*) voidBlock:(void(^)(void))block;
@@ -65,64 +60,6 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [resultSource trySetResult:resultValue];
     });
-    
-    return resultSource;
-}
-
-+(NSArray*) orderedByCompletion:(NSArray*)futures {
-    require(futures != nil);
-    futures = [futures copy]; // remove volatility (i.e. ensure not externally mutable)
-    for (TOCFuture* item in futures) {
-        require([item isKindOfClass:[TOCFuture class]]);
-    }
-    
-    NSMutableArray* result = [NSMutableArray array];
-    
-    __block NSUInteger completedCount = 0;
-    NSObject* lock = [NSObject new];
-    TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
-        NSUInteger i;
-        @synchronized(lock) {
-            i = completedCount++;
-        }
-        [[result objectAtIndex:i] trySetResult:completed];
-    };
-    
-    for (TOCFuture* item in futures) {
-        [result addObject:[TOCFutureSource new]];
-    }
-    for (TOCFuture* item in futures) {
-        [item finallyDo:doneHandler];
-    }
-    
-    return [result copy];
-}
-
-+(TOCFuture*) whenAll:(NSArray*)futures {
-    require(futures != nil);
-    futures = [futures copy]; // remove volatility (i.e. ensure not externally mutable)
-    for (TOCFuture* item in futures) {
-        require([item isKindOfClass:[TOCFuture class]]);
-    }
-    
-    TOCFutureSource* resultSource = [TOCFutureSource new];
-    
-    __block NSUInteger remaining = [futures count] + 1;
-    NSObject* lock = [NSObject new];
-    TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
-        @synchronized(lock) {
-            remaining--;
-            if (remaining > 0) return;
-        }
-        
-        [resultSource trySetFailure:futures];
-    };
-    
-    for (TOCFuture* item in futures) {
-        [item finallyDo:doneHandler];
-    }
-    
-    doneHandler(nil);
     
     return resultSource;
 }

@@ -1,13 +1,9 @@
 #import "TOCFuture.h"
+#import "TOCCommonDefs.h"
 
 #define FUTURE_STATE_INCOMPLETE 0
 #define FUTURE_STATE_SUCCEEDED 1
 #define FUTURE_STATE_FAILED -1
-#define require(expr) \
-    if (!(expr)) \
-        @throw([NSException exceptionWithName:NSInvalidArgumentException \
-                                       reason:[NSString stringWithFormat:@"!require(%@)", (@#expr)] \
-                                     userInfo:nil])
 
 @implementation TOCFuture {
 @protected NSMutableArray* completionHandlers;
@@ -211,6 +207,13 @@
     return [self trySet:finalFailure
                   state:FUTURE_STATE_FAILED
              isUnwiring:false];
+}
+
+-(void) forceSetResult:(id)finalResult {
+    require([self trySetResult:finalResult]);
+}
+-(void) forceSetFailure:(id)finalFailure {
+    require([self trySetFailure:finalFailure]);
 }
 
 -(NSString*) description {

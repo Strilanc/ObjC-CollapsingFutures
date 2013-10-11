@@ -36,57 +36,29 @@
     [thread cancel];
 }
 
--(void)testTOCFutureWithResultFromOperationOnThread {
+-(void)testFutureWithResultFromOperationOnThread {
     TOCFuture* f = [TOCFuture futureWithResultFromOperation:^{ return @1; }
                                       invokedOnThread:thread];
     testCompletesConcurrently(f);
-    testTOCFutureHasResult(f, @1);
+    testFutureHasResult(f, @1);
 }
--(void)testTOCFutureWithResultFromOperationDispatch {
+-(void)testFutureWithResultFromOperationDispatch {
     TOCFuture* f = [TOCFuture futureWithResultFromOperation:^{ return @1; }
                                     dispatchedOnQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
     testCompletesConcurrently(f);
-    testTOCFutureHasResult(f, @1);
+    testFutureHasResult(f, @1);
 }
--(void)testTOCFutureWithResultAfterDelay {
+-(void)testFutureWithResultAfterDelay {
     testThrows([TOCFuture futureWithResult:@"X" afterDelay:-1]);
     testThrows([TOCFuture futureWithResult:@"X" afterDelay:-INFINITY]);
     testThrows([TOCFuture futureWithResult:@"X" afterDelay:NAN]);
-    testTOCFutureHasResult([TOCFuture futureWithResult:@"X" afterDelay:0], @"X");
+    testFutureHasResult([TOCFuture futureWithResult:@"X" afterDelay:0], @"X");
     testDoesNotCompleteConcurrently([TOCFuture futureWithResult:@"X" afterDelay:INFINITY]);
     
     TOCFuture* f = [TOCFuture futureWithResult:@1
                               afterDelay:0.1];
     testCompletesConcurrently(f);
-    testTOCFutureHasResult(f, @1);
-}
--(void)testOrderedByCompletion {
-    test([[TOCFuture orderedByCompletion:@[]] isEqual:@[]]);
-    testThrows([TOCFuture orderedByCompletion:nil]);
-    testThrows([TOCFuture orderedByCompletion:(@[@1])]);
-    
-    NSArray* f = (@[[TOCFutureSource new], [TOCFutureSource new], [TOCFutureSource new]]);
-    NSArray* g = [TOCFuture orderedByCompletion:f];
-    test([g count] == [f count]);
-    
-    test([[g objectAtIndex:0] isIncomplete]);
-    
-    [[f objectAtIndex:1] trySetResult:@"A"];
-    testTOCFutureHasResult([g objectAtIndex:0], @"A");
-    test([[g objectAtIndex:1] isIncomplete]);
-    
-    [[f objectAtIndex:2] trySetFailure:@"B"];
-    testTOCFutureHasFailure([g objectAtIndex:1], @"B");
-    test([[g objectAtIndex:2] isIncomplete]);
-    
-    [[f objectAtIndex:0] trySetResult:@"C"];
-    testTOCFutureHasResult([g objectAtIndex:2], @"C");
-    
-    // ordered by continuations, so after completion should preserve ordering
-    NSArray* g2 = [TOCFuture orderedByCompletion:f];
-    testTOCFutureHasResult([g2 objectAtIndex:0], @"C");
-    testTOCFutureHasResult([g2 objectAtIndex:1], @"A");
-    testTOCFutureHasFailure([g2 objectAtIndex:2], @"B");
+    testFutureHasResult(f, @1);
 }
 
 @end

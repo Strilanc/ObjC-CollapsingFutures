@@ -22,14 +22,4 @@
 +(TOCFuture*) futureWithResult:(id)resultValue
                     afterDelay:(NSTimeInterval)delay;
 
-/// @abstract Takes an array of futures and returns an array of the "same" futures, but with later-completing futures later in the array.
-/// @param futures The array of futures. Must not be nil, and must contain only non-nil instances of TOCFuture.
-+(NSArray*) orderedByCompletion:(NSArray*)futures;
-
-/// @abstract Takes an array of futures and returns a future that, when they've all completed with a result, succeeds with an array of those results.
-/// @param futures The array of futures. Must not be nil, and must contain only non-nil instances of TOCFuture.
-/// @discussion If any of the futures fails, the returned future will fail with the array of futures once they've all completed.
-/// Passing in an empty array results in an immediately-succeeded future containing an empty array.
-+(TOCFuture*) whenAll:(NSArray*)futures;
-
 @end

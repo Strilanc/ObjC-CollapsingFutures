@@ -232,4 +232,34 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  */
 -(bool) trySetFailure:(id)finalFailure;
 
+/*!
+ * Sets the receiving future source to complete with the given result, or else raises an exception if it was already set.
+ *
+ * @param finalResult The result the receiving future source should complete with.
+ * Allowed to be nil.
+ * Allowed to be a future.
+ *
+ * @discussion
+ * If the receiving future source has already been set, this method has no effect and raises an exception.
+ *
+ * If the given result is a future and this method succeeds, then the receiving future source will collapse to match the future instead of containing it.
+ *
+ * When the future source is set to match an incomplete future, it remains incomplete (but still set) until that future completes.
+ */
+-(void) forceSetResult:(id)finalResult;
+
+/*!
+ * Sets the receiving future source to fail with the given failure, or else raises an exception.
+ *
+ * @param finalFailure The failure the receiving future source should fail with.
+ * Allowed to be nil.
+ * Allowed to be a future.
+ *
+ * @discussion
+ * If the receiving future source has already been set, this method has no effect and raises an exception if it was already set.
+ *
+ * No automatic collapse occurs when the given failure is a future. The receiving future source will just contain a failure that is a future, instead of matching that future.
+ */
+-(void) forceSetFailure:(id)finalFailure;
+
 @end

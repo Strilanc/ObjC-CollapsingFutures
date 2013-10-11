@@ -16,5 +16,8 @@ int testTargetHits;
                                          test(testTargetHits == 0)
 #define hitTarget (testTargetHits++)
 
-#define testTOCFutureHasResult(future, result) test([future hasResult] && [[future forceGetResult] isEqual:result])
-#define testTOCFutureHasFailure(future, failure) test([future hasFailed] && [[future forceGetFailure] isEqual:failure])
+#define testFutureHasResult(future, result) test([future hasResult] && [[future forceGetResult] isEqual:result])
+#define testFutureHasFailure(future, failure) test([future hasFailed] && [[future forceGetFailure] isEqual:failure])
+
+#define fut(X) [TOCFuture futureWithResult:X]
+#define futfail(X) [TOCFuture futureWithFailure:X]
