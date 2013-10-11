@@ -10,15 +10,16 @@ Installation
 
 **Method 1: CocoaPods**
 
-1. Add the podspec from this repo in your podfile:
+Example PodFile line:
 
     pod 'TwistedOakCollapsingFutures', :podspec => 'https://raw.github.com/Strilanc/ObjC-CollapsingFutures/master/TwistedOakCollapsingFutures.podspec'
 
-2. #import <TwistedOakCollapsingFutures.h> wherever you want to use the TOCFuture and TOCFutureSource types
+1. Add a pod line pointing at the podspec from this repo to your podfile.
+2. import <TwistedOakCollapsingFutures.h> wherever you want to use the TOCFuture and TOCFutureSource types
 
 **Method 2: Manual**
 
 1. Clone the repo
 2. Copy the source files from the src/ folder into your project
 3. Have ARC enabled
-4. #import <TwistedOakCollapsingFutures.h> wherever you want to use the TOCFuture and TOCFutureSource types
+4. import <TwistedOakCollapsingFutures.h> wherever you want to use the TOCFuture and TOCFutureSource types
