@@ -10,6 +10,8 @@
 		A1209B201808696100D6831C /* TOCFutureArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* TOCFutureArrayUtil.m */; };
 		A1209B211808696100D6831C /* TOCFutureArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* TOCFutureArrayUtil.m */; };
 		A1209B2418086A8F00D6831C /* TOCFutureArrayUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */; };
+		A1209B27180888E800D6831C /* TOCCancelToken.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B26180888E800D6831C /* TOCCancelToken.m */; };
+		A1209B28180888E800D6831C /* TOCCancelToken.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B26180888E800D6831C /* TOCCancelToken.m */; };
 		A19E0C3C17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
 		A19E0C4B17DBB27B00A5FD69 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */; };
 		A19E0C4E17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
@@ -50,6 +52,8 @@
 		A1209B1F1808696100D6831C /* TOCFutureArrayUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureArrayUtil.m; sourceTree = "<group>"; };
 		A1209B221808699700D6831C /* TOCCommonDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOCCommonDefs.h; sourceTree = "<group>"; };
 		A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureArrayUtilTest.m; sourceTree = "<group>"; };
+		A1209B25180888E800D6831C /* TOCCancelToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCCancelToken.h; sourceTree = "<group>"; };
+		A1209B26180888E800D6831C /* TOCCancelToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCCancelToken.m; sourceTree = "<group>"; };
 		A19E0C3817DBB27B00A5FD69 /* libCollapsingFutures.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCollapsingFutures.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollapsingFuturesTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -142,6 +146,8 @@
 		A1A019C5180774B600A052A6 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A1209B25180888E800D6831C /* TOCCancelToken.h */,
+				A1209B26180888E800D6831C /* TOCCancelToken.m */,
 				A1209B221808699700D6831C /* TOCCommonDefs.h */,
 				A1A019C6180774B600A052A6 /* TOCFuture.h */,
 				A1A019C7180774B600A052A6 /* TOCFuture.m */,
@@ -251,6 +257,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1209B27180888E800D6831C /* TOCCancelToken.m in Sources */,
 				A1A019CD180774B600A052A6 /* TOCFutureExtra.m in Sources */,
 				A1A019CB180774B600A052A6 /* TOCFuture.m in Sources */,
 				A1209B201808696100D6831C /* TOCFutureArrayUtil.m in Sources */,
@@ -261,6 +268,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1209B28180888E800D6831C /* TOCCancelToken.m in Sources */,
 				A1A0196D1807641000A052A6 /* TOCFutureExtraTest.m in Sources */,
 				A1A0196F1807641000A052A6 /* TestUtil.m in Sources */,
 				A1A0196E1807641000A052A6 /* TOCFutureTest.m in Sources */,
