@@ -8,14 +8,17 @@ Usage is discussed in [this blog post](http://twistedoakstudios.com/blog/Post714
 Installation
 ============
 
-Clone the repo and copy the four source files in the CollapsingFutures folder into an ARC-enabled project. The files:
+**Method 1: CocoaPods**
 
-(required)
-- Future.h
-- Future.m
+1. Add the podspec from this repo in your podfile:
 
-(optional, just some utility methods)
-- FutureExtra.h
-- FutureExtra.m
+    pod 'TwistedOakCollapsingFutures', :podspec => 'https://raw.github.com/Strilanc/ObjC-CollapsingFutures/master/TwistedOakCollapsingFutures.podspec'
 
-Requires ARC.
+2. #import <TwistedOakCollapsingFutures.h> wherever you want to use the TOCFuture and TOCFutureSource types
+
+**Method 2: Manual**
+
+1. Clone the repo
+2. Copy the source files from the src/ folder into your project
+3. Have ARC enabled
+4. #import <TwistedOakCollapsingFutures.h> wherever you want to use the TOCFuture and TOCFutureSource types
