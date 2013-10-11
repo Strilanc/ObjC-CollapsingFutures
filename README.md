@@ -1,7 +1,9 @@
 Collapsing Futures for Objective-C
 ==================================
 
-This is a bare bones library implementing futures that automatically flatten when nested. A Future containing a Future containing an NSNumber CAN NOT happen, because it transparently flattens into a Future just containing an NSNumber.
+This is a bare bones library implementing futures (TOCFuture) that automatically flatten when nested in Objective-C.
+
+A TOCFuture containing a TOCFuture containing an NSNumber can't be seen, because it transparently flattens into a TOCFuture just containing an NSNumber.
 
 Usage is discussed in [this blog post](http://twistedoakstudios.com/blog/Post7149_collapsing-futures-in-objective-c).
 
