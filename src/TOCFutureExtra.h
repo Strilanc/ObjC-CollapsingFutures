@@ -22,4 +22,8 @@
 +(TOCFuture*) futureWithResult:(id)resultValue
                     afterDelay:(NSTimeInterval)delay;
 
++(TOCFuture*) futureWithResult:(id)resultValue
+                    afterDelay:(NSTimeInterval)delay
+                        unless:(TOCCancelToken*)unlessCancelledToken;
+
 @end

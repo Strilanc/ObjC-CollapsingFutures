@@ -16,6 +16,8 @@
  */
 -(TOCFuture*) finallyAll;
 
+-(TOCFuture*) finallyAllUnless:(TOCCancelToken*)unlessCancelledToken;
+
 /*!
  * Eventually gets all of the results from the futures in the receiving array.
  *
@@ -30,6 +32,8 @@
  */
 -(TOCFuture*) thenAll;
 
+-(TOCFuture*) thenAllUnless:(TOCCancelToken*)unlessCancelledToken;
+
 /*!
  * Immediately returns an array containing futures matching those in the receiving array, but with futures that will complete later placed later in the array.
  *
@@ -43,5 +47,7 @@
  * Futures that had already completed will end up in the same order in the returned array as they were in the receiving array.
  */
 -(NSArray*) orderedByCompletion;
+
+-(NSArray*) orderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken;
 
 @end
