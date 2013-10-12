@@ -11,28 +11,29 @@
     test([[@[] orderedByCompletion] isEqual:@[]]);
     testThrows([(@[@1]) orderedByCompletion]);
     
-    NSArray* f = (@[[TOCFutureSource new], [TOCFutureSource new], [TOCFutureSource new]]);
+    NSArray* s = (@[[TOCFutureSource new], [TOCFutureSource new], [TOCFutureSource new]]);
+    NSArray* f = (@[[s[0] future], [s[1] future], [s[2] future]]);
     NSArray* g = [f orderedByCompletion];
     test([g count] == [f count]);
     
-    test([[g objectAtIndex:0] isIncomplete]);
+    test([g[0] isIncomplete]);
     
-    [[f objectAtIndex:1] trySetResult:@"A"];
-    testFutureHasResult([g objectAtIndex:0], @"A");
-    test([[g objectAtIndex:1] isIncomplete]);
+    [s[1] trySetResult:@"A"];
+    testFutureHasResult(g[0], @"A");
+    test([g[1] isIncomplete]);
     
-    [[f objectAtIndex:2] trySetFailure:@"B"];
-    testFutureHasFailure([g objectAtIndex:1], @"B");
-    test([[g objectAtIndex:2] isIncomplete]);
+    [s[2] trySetFailure:@"B"];
+    testFutureHasFailure(g[1], @"B");
+    test([g[2] isIncomplete]);
     
-    [[f objectAtIndex:0] trySetResult:@"C"];
-    testFutureHasResult([g objectAtIndex:2], @"C");
+    [s[0] trySetResult:@"C"];
+    testFutureHasResult(g[2], @"C");
     
     // ordered by continuations, so after completion should preserve ordering of original array
     NSArray* g2 = [f orderedByCompletion];
-    testFutureHasResult([g2 objectAtIndex:0], @"C");
-    testFutureHasResult([g2 objectAtIndex:1], @"A");
-    testFutureHasFailure([g2 objectAtIndex:2], @"B");
+    testFutureHasResult(g2[0], @"C");
+    testFutureHasResult(g2[1], @"A");
+    testFutureHasFailure(g2[2], @"B");
 }
 -(void) testFinallyAll {
     testThrows([@[@1] finallyAll]);
@@ -47,7 +48,7 @@
 }
 -(void) testFinallyAll_Incomplete {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCFuture* f = [(@[fut(@1), s, fut(@3)]) finallyAll];
+    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) finallyAll];
     test([f isIncomplete]);
     
     [s trySetFailure:@""];
@@ -73,7 +74,7 @@
 }
 -(void) testThenAll_Incomplete {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCFuture* f = [(@[fut(@1), s, fut(@3)]) thenAll];
+    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) thenAll];
     test([f isIncomplete]);
     [s trySetResult:@""];
     testFutureHasResult(f, (@[@1, @"", @3]));

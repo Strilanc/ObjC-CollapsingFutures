@@ -3,12 +3,14 @@
 
 #define FUTURE_STATE_INCOMPLETE 0
 #define FUTURE_STATE_SUCCEEDED 1
-#define FUTURE_STATE_FAILED -1
+#define FUTURE_STATE_FAILED 2
+#define FUTURE_STATE_ETERNAL 3
 
 @implementation TOCFuture {
-@protected NSMutableArray* completionHandlers;
-@protected int state;
-@protected id value;
+@private NSMutableArray* completionHandlers;
+@private int state;
+@private id value;
+@private bool hasBeenSet;
 }
 
 +(TOCFuture *)futureWithResult:(id)resultValue {
@@ -28,9 +30,73 @@
     return instance;
 }
 
++(TOCFuture*) __ForSource__completableFuture {
+    TOCFuture *future = [TOCFuture new];
+    future->completionHandlers = [NSMutableArray array];
+    return future;
+}
+-(bool) __ForSource__trySetResult:(id)finalResult {
+    // automatic flattening
+    if ([finalResult isKindOfClass:[TOCFuture class]]) {
+        return [self __trySetWithUnwrap:finalResult];
+    }
+
+    return [self __trySet:finalResult
+                    state:FUTURE_STATE_SUCCEEDED
+               isUnwiring:false];
+}
+-(bool) __ForSource__trySetFailure:(id)finalFailure {
+    return [self __trySet:finalFailure
+                    state:FUTURE_STATE_FAILED
+               isUnwiring:false];
+}
+-(bool) __ForSource__trySetEternal {
+    return [self __trySet:nil
+                    state:FUTURE_STATE_ETERNAL
+               isUnwiring:false];
+}
+
+-(bool) __trySet:(id)finalValue
+           state:(int)finalState
+      isUnwiring:(bool)unwiring {
+    NSArray* completionHandlersAtCompletion;
+    @synchronized(self) {
+        if (hasBeenSet && !unwiring) return false;
+        
+        completionHandlersAtCompletion = completionHandlers;
+        completionHandlers = nil;
+        hasBeenSet = true;
+        value = finalValue;
+        state = finalState;
+    }
+    
+    if (state == FUTURE_STATE_ETERNAL) return true;
+    for (TOCFutureFinallyHandler handler in completionHandlersAtCompletion) {
+        handler(self);
+    }
+    return true;
+}
+-(bool) __trySetWithUnwrap:(TOCFuture*)futureFinalResult {
+    require(futureFinalResult != nil);
+    
+    @synchronized(self) {
+        if (hasBeenSet) return false;
+        hasBeenSet = true;
+    }
+    
+    [futureFinalResult finallyDo:^(TOCFuture *completed) {
+        [self __trySet:completed->value
+                 state:completed->state
+            isUnwiring:true];
+    }];
+    
+    return true;
+}
+
+
 -(bool)isIncomplete {
     @synchronized(self) {
-        return state == FUTURE_STATE_INCOMPLETE;
+        return state == FUTURE_STATE_INCOMPLETE || state == FUTURE_STATE_ETERNAL;
     }
 }
 -(bool)hasResult {
@@ -54,6 +120,7 @@
 
 -(void)addOrRunCompletionhandler:(TOCFutureFinallyHandler)completionHandler {
     @synchronized(self) {
+        if (state == FUTURE_STATE_ETERNAL) return;
         if (state == FUTURE_STATE_INCOMPLETE) {
             [completionHandlers addObject:[completionHandler copy]];
             return;
@@ -100,7 +167,7 @@
     [self addOrRunCompletionhandler:^(TOCFuture *completed) {
         [resultSource trySetResult:completionContinuationCopy(completed)];
     }];
-    return resultSource;
+    return resultSource.future;
 }
 -(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation {
     require(resultContinuation != nil);
@@ -115,7 +182,7 @@
             [resultSource trySetFailure:completed->value];
         }
     }];
-    return resultSource;
+    return resultSource.future;
 }
 -(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation {
     require(failureContinuation != nil);
@@ -131,82 +198,41 @@
         }
     }];
     
-    return resultSource;
+    return resultSource.future;
 }
 
 -(NSString*) description {
     @synchronized(self) {
         if (state == FUTURE_STATE_SUCCEEDED) return [NSString stringWithFormat:@"Future with Result: %@", value];
         if (state == FUTURE_STATE_FAILED) return [NSString stringWithFormat:@"Future with Failure: %@", value];
+        if (state == FUTURE_STATE_ETERNAL) return @"Incomplete Future [Eternal]";
+        if (hasBeenSet && state == FUTURE_STATE_INCOMPLETE) return @"Incomplete Future [Set]";
         return @"Incomplete Future";
     }
 }
 
 @end
 
-@implementation TOCFutureSource {
-@private bool hasBeenSet;
-}
+@implementation TOCFutureSource
+
+@synthesize future;
 
 -(TOCFutureSource*) init {
     self = [super init];
     if (self) {
-        self->completionHandlers = [NSMutableArray array];
+        self->future = [TOCFuture __ForSource__completableFuture];
     }
     return self;
 }
 
--(bool) trySet:(id)finalValue
-         state:(int)finalState
-    isUnwiring:(bool)unwiring {
-    
-    NSArray* completionHandlersAtCompletion;
-    @synchronized(self) {
-        if (hasBeenSet && !unwiring) return false;
-        
-        completionHandlersAtCompletion = completionHandlers;
-        completionHandlers = nil;
-        hasBeenSet = true;
-        value = finalValue;
-        state = finalState;
-    }
-    
-    for (TOCFutureFinallyHandler handler in completionHandlersAtCompletion) {
-        handler(self);
-    }
-    return true;
+-(void) dealloc {
+    [future __ForSource__trySetEternal];
 }
-
--(bool) trySetWithUnwrap:(TOCFuture*)futureFinalResult {
-    require(futureFinalResult != nil);
-    
-    @synchronized(self) {
-        if (hasBeenSet) return false;
-        hasBeenSet = true;
-    }
-    
-    [futureFinalResult finallyDo:^(TOCFuture *completed) {
-        [self trySet:completed->value
-               state:completed->state
-          isUnwiring:true];
-    }];
-    
-    return true;
-}
-
 -(bool) trySetResult:(id)finalResult {
-    if ([finalResult isKindOfClass:[TOCFuture class]]) {
-        return [self trySetWithUnwrap:finalResult];
-    }
-    
-    return [self trySet:finalResult
-                  state:FUTURE_STATE_SUCCEEDED
-             isUnwiring:false];
+    return [future __ForSource__trySetResult:finalResult];
 }
 -(bool) trySetFailure:(id)finalFailure {
-    return [self trySet:finalFailure
-                  state:FUTURE_STATE_FAILED
-             isUnwiring:false];
+    return [future __ForSource__trySetFailure:finalFailure];
 }
 
 -(void) forceSetResult:(id)finalResult {
@@ -217,10 +243,7 @@
 }
 
 -(NSString*) description {
-    @synchronized(self) {
-        if (hasBeenSet && state == FUTURE_STATE_INCOMPLETE) return @"Incomplete Future [Set]";
-        return [super description];
-    }
+    return [NSString stringWithFormat:@"Future Source: %@", future];
 }
 
 @end

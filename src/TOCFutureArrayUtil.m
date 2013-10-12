@@ -28,7 +28,7 @@
     
     doneHandler(nil);
     
-    return resultSource;
+    return resultSource.future;
 }
 
 -(TOCFuture*) thenAll {
@@ -48,7 +48,7 @@
         require([item isKindOfClass:[TOCFuture class]]);
     }
     
-    NSMutableArray* result = [NSMutableArray array];
+    NSMutableArray* resultSources = [NSMutableArray array];
     
     __block NSUInteger completedCount = 0;
     NSObject* lock = [NSObject new];
@@ -57,15 +57,19 @@
         @synchronized(lock) {
             i = completedCount++;
         }
-        [result[i] forceSetResult:completed];
+        [resultSources[i] forceSetResult:completed];
     };
     
     for (TOCFuture* item in futures) {
-        [result addObject:[TOCFutureSource new]];
+        [resultSources addObject:[TOCFutureSource new]];
         [item finallyDo:doneHandler];
     }
     
-    return [result copy];
+    NSMutableArray* results = [NSMutableArray array];
+    for (TOCFutureSource* source in resultSources) {
+        [results addObject:source.future];
+    }
+    return [results copy];
 }
 
 @end

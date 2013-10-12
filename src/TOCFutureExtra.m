@@ -28,7 +28,7 @@
     
     dispatch_async(queue, ^{ [resultSource trySetResult:operation()]; });
     
-    return resultSource;
+    return resultSource.future;
 }
 +(TOCFuture*) futureWithResultFromOperation:(id(^)(void))operation
                             invokedOnThread:(NSThread*)thread {
@@ -45,7 +45,7 @@
                 withObject:block
              waitUntilDone:NO];
     
-    return resultSource;
+    return resultSource.future;
 }
 
 +(TOCFuture*) futureWithResult:(id)resultValue
@@ -55,13 +55,13 @@
     if (delay == 0) return [TOCFuture futureWithResult:resultValue];
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
-    if (delay == INFINITY) return resultSource;
+    if (delay == INFINITY) return resultSource.future;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [resultSource trySetResult:resultValue];
     });
     
-    return resultSource;
+    return resultSource.future;
 }
 
 @end

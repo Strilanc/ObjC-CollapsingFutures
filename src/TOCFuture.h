@@ -188,7 +188,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 @end
 
 /*!
- * An eventual value that can be manually completed. Extends TOCFuture.
+ * Creates and controles a TOCFuture.
  *
  * @discussion
  * TOCFutureSource is thread-safe.
@@ -196,7 +196,12 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * Use trySetResult/trySetFailure to cause the future to complete with a result or fail with a failure.
  */
-@interface TOCFutureSource : TOCFuture
+@interface TOCFutureSource : NSObject
+
+/*!
+ * Returns the future controlled by the receiving future source.
+ */
+@property (readonly, nonatomic) TOCFuture* future;
 
 /*!
  * Attempts to set the receiving future source to complete with the given result.

@@ -165,9 +165,7 @@ typedef void (^Remover)(void);
 }
 
 -(NSString*) description {
-    @synchronized(self) {
-        return [super description];
-    }
+    return [NSString stringWithFormat:@"Cancel Token Source: %@", token];
 }
 
 @end
