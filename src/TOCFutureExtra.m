@@ -50,6 +50,13 @@
 
 +(TOCFuture*) futureWithResult:(id)resultValue
                     afterDelay:(NSTimeInterval)delay {
+    return [self futureWithResult:resultValue
+                       afterDelay:delay
+                           unless:nil];
+}
++(TOCFuture*) futureWithResult:(id)resultValue
+                    afterDelay:(NSTimeInterval)delay
+                        unless:(TOCCancelToken*)unlessCancelledToken {
     require(delay >= 0);
     
     if (delay == 0) return [TOCFuture futureWithResult:resultValue];
@@ -57,9 +64,20 @@
     TOCFutureSource* resultSource = [TOCFutureSource new];
     if (delay == INFINITY) return resultSource.future;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    VoidBlock* target = [VoidBlock voidBlock:^{
         [resultSource trySetResult:resultValue];
-    });
+    }];
+    NSTimer* timer = [NSTimer timerWithTimeInterval:delay
+                                             target:target
+                                           selector:[target runSelector]
+                                           userInfo:nil
+                                            repeats:NO];
+    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+    
+    [unlessCancelledToken whenCancelledDo:^{
+        [timer invalidate];
+        [resultSource trySetFailure:unlessCancelledToken];
+    }];
     
     return resultSource.future;
 }
