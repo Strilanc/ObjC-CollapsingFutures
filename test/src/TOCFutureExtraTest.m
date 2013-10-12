@@ -3,14 +3,13 @@
 #import "TOCFutureExtra.h"
 #import "TestUtil.h"
 
-@interface TOCFutureExtraTest : SenTestCase {
+@interface TOCFutureExtraTest : SenTestCase
+@end
+
+@implementation TOCFutureExtraTest {
 @private NSThread* thread;
 @private NSRunLoop* runLoop;
 }
-
-@end
-
-@implementation TOCFutureExtraTest
 
 -(void) setUp {
     thread = [[NSThread alloc] initWithTarget:self selector:@selector(runLoopUntilCancelled) object:nil];

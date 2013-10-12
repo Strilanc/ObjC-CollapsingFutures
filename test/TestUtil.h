@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "TOCFuture.h"
 
+bool testPassesConcurrently_helper(bool (^check)(void), NSTimeInterval delay);
 bool testCompletesConcurrently_helper(TOCFuture* future, NSTimeInterval timeout);
 int testTargetHits;
 
@@ -8,6 +9,7 @@ int testTargetHits;
 #define testThrows(expressionExpectedToThrow) STAssertThrows(expressionExpectedToThrow, @"")
 #define testCompletesConcurrently(future) test(testCompletesConcurrently_helper(future, 2.0))
 #define testDoesNotCompleteConcurrently(future) test(!testCompletesConcurrently_helper(future, 0.01))
+#define testUntil(condition) test(testPassesConcurrently_helper(^bool{ return (condition);}, 2.0))
 #define testHitsTarget(expression) testTargetHits = 0; \
                                    expression; \
                                    test(testTargetHits == 1)
@@ -21,3 +23,13 @@ int testTargetHits;
 
 #define fut(X) [TOCFuture futureWithResult:X]
 #define futfail(X) [TOCFuture futureWithFailure:X]
+
+@class DeallocCounterHelper;
+@interface DeallocCounter : NSObject
+@property (atomic) NSUInteger helperDeallocCount;
+-(DeallocCounterHelper*) makeInstanceToCount;
+@end
+@interface DeallocCounterHelper : NSObject
++(DeallocCounterHelper*) helper:(DeallocCounter*)parent;
+-(void) poke;
+@end
