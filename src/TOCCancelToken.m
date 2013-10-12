@@ -133,7 +133,7 @@ typedef void (^SettledHandler)(int state);
 }
 
 -(void) whenCancelledDo:(TOCCancelHandler)cancelHandler
-        unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
+                 unless:(TOCCancelToken*)unlessCancelledToken {
     require(cancelHandler != nil);
     int peekOtherState = [unlessCancelledToken __peekTokenState];
 

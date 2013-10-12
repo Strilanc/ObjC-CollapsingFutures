@@ -88,7 +88,7 @@ typedef void (^TOCCancelHandler)(void);
  * The handler will be called either inline on the calling thread or on the thread that cancels the token.
  */
 -(void) whenCancelledDo:(TOCCancelHandler)cancelHandler
-        unlessCancelled:(TOCCancelToken*)unlessCancelledToken;
+                 unless:(TOCCancelToken*)unlessCancelledToken;
 
 @end
 

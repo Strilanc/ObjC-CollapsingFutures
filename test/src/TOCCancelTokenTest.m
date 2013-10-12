@@ -57,7 +57,7 @@
     test([s tryCancel]);
     test([c isAlreadyCancelled]);
     test(![c canStillBeCancelled]);
-
+    
     test(![s tryCancel]);
     test([c isAlreadyCancelled]);
     test(![c canStillBeCancelled]);
@@ -66,7 +66,7 @@
     TOCCancelToken* c = [TOCCancelToken immortalToken];
     test(![c canStillBeCancelled]);
     test(![c isAlreadyCancelled]);
-
+    
     [c whenCancelledDo:^{
         test(false);
     }];
@@ -114,10 +114,10 @@
     __block int hit2 = 0;
     [s.token whenCancelledDo:^{
         hit1++;
-    } unlessCancelled:u.token];
+    } unless:u.token];
     [u.token whenCancelledDo:^{
         hit2++;
-    } unlessCancelled:s.token];
+    } unless:s.token];
     
     test(hit1 == 0 && hit2 == 0);
     [s cancel];
@@ -146,12 +146,12 @@
         [s.token whenCancelledDo:^{
             test(false);
             [inst1 poke];
-        } unlessCancelled:u.token];
+        } unless:u.token];
         [u.token whenCancelledDo:^{
             test(false);
             [inst2 poke];
             [inst3 poke];
-        } unlessCancelled:s.token];
+        } unless:s.token];
         test(d.helperDeallocCount == 0);
         return nil;
     } invokedOnThread:thread];
@@ -181,11 +181,11 @@
         
         [s.token whenCancelledDo:^{
             [inst1 poke];
-        } unlessCancelled:u.token];
+        } unless:u.token];
         [u.token whenCancelledDo:^{
             [inst2 poke];
             [inst3 poke];
-        } unlessCancelled:s.token];
+        } unless:s.token];
         test(d.helperDeallocCount == 0);
         
         [s cancel];
@@ -214,12 +214,12 @@
         
         [s.token whenCancelledDo:^{
             [inst1 poke];
-        } unlessCancelled:u.token];
+        } unless:u.token];
         [u.token whenCancelledDo:^{
             test(false);
             [inst2 poke];
             [inst3 poke];
-        } unlessCancelled:s.token];
+        } unless:s.token];
         test(d.helperDeallocCount == 0);
         
         [s cancel];
@@ -236,17 +236,17 @@
 
 -(void) testSelfOnCancelledUnlesCancelledIsConsistentBeforeAndAfter {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
-
+    
     __block int hit1 = 0;
     [s.token whenCancelledDo:^{
         hit1++;
-    } unlessCancelled:s.token];
+    } unless:s.token];
     [s cancel];
     
     __block int hit2 = 0;
     [s.token whenCancelledDo:^{
         hit2++;
-    } unlessCancelled:s.token];
+    } unless:s.token];
     
     test(hit1 <= 1);
     test(hit2 <= 1);
@@ -257,7 +257,7 @@
     __block int hit1 = 0;
     [[TOCCancelToken cancelledToken] whenCancelledDo:^{
         hit1++;
-    } unlessCancelled:[TOCCancelToken cancelledToken]];
+    } unless:[TOCCancelToken cancelledToken]];
     test(hit1 == 0);
 }
 
