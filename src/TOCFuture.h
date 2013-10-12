@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "TOCCancelToken.h"
 
 @class TOCFuture;
 
@@ -138,6 +139,9 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  */
 -(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation;
 
+-(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation
+            unless:(TOCCancelToken*)unlessCancelledToken;
+
 /*!
  * Eventually matches the receiving future's result, or else evaluates a 'catch' continuation on the receiving future's failure.
  *
@@ -148,6 +152,9 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * If the continuation returns a future, instead of a normal value, then this method's result is automatically flattened to match that future instead of containing it.
  */
 -(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation;
+
+-(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation
+             unless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Eventually evaluates a 'finally' continuation on the receiving future, once it has completed with a result or failed.
@@ -160,6 +167,9 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  */
 -(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation;
 
+-(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation
+               unless:(TOCCancelToken*)unlessCancelledToken;
+
 /*!
  * Eventually runs a 'then' handler on the receiving future's result.
  *
@@ -168,6 +178,9 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * If the receiving future fails, instead of succeeding with a result, the handler is not run.
  */
 -(void) thenDo:(TOCFutureThenHandler)resultHandler;
+
+-(void) thenDo:(TOCFutureThenHandler)resultHandler
+        unless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Eventually runs a 'catch' handler on the receiving future's failure.
@@ -178,12 +191,18 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  */
 -(void) catchDo:(TOCFutureCatchHandler)failureHandler;
 
+-(void) catchDo:(TOCFutureCatchHandler)failureHandler
+         unless:(TOCCancelToken*)unlessCancelledToken;
+
 /*!
  * Eventually runs a 'finally' handler on the receiving future, once it has completed with a result or failed.
  *
  * @discussion If the receiving future has already completed with a result or failed, the handler is run inline.
  */
 -(void) finallyDo:(TOCFutureFinallyHandler)completionHandler;
+
+-(void) finallyDo:(TOCFutureFinallyHandler)completionHandler
+           unless:(TOCCancelToken*)unlessCancelledToken;
 
 @end
 

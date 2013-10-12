@@ -1,16 +1,12 @@
 #import "TOCFuture.h"
 #import "TOCCommonDefs.h"
 
-#define FUTURE_STATE_INCOMPLETE 0
-#define FUTURE_STATE_SUCCEEDED 1
-#define FUTURE_STATE_FAILED 2
-#define FUTURE_STATE_ETERNAL 3
-
 @implementation TOCFuture {
-@private NSMutableArray* completionHandlers;
-@private int state;
 @private id value;
+@private bool ifDoneHasSucceeded;
 @private bool hasBeenSet;
+@private TOCCancelTokenSource* completionSource;
+@private TOCCancelToken* completionToken;
 }
 
 +(TOCFuture *)futureWithResult:(id)resultValue {
@@ -18,21 +14,24 @@
         return resultValue;
     }
     
-    TOCFuture *instance = [TOCFuture new];
-    instance->state = FUTURE_STATE_SUCCEEDED;
-    instance->value = resultValue;
-    return instance;
+    TOCFuture *future = [TOCFuture new];
+    future->completionToken = [TOCCancelToken cancelledToken];
+    future->ifDoneHasSucceeded = true;
+    future->value = resultValue;
+    return future;
 }
 +(TOCFuture *)futureWithFailure:(id)failureValue {
-    TOCFuture *instance = [TOCFuture new];
-    instance->state = FUTURE_STATE_FAILED;
-    instance->value = failureValue;
-    return instance;
+    TOCFuture *future = [TOCFuture new];
+    future->completionToken = [TOCCancelToken cancelledToken];
+    future->ifDoneHasSucceeded = false;
+    future->value = failureValue;
+    return future;
 }
 
 +(TOCFuture*) __ForSource__completableFuture {
-    TOCFuture *future = [TOCFuture new];
-    future->completionHandlers = [NSMutableArray array];
+    TOCFuture* future = [TOCFuture new];
+    future->completionSource = [TOCCancelTokenSource new];
+    future->completionToken = future->completionSource.token;
     return future;
 }
 -(bool) __ForSource__trySetResult:(id)finalResult {
@@ -42,38 +41,32 @@
     }
 
     return [self __trySet:finalResult
-                    state:FUTURE_STATE_SUCCEEDED
+                succeeded:true
                isUnwiring:false];
 }
 -(bool) __ForSource__trySetFailure:(id)finalFailure {
     return [self __trySet:finalFailure
-                    state:FUTURE_STATE_FAILED
+                succeeded:false
                isUnwiring:false];
 }
--(bool) __ForSource__trySetEternal {
-    return [self __trySet:nil
-                    state:FUTURE_STATE_ETERNAL
-               isUnwiring:false];
+-(void) __ForSource__trySetEternal {
+    @synchronized(self) {
+        if (!hasBeenSet) {
+            completionSource = nil;
+        }
+    }
 }
 
 -(bool) __trySet:(id)finalValue
-           state:(int)finalState
+       succeeded:(bool)succeeded
       isUnwiring:(bool)unwiring {
-    NSArray* completionHandlersAtCompletion;
     @synchronized(self) {
         if (hasBeenSet && !unwiring) return false;
-        
-        completionHandlersAtCompletion = completionHandlers;
-        completionHandlers = nil;
         hasBeenSet = true;
         value = finalValue;
-        state = finalState;
+        ifDoneHasSucceeded = succeeded;
     }
-    
-    if (state == FUTURE_STATE_ETERNAL) return true;
-    for (TOCFutureFinallyHandler handler in completionHandlersAtCompletion) {
-        handler(self);
-    }
+    [completionSource cancel];
     return true;
 }
 -(bool) __trySetWithUnwrap:(TOCFuture*)futureFinalResult {
@@ -86,7 +79,7 @@
     
     [futureFinalResult finallyDo:^(TOCFuture *completed) {
         [self __trySet:completed->value
-                 state:completed->state
+             succeeded:completed->ifDoneHasSucceeded
             isUnwiring:true];
     }];
     
@@ -95,19 +88,13 @@
 
 
 -(bool)isIncomplete {
-    @synchronized(self) {
-        return state == FUTURE_STATE_INCOMPLETE || state == FUTURE_STATE_ETERNAL;
-    }
+    return ![completionToken isAlreadyCancelled];
 }
 -(bool)hasResult {
-    @synchronized(self) {
-        return state == FUTURE_STATE_SUCCEEDED;
-    }
+    return [completionToken isAlreadyCancelled] && ifDoneHasSucceeded;
 }
 -(bool)hasFailed {
-    @synchronized(self) {
-        return state == FUTURE_STATE_FAILED;
-    }
+    return [completionToken isAlreadyCancelled] && !ifDoneHasSucceeded;
 }
 -(id)forceGetResult {
     require([self hasResult]);
@@ -118,96 +105,106 @@
     return value;
 }
 
--(void)addOrRunCompletionhandler:(TOCFutureFinallyHandler)completionHandler {
-    @synchronized(self) {
-        if (state == FUTURE_STATE_ETERNAL) return;
-        if (state == FUTURE_STATE_INCOMPLETE) {
-            [completionHandlers addObject:[completionHandler copy]];
-            return;
-        }
-    }
-    
-    completionHandler(self);
-}
-
--(void)finallyDo:(TOCFutureFinallyHandler)completionHandler {
+-(void)finallyDo:(TOCFutureFinallyHandler)completionHandler
+          unless:(TOCCancelToken *)unlessCancelledToken {
     require(completionHandler != nil);
     
-    [self addOrRunCompletionhandler:completionHandler];
+    __weak TOCFuture* weakSelf = self;
+    [completionToken whenCancelledDo:^{ completionHandler(weakSelf); }
+                                     unless:unlessCancelledToken];
 }
--(void)thenDo:(TOCFutureThenHandler)resultHandler {
+-(void)finallyDo:(TOCFutureFinallyHandler)completionHandler {
+    [self finallyDo:completionHandler unless:nil];
+}
+
+-(void)thenDo:(TOCFutureThenHandler)resultHandler
+       unless:(TOCCancelToken *)unlessCancelledToken {
     require(resultHandler != nil);
     
-    TOCFutureThenHandler resultHandlerCopy = [resultHandler copy];
-
-    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
-        if (completed->state == FUTURE_STATE_SUCCEEDED) {
-            resultHandlerCopy(completed->value);
+    [self finallyDo:^(TOCFuture *completed) {
+        if (completed->ifDoneHasSucceeded) {
+            resultHandler(completed->value);
         }
-    }];
+    } unless:unlessCancelledToken];
 }
--(void)catchDo:(TOCFutureCatchHandler)failureHandler {
+-(void)thenDo:(TOCFutureThenHandler)resultHandler {
+    [self thenDo:resultHandler unless:nil];
+}
+
+-(void)catchDo:(TOCFutureCatchHandler)failureHandler
+        unless:(TOCCancelToken *)unlessCancelledToken {
     require(failureHandler != nil);
     
-    TOCFutureCatchHandler failureHandlerCopy = [failureHandler copy];
-    
-    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
-        if (completed->state == FUTURE_STATE_FAILED) {
-            failureHandlerCopy(completed->value);
+    [self finallyDo:^(TOCFuture *completed) {
+        if (!completed->ifDoneHasSucceeded) {
+            failureHandler(completed->value);
         }
-    }];
+    } unless:unlessCancelledToken];
+}
+-(void)catchDo:(TOCFutureCatchHandler)failureHandler {
+    [self catchDo:failureHandler unless:nil];
 }
 
--(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation {
+-(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation
+               unless:(TOCCancelToken *)unlessCancelledToken {
     require(completionContinuation != nil);
     
-    TOCFutureFinallyContinuation completionContinuationCopy = [completionContinuation copy];
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
-    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
-        [resultSource trySetResult:completionContinuationCopy(completed)];
-    }];
+    [self finallyDo:^(TOCFuture *completed) {
+        [resultSource trySetResult:completionContinuation(completed)];
+    } unless:unlessCancelledToken];
+    
     return resultSource.future;
+}
+-(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation {
+    return [self finally:completionContinuation unless:nil];
+}
+
+-(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation unless:(TOCCancelToken *)unlessCancelledToken {
+    require(resultContinuation != nil);
+    
+    return [self finally:^id(TOCFuture *completed) {
+        if (completed->ifDoneHasSucceeded) {
+            return resultContinuation(completed->value);
+        } else {
+            return completed;;
+        }
+    } unless:unlessCancelledToken];
 }
 -(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation {
-    require(resultContinuation != nil);
-
-    TOCFutureFinallyContinuation resultContinuationCopy = [resultContinuation copy];
-    TOCFutureSource* resultSource = [TOCFutureSource new];
-
-    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
-        if (completed->state == FUTURE_STATE_SUCCEEDED) {
-            [resultSource trySetResult:resultContinuationCopy(completed->value)];
-        } else {
-            [resultSource trySetFailure:completed->value];
-        }
-    }];
-    return resultSource.future;
+    return [self then:resultContinuation unless:nil];
 }
--(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation {
+
+-(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation
+             unless:(TOCCancelToken *)unlessCancelledToken {
     require(failureContinuation != nil);
     
-    TOCFutureFinallyContinuation failureContinuationCopy = [failureContinuation copy];
-    TOCFutureSource* resultSource = [TOCFutureSource new];
-    
-    [self addOrRunCompletionhandler:^(TOCFuture *completed) {
-        if (completed->state == FUTURE_STATE_SUCCEEDED) {
-            [resultSource trySetResult:completed->value];
+    return [self finally:^(TOCFuture *completed) {
+        if (completed->ifDoneHasSucceeded) {
+            return completed->value;
         } else {
-            [resultSource trySetResult:failureContinuationCopy(completed->value)];
+            return failureContinuation(completed->value);
         }
-    }];
-    
-    return resultSource.future;
+    } unless:unlessCancelledToken];
+}
+-(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation {
+    return [self catch:failureContinuation unless:nil];
 }
 
 -(NSString*) description {
     @synchronized(self) {
-        if (state == FUTURE_STATE_SUCCEEDED) return [NSString stringWithFormat:@"Future with Result: %@", value];
-        if (state == FUTURE_STATE_FAILED) return [NSString stringWithFormat:@"Future with Failure: %@", value];
-        if (state == FUTURE_STATE_ETERNAL) return @"Incomplete Future [Eternal]";
-        if (hasBeenSet && state == FUTURE_STATE_INCOMPLETE) return @"Incomplete Future [Set]";
-        return @"Incomplete Future";
+        bool isIncomplete = [completionToken isAlreadyCancelled];
+        bool isStuck = ![completionToken canStillBeCancelled];
+        
+        if (isIncomplete) {
+            if (isStuck) return @"Incomplete Future [Eternal]";
+            if (hasBeenSet) return @"Incomplete Future [Set]";
+            return @"Incomplete Future";
+        }
+        return [NSString stringWithFormat:@"Future with %@: %@",
+                ifDoneHasSucceeded ? @"Result" : @"Failure",
+                value];
     }
 }
 
