@@ -4,6 +4,10 @@
 @implementation NSArray (TOCFutureArrayUtil)
 
 -(TOCFuture*) finallyAll {
+    return [self finallyAllUnless:nil];
+}
+
+-(TOCFuture*) finallyAllUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
     for (TOCFuture* item in futures) {
         require([item isKindOfClass:[TOCFuture class]]);
@@ -23,16 +27,24 @@
     };
     
     for (TOCFuture* item in futures) {
-        [item finallyDo:doneHandler];
+        [item finallyDo:doneHandler
+                 unless:unlessCancelledToken];
     }
     
     doneHandler(nil);
+    
+    [unlessCancelledToken whenCancelledDo:^{ [resultSource trySetFailure:unlessCancelledToken]; }
+                                   unless:[resultSource.future cancelledOnCompletionToken]];
     
     return resultSource.future;
 }
 
 -(TOCFuture*) thenAll {
-    return [[self finallyAll] then:^id(NSArray* completedFutures) {
+    return [self thenAllUnless:nil];
+}
+
+-(TOCFuture*) thenAllUnless:(TOCCancelToken*)unlessCancelledToken {
+    return [[self finallyAllUnless:unlessCancelledToken] then:^id(NSArray* completedFutures) {
         NSMutableArray* results = [NSMutableArray array];
         for (TOCFuture* item in completedFutures) {
             if ([item hasFailed]) return [TOCFuture futureWithFailure:completedFutures];
@@ -43,6 +55,10 @@
 }
 
 -(NSArray*) orderedByCompletion {
+    return [self orderedByCompletionUnless:nil];
+}
+
+-(NSArray*) orderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
     for (TOCFuture* item in futures) {
         require([item isKindOfClass:[TOCFuture class]]);
@@ -62,7 +78,7 @@
     
     for (TOCFuture* item in futures) {
         [resultSources addObject:[TOCFutureSource new]];
-        [item finallyDo:doneHandler];
+        [[item unless:unlessCancelledToken] finallyDo:doneHandler];
     }
     
     NSMutableArray* results = [NSMutableArray array];

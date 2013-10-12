@@ -87,6 +87,12 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  */
 +(TOCFuture *)futureWithFailure:(id)failureValue;
 
+
+/*!
+ * Returns a cancel token that is cancelled when the receiving future has succeeded with a result or failed.
+ */
+-(TOCCancelToken*) cancelledOnCompletionToken;
+
 /*!
  * Determines if the receiving future has not yet completed or failed.
  */
@@ -203,6 +209,8 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 
 -(void) finallyDo:(TOCFutureFinallyHandler)completionHandler
            unless:(TOCCancelToken*)unlessCancelledToken;
+
+-(TOCFuture*) unless:(TOCCancelToken*)unlessCancelledToken;
 
 @end
 

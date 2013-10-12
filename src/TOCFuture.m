@@ -87,6 +87,10 @@
 }
 
 
+-(TOCCancelToken*) cancelledOnCompletionToken {
+    return completionToken;
+}
+
 -(bool)isIncomplete {
     return ![completionToken isAlreadyCancelled];
 }
@@ -154,6 +158,9 @@
     [self finallyDo:^(TOCFuture *completed) {
         [resultSource trySetResult:completionContinuation(completed)];
     } unless:unlessCancelledToken];
+    [unlessCancelledToken whenCancelledDo:^{
+        [resultSource trySetFailure:unlessCancelledToken];
+    } unless:completionToken];
     
     return resultSource.future;
 }
@@ -190,6 +197,12 @@
 }
 -(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation {
     return [self catch:failureContinuation unless:nil];
+}
+
+-(TOCFuture*) unless:(TOCCancelToken*)unlessCancelledToken {
+    if (unlessCancelledToken == nil) return self;
+    return [self finally:^(TOCFuture *completed) { return completed; }
+                  unless:unlessCancelledToken];
 }
 
 -(NSString*) description {
