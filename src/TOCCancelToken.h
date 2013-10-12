@@ -83,7 +83,7 @@ typedef void (^TOCCancelHandler)(void);
  *
  * If the token is or becomes immortal, the handler is not kept.
  *
- * If the same token is used as both the receiving and unlessCancelled token, the unlessCancelled token is ignored.
+ * If the same token is used as both the receiving and unlessCancelled token, the cancel handler is discarded without being run.
  *
  * The handler will be called either inline on the calling thread or on the thread that cancels the token.
  */
