@@ -110,14 +110,14 @@ typedef void (^SettledHandler)(int state);
     cancelHandler();
 }
 
--(Remover)__removable_whenCancelledOrImmortalDo:(SettledHandler)immortalOrCancelHandler {
-    require(immortalOrCancelHandler != nil);
+-(Remover)__removable_whenSettledDo:(SettledHandler)settledHandler {
+    require(settledHandler != nil);
     @synchronized(lock) {
         if (state == TOKEN_STATE_MORTAL) {
-            TOCCancelHandler handlerCopy = [immortalOrCancelHandler copy];
+            TOCCancelHandler handlerCopy = [settledHandler copy];
             [removableSettledHandlers addObject:handlerCopy];
 
-            // avoid closing over 'self'
+            // avoid closing over 'self' in the remover, just to be safe
             id lockRef = lock;
             NSMutableSet* removableSettledHandlersRef = removableSettledHandlers;
             return ^{
@@ -128,23 +128,23 @@ typedef void (^SettledHandler)(int state);
         }
     }
     
-    immortalOrCancelHandler(state);
+    settledHandler(state);
     return ^{};
 }
 
 -(void) whenCancelledDo:(TOCCancelHandler)cancelHandler
         unlessCancelled:(TOCCancelToken*)unlessCancelledToken {
     require(cancelHandler != nil);
-    int peekUnlessCancelledTokenState = [unlessCancelledToken __peekTokenState];
+    int peekOtherState = [unlessCancelledToken __peekTokenState];
 
-    // optimistically use the unconditional whenCancelledDo
-    if (peekUnlessCancelledTokenState == TOKEN_STATE_IMMORTAL || unlessCancelledToken == self) {
-        [self whenCancelledDo:cancelHandler];
+    // optimistically do nothing
+    if (unlessCancelledToken == self || peekOtherState == TOKEN_STATE_CANCELLED) {
         return;
     }
     
-    // optimistically avoid doing anything
-    if (peekUnlessCancelledTokenState == TOKEN_STATE_CANCELLED) {
+    // optimistically use the unconditional whenCancelledDo
+    if (peekOtherState == TOKEN_STATE_IMMORTAL) {
+        [self whenCancelledDo:cancelHandler];
         return;
     }
     
@@ -160,13 +160,13 @@ typedef void (^SettledHandler)(int state);
     };
     
     // make the cancel-each-other cycle, running the cancel handler if self is cancelled first
-    __block Remover removeHandlerFromSelfToOther = [self __removable_whenCancelledOrImmortalDo:^(int finalState){
+    __block Remover removeHandlerFromSelfToOther = [self __removable_whenSettledDo:^(int finalState){
         if (finalState == TOKEN_STATE_CANCELLED) {
             cancelHandler();
         }
         onSecondCallRemoveHandlerFromOtherToSelf();
     }];
-    removeHandlerFromOtherToSelf = [unlessCancelledToken __removable_whenCancelledOrImmortalDo:^(int finalState) {
+    removeHandlerFromOtherToSelf = [unlessCancelledToken __removable_whenSettledDo:^(int finalState) {
         removeHandlerFromSelfToOther();
         removeHandlerFromSelfToOther = nil;
     }];

@@ -60,7 +60,7 @@ typedef void (^TOCCancelHandler)(void);
 -(bool)canStillBeCancelled;
 
 /*!
- * Registers a cancel handler block to be called once the token is cancelled.
+ * Registers a cancel handler block to be called once the receiving token is cancelled.
  *
  * @param cancelHandler The block to call once the token is cancelled.
  *
@@ -73,7 +73,7 @@ typedef void (^TOCCancelHandler)(void);
 -(void)whenCancelledDo:(TOCCancelHandler)cancelHandler;
 
 /*!
- * Registers a cancel handler block to be called once the token is cancelled.
+ * Registers a cancel handler block to be called once the receiving token is cancelled.
  *
  * @param cancelHandler The block to call once the token is cancelled.
  *

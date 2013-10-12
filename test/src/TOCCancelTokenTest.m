@@ -234,4 +234,31 @@
     test(![token2 canStillBeCancelled]);
 }
 
+-(void) testSelfOnCancelledUnlesCancelledIsConsistentBeforeAndAfter {
+    TOCCancelTokenSource* s = [TOCCancelTokenSource new];
+
+    __block int hit1 = 0;
+    [s.token whenCancelledDo:^{
+        hit1++;
+    } unlessCancelled:s.token];
+    [s cancel];
+    
+    __block int hit2 = 0;
+    [s.token whenCancelledDo:^{
+        hit2++;
+    } unlessCancelled:s.token];
+    
+    test(hit1 <= 1);
+    test(hit2 <= 1);
+    test(hit1 == hit2);
+}
+
+-(void) testOnCancelledUnlesCancelledWhenBothCancelledDoesNotRunCallback {
+    __block int hit1 = 0;
+    [[TOCCancelToken cancelledToken] whenCancelledDo:^{
+        hit1++;
+    } unlessCancelled:[TOCCancelToken cancelledToken]];
+    test(hit1 == 0);
+}
+
 @end
