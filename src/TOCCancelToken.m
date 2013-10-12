@@ -9,7 +9,7 @@
 typedef void (^Remover)(void);
 
 @implementation TOCCancelToken {
-@private NSMutableArray* cancelHandlers;
+@private NSMutableArray* cancelHandlers; // is not nil if-and-only-if the token can be cancelled
 @private bool isImmortal;
 }
 
@@ -52,9 +52,10 @@ typedef void (^Remover)(void);
 }
 
 -(bool)isAlreadyCancelled {
-    @synchronized(self) {
-        return cancelHandlers == nil && !isImmortal;
-    }
+    return [self __peekTokenState] == TOKEN_STATE_CANCELLED;
+}
+-(bool)canStillBeCancelled {
+    return [self __peekTokenState] == TOKEN_STATE_MORTAL;
 }
 -(int)__peekTokenState {
     @synchronized(self) {
