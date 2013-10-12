@@ -16,7 +16,7 @@
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
-    assert([futures count] < INT_MAX-1);
+    require([futures count] < INT_MAX);
     __block int remaining = (int)[futures count] + 1;
     TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
         if (OSAtomicDecrement32(&remaining) > 0) return;
