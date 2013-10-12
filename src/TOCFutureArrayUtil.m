@@ -1,5 +1,6 @@
 #import "TOCFutureArrayUtil.h"
 #import "TOCCommonDefs.h"
+#include <libkern/OSAtomic.h>
 
 @implementation NSArray (TOCFutureArrayUtil)
 
@@ -15,14 +16,10 @@
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
-    __block NSUInteger remaining = [futures count] + 1;
-    NSObject* lock = [NSObject new];
+    assert([futures count] < INT_MAX-1);
+    __block int remaining = (int)[futures count] + 1;
     TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
-        @synchronized(lock) {
-            remaining--;
-            if (remaining > 0) return;
-        }
-        
+        if (OSAtomicDecrement32(&remaining) > 0) return;
         [resultSource forceSetResult:futures];
     };
     
@@ -66,13 +63,9 @@
     
     NSMutableArray* resultSources = [NSMutableArray array];
     
-    __block NSUInteger completedCount = 0;
-    NSObject* lock = [NSObject new];
+    __block int nextIndexMinusOne = -1;
     TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
-        NSUInteger i;
-        @synchronized(lock) {
-            i = completedCount++;
-        }
+        NSUInteger i = (NSUInteger)OSAtomicIncrement32(&nextIndexMinusOne);
         [resultSources[i] forceSetResult:completed];
     };
     
