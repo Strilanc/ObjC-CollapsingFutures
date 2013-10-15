@@ -133,18 +133,40 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 -(id)forceGetFailure;
 
 /*!
+ * Eventually runs a 'finally' handler on the receiving future, once it has completed with a result or failed.
+ *
+ * @param completionHandler The block to run once the future has completed, unless the cancel token is cancelled first.
+ *
+ * @param unlessCancelledToken If this token is cancelled before the future completes, the completion handler will be discarded instead of run.
+ * A nil cancel token corresponds to an immortal cancel token.
+ *
+ * @discussion If the receiving future has already failed or completed with a result, the handler is run inline.
+ *
+ * If the receiving future has already completed and the given cancel token has already been cancelled, the cancellation "wins": the handler is not run.
+ */
+-(void) finallyDo:(TOCFutureFinallyHandler)completionHandler
+           unless:(TOCCancelToken*)unlessCancelledToken;
+
+/*!
  * Eventually evaluates a 'then' continuation on the receiving future's result, or else propagates the receiving future's failure.
  *
  * @result A future for the eventual result of evaluating the given 'then' block on the receiving future's result, or else a failure if the receiving future fails.
+ * If the given cancellation token is cancelled before the future completes, the resulting future ends up with the cancellation token as its failure.
+ *
+ * @param resultContinuation The block to run when the future succeeds with a result.
+ *
+ * @param unlessCancelledToken If this token is cancelled before the future completes, the continuation is cancelled.
+ * The resulting future will immediately transition to the failed state, with the given token as its failure value.
+ * The cancel token may be nil, in which case it acts like a cancel token that is never cancelled.
  *
  * @discussion If the receiving future has already succeeded with a result, the continuation is run inline.
  *
  * If the receiving future fails, instead of succeeding with a result, the continuation is not run and the failure is propagated into the returned future.
  *
  * If the continuation returns a future, instead of a normal value, then this method's result is automatically flattened to match that future instead of containing it.
+ *
+ * If the given cancel token is already cancelled and the receiving future already has a result, the cancel token "wins": the continuation is not run.
  */
--(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation;
-
 -(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation
             unless:(TOCCancelToken*)unlessCancelledToken;
 
@@ -157,10 +179,8 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * If the continuation returns a future, instead of a normal value, then this method's result is automatically flattened to match that future instead of containing it.
  */
--(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation;
-
 -(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation
-             unless:(TOCCancelToken*)unlessCancelledToken;
+unless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Eventually evaluates a 'finally' continuation on the receiving future, once it has completed with a result or failed.
@@ -171,8 +191,6 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * If the continuation returns a future, instead of a normal value, then this method's result is automatically flattened to match that future instead of containing it.
  */
--(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation;
-
 -(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation
                unless:(TOCCancelToken*)unlessCancelledToken;
 
@@ -183,8 +201,6 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * If the receiving future fails, instead of succeeding with a result, the handler is not run.
  */
--(void) thenDo:(TOCFutureThenHandler)resultHandler;
-
 -(void) thenDo:(TOCFutureThenHandler)resultHandler
         unless:(TOCCancelToken*)unlessCancelledToken;
 
@@ -195,22 +211,8 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * If the receiving future succeeds with a result, instead of failing, the handler is not run.
  */
--(void) catchDo:(TOCFutureCatchHandler)failureHandler;
-
 -(void) catchDo:(TOCFutureCatchHandler)failureHandler
          unless:(TOCCancelToken*)unlessCancelledToken;
-
-/*!
- * Eventually runs a 'finally' handler on the receiving future, once it has completed with a result or failed.
- *
- * @discussion If the receiving future has already completed with a result or failed, the handler is run inline.
- */
--(void) finallyDo:(TOCFutureFinallyHandler)completionHandler;
-
--(void) finallyDo:(TOCFutureFinallyHandler)completionHandler
-           unless:(TOCCancelToken*)unlessCancelledToken;
-
--(TOCFuture*) unless:(TOCCancelToken*)unlessCancelledToken;
 
 @end
 
