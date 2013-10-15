@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "TocFutureMoreContinuations.h"
+#import "TOCFutureMoreContinuations.h"
 
 @interface NSArray (TOCFutureArrayUtil)
 

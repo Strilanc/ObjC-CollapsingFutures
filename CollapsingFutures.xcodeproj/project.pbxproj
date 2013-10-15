@@ -13,8 +13,8 @@
 		A1209B27180888E800D6831C /* TOCCancelTokenAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */; };
 		A1209B28180888E800D6831C /* TOCCancelTokenAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */; };
 		A1209B2A1808E51B00D6831C /* TOCCancelTokenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B291808E51B00D6831C /* TOCCancelTokenTest.m */; };
-		A1209B2D180DD34F00D6831C /* TocFutureMoreContinuations.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2C180DD34F00D6831C /* TocFutureMoreContinuations.m */; };
-		A1209B2E180DD34F00D6831C /* TocFutureMoreContinuations.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2C180DD34F00D6831C /* TocFutureMoreContinuations.m */; };
+		A1209B2D180DD34F00D6831C /* TOCFutureMoreContinuations.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2C180DD34F00D6831C /* TOCFutureMoreContinuations.m */; };
+		A1209B2E180DD34F00D6831C /* TOCFutureMoreContinuations.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2C180DD34F00D6831C /* TOCFutureMoreContinuations.m */; };
 		A1209B30180DD50200D6831C /* TOCFutureMoreContinuationsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2F180DD50200D6831C /* TOCFutureMoreContinuationsTest.m */; };
 		A1209B32180DD52A00D6831C /* TOCFutureSourceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B31180DD52A00D6831C /* TOCFutureSourceTest.m */; };
 		A1209B35180DF3C200D6831C /* Internal.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B34180DF3C200D6831C /* Internal.m */; };
@@ -61,8 +61,8 @@
 		A1209B25180888E800D6831C /* TOCCancelTokenAndSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCCancelTokenAndSource.h; sourceTree = "<group>"; };
 		A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCCancelTokenAndSource.m; sourceTree = "<group>"; };
 		A1209B291808E51B00D6831C /* TOCCancelTokenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCCancelTokenTest.m; sourceTree = "<group>"; };
-		A1209B2B180DD34F00D6831C /* TocFutureMoreContinuations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TocFutureMoreContinuations.h; sourceTree = "<group>"; };
-		A1209B2C180DD34F00D6831C /* TocFutureMoreContinuations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TocFutureMoreContinuations.m; sourceTree = "<group>"; };
+		A1209B2B180DD34F00D6831C /* TOCFutureMoreContinuations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCFutureMoreContinuations.h; sourceTree = "<group>"; };
+		A1209B2C180DD34F00D6831C /* TOCFutureMoreContinuations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureMoreContinuations.m; sourceTree = "<group>"; };
 		A1209B2F180DD50200D6831C /* TOCFutureMoreContinuationsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureMoreContinuationsTest.m; sourceTree = "<group>"; };
 		A1209B31180DD52A00D6831C /* TOCFutureSourceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureSourceTest.m; sourceTree = "<group>"; };
 		A1209B33180DF3C200D6831C /* Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Internal.h; sourceTree = "<group>"; };
@@ -170,8 +170,8 @@
 				A1209B1F1808696100D6831C /* TOCFutureArrayUtil.m */,
 				A1A019C8180774B600A052A6 /* TOCFutureExtra.h */,
 				A1A019C9180774B600A052A6 /* TOCFutureExtra.m */,
-				A1209B2B180DD34F00D6831C /* TocFutureMoreContinuations.h */,
-				A1209B2C180DD34F00D6831C /* TocFutureMoreContinuations.m */,
+				A1209B2B180DD34F00D6831C /* TOCFutureMoreContinuations.h */,
+				A1209B2C180DD34F00D6831C /* TOCFutureMoreContinuations.m */,
 				A1A019CA180774B600A052A6 /* TwistedOakCollapsingFutures.h */,
 				A1209B33180DF3C200D6831C /* Internal.h */,
 				A1209B34180DF3C200D6831C /* Internal.m */,
@@ -281,7 +281,7 @@
 				A1A019CB180774B600A052A6 /* TOCFutureAndSource.m in Sources */,
 				A1209B201808696100D6831C /* TOCFutureArrayUtil.m in Sources */,
 				A1209B35180DF3C200D6831C /* Internal.m in Sources */,
-				A1209B2D180DD34F00D6831C /* TocFutureMoreContinuations.m in Sources */,
+				A1209B2D180DD34F00D6831C /* TOCFutureMoreContinuations.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,7 +294,7 @@
 				A1209B36180DF3C200D6831C /* Internal.m in Sources */,
 				A1A0196D1807641000A052A6 /* TOCFutureExtraTest.m in Sources */,
 				A1A0196F1807641000A052A6 /* TestUtil.m in Sources */,
-				A1209B2E180DD34F00D6831C /* TocFutureMoreContinuations.m in Sources */,
+				A1209B2E180DD34F00D6831C /* TOCFutureMoreContinuations.m in Sources */,
 				A1A0196E1807641000A052A6 /* TOCFutureTest.m in Sources */,
 				A1209B32180DD52A00D6831C /* TOCFutureSourceTest.m in Sources */,
 				A1A019CC180774B600A052A6 /* TOCFutureAndSource.m in Sources */,
