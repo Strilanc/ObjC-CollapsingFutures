@@ -1,22 +1,5 @@
 #import "TOCFutureExtra.h"
-#import "TOCCommonDefs.h"
-
-@interface VoidBlock : NSObject { @public void (^block)(void); }
-+(VoidBlock*) voidBlock:(void(^)(void))block;
--(void)run;
--(SEL)runSelector;
-@end
-@implementation VoidBlock
-+(VoidBlock*) voidBlock:(void(^)(void))block {
-    VoidBlock* b = [VoidBlock new];
-    b->block = [block copy];
-    return b;
-}
--(void)run {
-    block();
-}
--(SEL)runSelector { return @selector(run); }
-@end
+#import "Internal.h"
 
 @implementation TOCFuture (TOCFutureExtra)
 
@@ -36,14 +19,9 @@
     require(thread != nil);
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
-    
-    VoidBlock* block = [VoidBlock voidBlock:^{
-        [resultSource trySetResult:operation()];
-    }];
-    [block performSelector:[block runSelector]
-                  onThread:thread
-                withObject:block
-             waitUntilDone:NO];
+
+    [VoidBlock performBlock:^{ [resultSource trySetResult:operation()]; }
+                   onThread:thread];
     
     return resultSource.future;
 }

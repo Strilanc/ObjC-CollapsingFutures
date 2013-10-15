@@ -1,5 +1,5 @@
 #import "TOCCancelTokenAndSource.h"
-#import "TOCCommonDefs.h"
+#import "Internal.h"
 #include <libkern/OSAtomic.h>
 
 #define TOKEN_STATE_IMMORTAL 0 // nil defaults to immortal, so must use default int

@@ -17,6 +17,8 @@
 		A1209B2E180DD34F00D6831C /* TocFutureMoreContinuations.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2C180DD34F00D6831C /* TocFutureMoreContinuations.m */; };
 		A1209B30180DD50200D6831C /* TOCFutureMoreContinuationsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2F180DD50200D6831C /* TOCFutureMoreContinuationsTest.m */; };
 		A1209B32180DD52A00D6831C /* TOCFutureSourceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B31180DD52A00D6831C /* TOCFutureSourceTest.m */; };
+		A1209B35180DF3C200D6831C /* Internal.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B34180DF3C200D6831C /* Internal.m */; };
+		A1209B36180DF3C200D6831C /* Internal.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B34180DF3C200D6831C /* Internal.m */; };
 		A19E0C3C17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
 		A19E0C4B17DBB27B00A5FD69 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */; };
 		A19E0C4E17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
@@ -55,7 +57,6 @@
 /* Begin PBXFileReference section */
 		A1209B1E1808696100D6831C /* TOCFutureArrayUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCFutureArrayUtil.h; sourceTree = "<group>"; };
 		A1209B1F1808696100D6831C /* TOCFutureArrayUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureArrayUtil.m; sourceTree = "<group>"; };
-		A1209B221808699700D6831C /* TOCCommonDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TOCCommonDefs.h; sourceTree = "<group>"; };
 		A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureArrayUtilTest.m; sourceTree = "<group>"; };
 		A1209B25180888E800D6831C /* TOCCancelTokenAndSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCCancelTokenAndSource.h; sourceTree = "<group>"; };
 		A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCCancelTokenAndSource.m; sourceTree = "<group>"; };
@@ -64,6 +65,8 @@
 		A1209B2C180DD34F00D6831C /* TocFutureMoreContinuations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TocFutureMoreContinuations.m; sourceTree = "<group>"; };
 		A1209B2F180DD50200D6831C /* TOCFutureMoreContinuationsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureMoreContinuationsTest.m; sourceTree = "<group>"; };
 		A1209B31180DD52A00D6831C /* TOCFutureSourceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureSourceTest.m; sourceTree = "<group>"; };
+		A1209B33180DF3C200D6831C /* Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Internal.h; sourceTree = "<group>"; };
+		A1209B34180DF3C200D6831C /* Internal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Internal.m; sourceTree = "<group>"; };
 		A19E0C3817DBB27B00A5FD69 /* libCollapsingFutures.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCollapsingFutures.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollapsingFuturesTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -161,7 +164,6 @@
 			children = (
 				A1209B25180888E800D6831C /* TOCCancelTokenAndSource.h */,
 				A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */,
-				A1209B221808699700D6831C /* TOCCommonDefs.h */,
 				A1A019C6180774B600A052A6 /* TOCFutureAndSource.h */,
 				A1A019C7180774B600A052A6 /* TOCFutureAndSource.m */,
 				A1209B1E1808696100D6831C /* TOCFutureArrayUtil.h */,
@@ -171,6 +173,8 @@
 				A1209B2B180DD34F00D6831C /* TocFutureMoreContinuations.h */,
 				A1209B2C180DD34F00D6831C /* TocFutureMoreContinuations.m */,
 				A1A019CA180774B600A052A6 /* TwistedOakCollapsingFutures.h */,
+				A1209B33180DF3C200D6831C /* Internal.h */,
+				A1209B34180DF3C200D6831C /* Internal.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -276,6 +280,7 @@
 				A1A019CD180774B600A052A6 /* TOCFutureExtra.m in Sources */,
 				A1A019CB180774B600A052A6 /* TOCFutureAndSource.m in Sources */,
 				A1209B201808696100D6831C /* TOCFutureArrayUtil.m in Sources */,
+				A1209B35180DF3C200D6831C /* Internal.m in Sources */,
 				A1209B2D180DD34F00D6831C /* TocFutureMoreContinuations.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,6 +291,7 @@
 			files = (
 				A1209B28180888E800D6831C /* TOCCancelTokenAndSource.m in Sources */,
 				A1209B2A1808E51B00D6831C /* TOCCancelTokenTest.m in Sources */,
+				A1209B36180DF3C200D6831C /* Internal.m in Sources */,
 				A1A0196D1807641000A052A6 /* TOCFutureExtraTest.m in Sources */,
 				A1A0196F1807641000A052A6 /* TestUtil.m in Sources */,
 				A1209B2E180DD34F00D6831C /* TocFutureMoreContinuations.m in Sources */,

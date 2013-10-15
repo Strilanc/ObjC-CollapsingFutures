@@ -1,5 +1,5 @@
 #import "TOCFutureAndSource.h"
-#import "TOCCommonDefs.h"
+#import "Internal.h"
 
 @implementation TOCFuture {
 @private id value;
@@ -93,7 +93,7 @@
 -(void)finallyDo:(TOCFutureFinallyHandler)completionHandler
           unless:(TOCCancelToken *)unlessCancelledToken {
     require(completionHandler != nil);
-    
+
     __weak TOCFuture* weakSelf = self;
     [completionToken whenCancelledDo:^{ completionHandler(weakSelf); }
                               unless:unlessCancelledToken];

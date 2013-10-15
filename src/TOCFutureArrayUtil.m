@@ -1,5 +1,5 @@
 #import "TOCFutureArrayUtil.h"
-#import "TOCCommonDefs.h"
+#import "Internal.h"
 #include <libkern/OSAtomic.h>
 
 @implementation NSArray (TOCFutureArrayUtil)
