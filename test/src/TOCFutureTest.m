@@ -1,6 +1,6 @@
 #import <SenTestingKit/SenTestingKit.h>
 
-#import "TOCFuture.h"
+#import "TOCFutureAndSource.h"
 #import "TOCFutureMoreContinuations.h"
 #import "TestUtil.h"
 

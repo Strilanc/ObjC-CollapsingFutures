@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "TOCFuture.h"
+#import "TOCFutureAndSource.h"
 
 @interface TOCFuture (TOCFutureExtra)
 

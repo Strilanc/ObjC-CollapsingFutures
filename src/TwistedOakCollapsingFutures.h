@@ -1,5 +1,5 @@
-#import "TOCFuture.h"
-#import "TOCFutureExtra.h"
-#import "TOCCancelToken.h"
+#import "TOCCancelTokenAndSource.h"
+#import "TOCFutureAndSource.h"
 #import "TOCFutureArrayUtil.h"
+#import "TOCFutureExtra.h"
 #import "TocFutureMoreContinuations.h"

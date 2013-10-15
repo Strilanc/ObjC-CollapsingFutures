@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "TOCCancelToken.h"
+#import "TOCCancelTokenAndSource.h"
 
 @class TOCFuture;
 

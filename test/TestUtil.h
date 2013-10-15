@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "TOCFuture.h"
+#import "TOCFutureAndSource.h"
 
 bool testPassesConcurrently_helper(bool (^check)(void), NSTimeInterval delay);
 bool testCompletesConcurrently_helper(TOCFuture* future, NSTimeInterval timeout);

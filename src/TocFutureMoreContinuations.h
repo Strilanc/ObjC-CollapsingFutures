@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "TOCFuture.h"
+#import "TOCFutureAndSource.h"
 
 /*!
  * Utility methods involving continuing off of futures (then/catch/finally).

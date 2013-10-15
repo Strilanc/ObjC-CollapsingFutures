@@ -1,4 +1,4 @@
-#import "TOCCancelToken.h"
+#import "TOCCancelTokenAndSource.h"
 #import "TOCCommonDefs.h"
 #include <libkern/OSAtomic.h>
 
