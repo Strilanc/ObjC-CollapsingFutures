@@ -17,7 +17,7 @@ Installation
 
 **Method #1: CocoaPods**
 
-Example podfile line:
+Example podfile line (for 'bleeding edge' instead of a particular release):
 
     pod 'TwistedOakCollapsingFutures', :podspec => 'https://raw.github.com/Strilanc/ObjC-CollapsingFutures/master/TwistedOakCollapsingFutures.podspec'
 
