@@ -5,34 +5,7 @@
 @interface TOCCancelTokenTest : SenTestCase
 @end
 
-@implementation TOCCancelTokenTest {
-@private NSThread* thread;
-@private NSRunLoop* runLoop;
-}
-
--(void) setUp {
-    thread = [[NSThread alloc] initWithTarget:self selector:@selector(runLoopUntilCancelled) object:nil];
-    [thread start];
-    
-    while (true) {
-        @synchronized(self) {
-            if (runLoop != nil) break;
-        }
-    }
-}
--(void) runLoopUntilCancelled {
-    NSThread* curThread = [NSThread currentThread];
-    NSRunLoop* curRunLoop = [NSRunLoop currentRunLoop];
-    @synchronized(self) {
-        runLoop = curRunLoop;
-    }
-    while (![curThread isCancelled]) {
-        [curRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
-    }
-}
--(void) tearDown {
-    [thread cancel];
-}
+@implementation TOCCancelTokenTest
 
 -(void) testCancelTokenSourceCancel {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
@@ -187,6 +160,21 @@
     test([c1 isAlreadyCancelled]);
     test([c2 isAlreadyCancelled]);
 }
+-(void) testDealloc_AfterCancel {
+    DeallocCounter* d = [DeallocCounter new];
+    TOCCancelTokenSource* s;
+    @autoreleasepool {
+        s = [TOCCancelTokenSource new];
+        DeallocToken* dToken = [d makeToken];
+        [s.token whenCancelledDo:^{
+            [dToken poke];
+        }];
+        [s cancel];
+    }
+    test(d.lostTokenCount == 1);
+    test(s != nil);
+}
+
 -(void) testConditionalCancelCallbackCanDeallocOnHalfCancelHalfImmortalize {
     DeallocCounter* d = [DeallocCounter new];
     

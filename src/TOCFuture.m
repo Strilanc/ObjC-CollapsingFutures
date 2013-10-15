@@ -5,7 +5,6 @@
 @private id value;
 @private bool ifDoneHasSucceeded;
 @private bool hasBeenSet;
-@private TOCCancelTokenSource* completionSource;
 @private TOCCancelToken* completionToken;
 }
 
@@ -28,62 +27,43 @@
     return future;
 }
 
-+(TOCFuture*) __ForSource__completableFuture {
++(TOCFuture*) __ForSource__completableFuture:(TOCCancelToken*)token {
     TOCFuture* future = [TOCFuture new];
-    future->completionSource = [TOCCancelTokenSource new];
-    future->completionToken = future->completionSource.token;
+    future->completionToken = token;
     return future;
 }
--(bool) __ForSource__trySetResult:(id)finalResult {
-    // automatic flattening
-    if ([finalResult isKindOfClass:[TOCFuture class]]) {
-        return [self __trySetWithUnwrap:finalResult];
-    }
 
-    return [self __trySet:finalResult
-                succeeded:true
-               isUnwiring:false];
-}
--(bool) __ForSource__trySetFailure:(id)finalFailure {
-    return [self __trySet:finalFailure
-                succeeded:false
-               isUnwiring:false];
-}
--(void) __ForSource__trySetEternal {
+-(bool) __ForSource__tryStartFutureSet {
     @synchronized(self) {
-        if (!hasBeenSet) {
-            completionSource = nil;
-            hasBeenSet = true;
-        }
+        if (hasBeenSet) return false;
+        hasBeenSet = true;
     }
+    return true;
 }
-
+-(void) __ForSource__forceFinishFutureSet:(TOCFuture*)finalValue {
+    require(finalValue != nil);
+    require([self __trySet:finalValue->value
+                 succeeded:finalValue->ifDoneHasSucceeded
+                isUnwiring:true]);
+}
+-(bool) __ForSource__trySet:(id)finalValue
+                  succeeded:(bool)succeeded {
+    return [self __trySet:finalValue
+                succeeded:succeeded
+               isUnwiring:false];
+}
 -(bool) __trySet:(id)finalValue
        succeeded:(bool)succeeded
       isUnwiring:(bool)unwiring {
+    
+    require(![finalValue isKindOfClass:[TOCFuture class]]);
+    
     @synchronized(self) {
         if (hasBeenSet && !unwiring) return false;
         hasBeenSet = true;
         value = finalValue;
         ifDoneHasSucceeded = succeeded;
     }
-    [completionSource cancel];
-    return true;
-}
--(bool) __trySetWithUnwrap:(TOCFuture*)futureFinalResult {
-    require(futureFinalResult != nil);
-    
-    @synchronized(self) {
-        if (hasBeenSet) return false;
-        hasBeenSet = true;
-    }
-    
-    [futureFinalResult finallyDo:^(TOCFuture *completed) {
-        [self __trySet:completed->value
-             succeeded:completed->ifDoneHasSucceeded
-            isUnwiring:true];
-    } unless:nil];
-    
     return true;
 }
 
@@ -116,7 +96,7 @@
     
     __weak TOCFuture* weakSelf = self;
     [completionToken whenCancelledDo:^{ completionHandler(weakSelf); }
-                                     unless:unlessCancelledToken];
+                              unless:unlessCancelledToken];
 }
 
 -(void)thenDo:(TOCFutureThenHandler)resultHandler
@@ -200,26 +180,44 @@
 
 @end
 
-@implementation TOCFutureSource
+@implementation TOCFutureSource {
+@public TOCCancelTokenSource* completionSource;
+}
 
 @synthesize future;
 
 -(TOCFutureSource*) init {
     self = [super init];
     if (self) {
-        self->future = [TOCFuture __ForSource__completableFuture];
+        self->completionSource = [TOCCancelTokenSource new];
+        self->future = [TOCFuture __ForSource__completableFuture:self->completionSource.token];
     }
     return self;
 }
 
--(void) dealloc {
-    [future __ForSource__trySetEternal];
-}
 -(bool) trySetResult:(id)finalResult {
-    return [future __ForSource__trySetResult:finalResult];
+    // automatic flattening
+    if ([finalResult isKindOfClass:[TOCFuture class]]) {
+        if (![future __ForSource__tryStartFutureSet]) return false;
+        
+        // optimize self-dependence into immortality
+        if (finalResult == future) {
+            completionSource = nil;
+            return true;
+        }
+        
+        [(TOCFuture*)finalResult finallyDo:^(TOCFuture *completed) {
+            [future __ForSource__forceFinishFutureSet:completed];
+            [completionSource cancel];
+        } unless:nil];
+        
+        return true;
+    }
+    
+    return [future __ForSource__trySet:finalResult succeeded:true] && [completionSource tryCancel];
 }
 -(bool) trySetFailure:(id)finalFailure {
-    return [future __ForSource__trySetFailure:finalFailure];
+    return [future __ForSource__trySet:finalFailure succeeded:false] && [completionSource tryCancel];
 }
 
 -(void) forceSetResult:(id)finalResult {

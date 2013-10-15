@@ -1,12 +1,39 @@
 #import <SenTestingKit/SenTestingKit.h>
 
-#import "TOCFutureMoreContinuations.h"
+#import "TwistedOakCollapsingFutures.h"
 #import "TestUtil.h"
 
 @interface TOCFutureSourceTest : SenTestCase
 @end
 
-@implementation TOCFutureSourceTest
+@implementation TOCFutureSourceTest {
+@private NSThread* thread;
+@private NSRunLoop* runLoop;
+}
+
+-(void) setUp {
+    thread = [[NSThread alloc] initWithTarget:self selector:@selector(runLoopUntilCancelled) object:nil];
+    [thread start];
+    
+    while (true) {
+        @synchronized(self) {
+            if (runLoop != nil) break;
+        }
+    }
+}
+-(void) runLoopUntilCancelled {
+    NSThread* curThread = [NSThread currentThread];
+    NSRunLoop* curRunLoop = [NSRunLoop currentRunLoop];
+    @synchronized(self) {
+        runLoop = curRunLoop;
+    }
+    while (![curThread isCancelled]) {
+        [curRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+    }
+}
+-(void) tearDown {
+    [thread cancel];
+}
 
 -(void)testFailedFutureSource {
     TOCFutureSource* s = [TOCFutureSource new];
@@ -129,19 +156,36 @@
     test([s trySetResult:f]);
     test([f isIncomplete]);
 }
--(void)testCyclicCollapsedFutureAllowsDealloc {
-    TOCFutureSource* s = [TOCFutureSource new];
-    TOCFuture* f = s.future;
+-(void)testDealloc_CompletedFutureDiscardsCallbacksAfterRunning {
     DeallocCounter* d = [DeallocCounter new];
+    TOCFutureSource* s;
     @autoreleasepool {
+        s = [TOCFutureSource new];
         DeallocToken* dToken = [d makeToken];
-        [f finallyDo:^(TOCFuture *completed) {
+        [s.future finallyDo:^(TOCFuture* completed){
             [dToken poke];
-        }];
+        } unless:nil];
         test(d.lostTokenCount == 0);
-        [s trySetResult:f];
+        [s trySetResult:nil];
     }
     test(d.lostTokenCount == 1);
+    test(s != nil);
+}
+-(void)testDealloc_CyclicFutureDiscardsCallbacksWithoutRunning {
+    DeallocCounter* d = [DeallocCounter new];
+    TOCFutureSource* s;
+    @autoreleasepool {
+        s = [TOCFutureSource new];
+        DeallocToken* dToken = [d makeToken];
+        [s.future finallyDo:^(TOCFuture* completed){
+            test(false);
+            [dToken poke];
+        } unless:nil];
+        test(d.lostTokenCount == 0);
+        [s trySetResult:s.future];
+    }
+    test(d.lostTokenCount == 1);
+    test(s != nil);
 }
 
 -(void)testTrySetMany1 {

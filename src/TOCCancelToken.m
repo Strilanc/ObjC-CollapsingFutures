@@ -95,7 +95,7 @@ typedef void (^SettledHandler)(int state);
     @synchronized(self) {
         if (state == TOKEN_STATE_IMMORTAL) return;
         if (state == TOKEN_STATE_MORTAL) {
-            [cancelHandlers addObject:[cancelHandler copy]];
+            [cancelHandlers addObject:cancelHandler];
             return;
         }
     }
