@@ -94,7 +94,7 @@
           unless:(TOCCancelToken *)unlessCancelledToken {
     require(completionHandler != nil);
 
-    __weak TOCFuture* weakSelf = self;
+    __unsafe_unretained TOCFuture* weakSelf = self;
     [completionToken whenCancelledDo:^{ completionHandler(weakSelf); }
                               unless:unlessCancelledToken];
 }
