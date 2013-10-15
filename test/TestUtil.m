@@ -13,22 +13,22 @@ bool testCompletesConcurrently_helper(TOCFuture* future, NSTimeInterval delay) {
 }
 
 @implementation DeallocCounter
-@synthesize helperDeallocCount;
--(DeallocCounterHelper*) makeInstanceToCount {
-    return [DeallocCounterHelper helper:self];
+@synthesize lostTokenCount;
+-(DeallocToken*) makeToken {
+    return [DeallocToken token:self];
 }
 @end
 
-@implementation DeallocCounterHelper {
+@implementation DeallocToken {
 @private DeallocCounter* parent;
 }
-+(DeallocCounterHelper*) helper:(DeallocCounter*)parent {
-    DeallocCounterHelper* helper = [DeallocCounterHelper new];
-    helper->parent = parent;
-    return helper;
++(DeallocToken*) token:(DeallocCounter*)parent {
+    DeallocToken* token = [DeallocToken new];
+    token->parent = parent;
+    return token;
 }
 -(void) dealloc {
-    parent.helperDeallocCount += 1;
+    parent.lostTokenCount += 1;
 }
 -(void) poke {
     // tee hee!

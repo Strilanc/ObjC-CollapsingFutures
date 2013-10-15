@@ -85,26 +85,24 @@
 -(void) testDeallocSourceResultsInImmortalTokenAndDiscardedCallbacks {
     DeallocCounter* d = [DeallocCounter new];
     
-    __block TOCCancelToken* token = nil;
-    [TOCFuture futureWithResultFromOperation:^id{
-        DeallocCounterHelper* inst = [d makeInstanceToCount];
+    TOCCancelToken* c = nil;
+    @autoreleasepool {
+        DeallocToken* dToken = [d makeToken];
         
         TOCCancelTokenSource* s = [TOCCancelTokenSource new];
-        token = s.token;
+        c = s.token;
         
-        // retain inst in closure held by token held by outside
-        [s.token whenCancelledDo:^{
+        // retain dToken in closure held by token held by outside, so it can't dealloc unless closure deallocs
+        [c whenCancelledDo:^{
             test(false);
-            [inst poke];
+            [dToken poke];
         }];
-        test(d.helperDeallocCount == 0);
-        return nil;
-    } invokedOnThread:thread];
+        test(d.lostTokenCount == 0);
+    }
     
-    testUntil(d.helperDeallocCount == 1);
-    test(token != nil);
-    test(![token isAlreadyCancelled]);
-    test(![token canStillBeCancelled]);
+    test(d.lostTokenCount == 1);
+    test(![c isAlreadyCancelled]);
+    test(![c canStillBeCancelled]);
 }
 -(void) testConditionalCancelCallback {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
@@ -131,107 +129,94 @@
 -(void) testConditionalCancelCallbackCanDeallocOnImmortalize {
     DeallocCounter* d = [DeallocCounter new];
     
-    __block TOCCancelToken* token1;
-    __block TOCCancelToken* token2;
-    [TOCFuture futureWithResultFromOperation:^id{
-        DeallocCounterHelper* inst1 = [d makeInstanceToCount];
-        DeallocCounterHelper* inst2 = [d makeInstanceToCount];
-        DeallocCounterHelper* inst3 = [d makeInstanceToCount];
+    TOCCancelToken* c1;
+    TOCCancelToken* c2;
+    @autoreleasepool {
+        DeallocToken* dToken1 = [d makeToken];
+        DeallocToken* dToken2 = [d makeToken];
         
-        TOCCancelTokenSource* s = [TOCCancelTokenSource new];
-        TOCCancelTokenSource* u = [TOCCancelTokenSource new];
-        token1 = s.token;
-        token2 = u.token;
+        TOCCancelTokenSource* s1 = [TOCCancelTokenSource new];
+        TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
+        c1 = s1.token;
+        c2 = s2.token;
         
-        [s.token whenCancelledDo:^{
+        [c1 whenCancelledDo:^{
             test(false);
-            [inst1 poke];
-        } unless:u.token];
-        [u.token whenCancelledDo:^{
+            [dToken1 poke];
+        } unless:c2];
+        [c2 whenCancelledDo:^{
             test(false);
-            [inst2 poke];
-            [inst3 poke];
-        } unless:s.token];
-        test(d.helperDeallocCount == 0);
-        return nil;
-    } invokedOnThread:thread];
+            [dToken2 poke];
+        } unless:c1];
+        test(d.lostTokenCount == 0);
+    }
     
-    testUntil(d.helperDeallocCount == 3);
-    test(token1 != nil);
-    test(![token1 isAlreadyCancelled]);
-    test(![token1 canStillBeCancelled]);
-    test(token2 != nil);
-    test(![token2 isAlreadyCancelled]);
-    test(![token2 canStillBeCancelled]);
+    test(d.lostTokenCount == 2);
+    test(![c1 isAlreadyCancelled]);
+    test(![c1 canStillBeCancelled]);
+    test(![c2 isAlreadyCancelled]);
+    test(![c2 canStillBeCancelled]);
 }
 -(void) testConditionalCancelCallbackCanDeallocOnCancel {
     DeallocCounter* d = [DeallocCounter new];
     
-    __block TOCCancelToken* token1;
-    __block TOCCancelToken* token2;
-    [TOCFuture futureWithResultFromOperation:^id{
-        DeallocCounterHelper* inst1 = [d makeInstanceToCount];
-        DeallocCounterHelper* inst2 = [d makeInstanceToCount];
-        DeallocCounterHelper* inst3 = [d makeInstanceToCount];
+    TOCCancelToken* c1;
+    TOCCancelToken* c2;
+    @autoreleasepool {
+        DeallocToken* dToken1 = [d makeToken];
+        DeallocToken* dToken2 = [d makeToken];
         
-        TOCCancelTokenSource* s = [TOCCancelTokenSource new];
-        TOCCancelTokenSource* u = [TOCCancelTokenSource new];
-        token1 = s.token;
-        token2 = u.token;
+        TOCCancelTokenSource* s1 = [TOCCancelTokenSource new];
+        TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
+        c1 = s1.token;
+        c2 = s2.token;
         
-        [s.token whenCancelledDo:^{
-            [inst1 poke];
-        } unless:u.token];
-        [u.token whenCancelledDo:^{
-            [inst2 poke];
-            [inst3 poke];
-        } unless:s.token];
-        test(d.helperDeallocCount == 0);
+        [c1 whenCancelledDo:^{
+            [dToken1 poke];
+        } unless:c2];
+        [c2 whenCancelledDo:^{
+            [dToken2 poke];
+        } unless:c1];
+        test(d.lostTokenCount == 0);
         
-        [s cancel];
-        [u cancel];
-        return nil;
-    } invokedOnThread:thread];
+        [s1 cancel];
+        [s2 cancel];
+    }
     
-    testUntil(d.helperDeallocCount == 3);
-    test([token1 isAlreadyCancelled]);
-    test([token2 isAlreadyCancelled]);
+    test(d.lostTokenCount == 2);
+    test([c1 isAlreadyCancelled]);
+    test([c2 isAlreadyCancelled]);
 }
 -(void) testConditionalCancelCallbackCanDeallocOnHalfCancelHalfImmortalize {
     DeallocCounter* d = [DeallocCounter new];
     
-    __block TOCCancelToken* token1;
-    __block TOCCancelToken* token2;
-    [TOCFuture futureWithResultFromOperation:^id{
-        DeallocCounterHelper* inst1 = [d makeInstanceToCount];
-        DeallocCounterHelper* inst2 = [d makeInstanceToCount];
-        DeallocCounterHelper* inst3 = [d makeInstanceToCount];
+    TOCCancelToken* c1;
+    TOCCancelToken* c2;
+    @autoreleasepool {
+        DeallocToken* dToken1 = [d makeToken];
+        DeallocToken* dToken2 = [d makeToken];
         
-        TOCCancelTokenSource* s = [TOCCancelTokenSource new];
-        TOCCancelTokenSource* u = [TOCCancelTokenSource new];
-        token1 = s.token;
-        token2 = u.token;
+        TOCCancelTokenSource* s1 = [TOCCancelTokenSource new];
+        TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
+        c1 = s1.token;
+        c2 = s2.token;
         
-        [s.token whenCancelledDo:^{
-            [inst1 poke];
-        } unless:u.token];
-        [u.token whenCancelledDo:^{
+        [c1 whenCancelledDo:^{
+            [dToken1 poke];
+        } unless:c2];
+        [c2 whenCancelledDo:^{
             test(false);
-            [inst2 poke];
-            [inst3 poke];
-        } unless:s.token];
-        test(d.helperDeallocCount == 0);
+            [dToken2 poke];
+        } unless:c1];
+        test(d.lostTokenCount == 0);
         
-        [s cancel];
-        return nil;
-    } invokedOnThread:thread];
-    
-    testUntil(d.helperDeallocCount == 3);
-    test(token1 != nil);
-    test([token1 isAlreadyCancelled]);
-    test(token2 != nil);
-    test(![token2 isAlreadyCancelled]);
-    test(![token2 canStillBeCancelled]);
+        [s1 cancel];
+    }
+
+    test(d.lostTokenCount == 2);
+    test([c1 isAlreadyCancelled]);
+    test(![c2 isAlreadyCancelled]);
+    test(![c2 canStillBeCancelled]);
 }
 
 -(void) testSelfOnCancelledUnlesCancelledIsConsistentBeforeAndAfter {
@@ -241,6 +226,7 @@
     [s.token whenCancelledDo:^{
         hit1++;
     } unless:s.token];
+    
     [s cancel];
     
     __block int hit2 = 0;

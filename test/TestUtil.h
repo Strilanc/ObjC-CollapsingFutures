@@ -24,12 +24,12 @@ int testTargetHits;
 #define fut(X) [TOCFuture futureWithResult:X]
 #define futfail(X) [TOCFuture futureWithFailure:X]
 
-@class DeallocCounterHelper;
+@class DeallocToken;
 @interface DeallocCounter : NSObject
-@property (atomic) NSUInteger helperDeallocCount;
--(DeallocCounterHelper*) makeInstanceToCount;
+@property (atomic) NSUInteger lostTokenCount;
+-(DeallocToken*) makeToken;
 @end
-@interface DeallocCounterHelper : NSObject
-+(DeallocCounterHelper*) helper:(DeallocCounter*)parent;
+@interface DeallocToken : NSObject
++(DeallocToken*) token:(DeallocCounter*)parent;
 -(void) poke;
 @end
