@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "TwistedOakCollapsingFutures"
-  s.version      = "0.0.9"
+  s.version      = "0.1.0"
   s.summary      = "Futures without nesting issues."
   s.description  = <<-DESC
                    Makes representing and consuming asynchronous results simpler.
@@ -10,11 +10,12 @@ Pod::Spec.new do |s|
                    * Hook work-to-eventually-do onto a future using then/catch/finally methods.
                    * Chain more work onto the future results of then/catch/finally.
                    * No need to track if a TOCFuture has a result of type TOCFuture: always automatically flattened.
+                   * Cancel operations on the fly by giving them a TOKCancelToken controlled by a TOCCancelTokenSource.
                    DESC
   s.homepage     = "https://github.com/Strilanc/ObjC-CollapsingFutures"
   s.license      = { :type => 'BSD', :file => 'License.txt' }
   s.author       = { "Craig Gidney" => "craig.gidney@gmail.com" }
-  s.source       = { :git => "https://github.com/Strilanc/ObjC-CollapsingFutures.git", :tag => "v0.0.9" }
+  s.source       = { :git => "https://github.com/Strilanc/ObjC-CollapsingFutures.git", :tag => "v0.1.0" }
   s.source_files  = 'src', 'src/**/*.{h,m}'
   s.requires_arc = true
 end
