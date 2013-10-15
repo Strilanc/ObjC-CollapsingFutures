@@ -8,7 +8,7 @@ Features:
 - **Types**: `TOCFuture`, `TOCFutureSource`, `TOCCancelToken`, `TOCCancelTokenSource`
 - **Collapsing**: Automatic flattening. You never have to worry about how many times you need to unwrap/flatten a future. A `[TOCFuture futureWithResult:[TOCFuture futureWithResult:@1]]` is automatically a `[TOCFuture futureWithResult:@1]`.
 - **Cancellation**: Almost all operations have a variant that accepts a `TOCCancelToken`. When the cancel token is cancelled, the operation immediately cleans up and completes with a cancellation failure (if it didn't already finish).
-- **Dealloc-on-Immortal**: If a future or cancel token's source is deallocated without setting/cancelling its future or token, the future or token becomes immortal and discards all of its callbacks. This makes it a lot harder to make a self-sustaining reference cycle involving futures.
+- **Dealloc-on-Immortal**: If a future or cancel token's source is deallocated without setting/cancelling its future or token, the future or token is marked as immortal and discards all of its callbacks. This makes it a lot harder to make a self-sustaining reference cycle involving futures.
 - **Documentation**: Comments on every method and type, covering corner cases and in some cases basic usage hints.
 
 
