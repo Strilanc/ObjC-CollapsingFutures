@@ -21,7 +21,7 @@ Example podfile line:
 
 **Method #2: Manual**
 
-1. Clone the repo
+1. Download one of the [releases](https://github.com/Strilanc/ObjC-CollapsingFutures/releases), or clone the repo
 2. Copy the source files from the src/ folder into your project
 3. Have ARC enabled
 4. Import TwistedOakCollapsingFutures.h wherever you want to use the TOCFuture and TOCFutureSource types
