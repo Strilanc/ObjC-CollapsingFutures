@@ -125,6 +125,10 @@
                unless:(TOCCancelToken *)unlessCancelledToken {
     require(completionContinuation != nil);
     
+    if ([unlessCancelledToken isAlreadyCancelled] && [completionToken isAlreadyCancelled]) {
+        return [TOCFuture futureWithFailure:unlessCancelledToken];
+    }
+
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
     [self finallyDo:^(TOCFuture *completed) {
@@ -164,7 +168,7 @@
 
 -(NSString*) description {
     @synchronized(self) {
-        bool isIncomplete = [completionToken isAlreadyCancelled];
+        bool isIncomplete = ![completionToken isAlreadyCancelled];
         bool isStuck = ![completionToken canStillBeCancelled];
         
         if (isIncomplete) {

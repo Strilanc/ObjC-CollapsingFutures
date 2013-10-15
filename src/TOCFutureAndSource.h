@@ -133,7 +133,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 -(id)forceGetFailure;
 
 /*!
- * Eventually runs a 'finally' handler on the receiving future, once it has completed with a result or failed.
+ * Eventually runs a 'finally' handler on the receiving future, once it has completed with a result or failed, unless cancelled.
  *
  * @param completionHandler The block to run once the future has completed, unless the cancel token is cancelled first.
  *
@@ -143,19 +143,83 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * @discussion If the receiving future has already failed or completed with a result, the handler is run inline.
  *
  * If the receiving future has already completed and the given cancel token has already been cancelled, the cancellation "wins": the handler is not run.
+ *
+ * Cancelling a callback causes it to be immediately discarded.
+ * The future will no longer reference it, and it may be deallocated.
  */
 -(void) finallyDo:(TOCFutureFinallyHandler)completionHandler
            unless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
+ * Eventually runs a 'then' handler on the receiving future's result, unless cancelled.
+ *
+ * @param resultHandler The block to run when the future succeeds with a result.
+ *
+ * @discussion If the receiving future has already succeeded with a result, the handler is run inline.
+ *
+ * If the receiving future fails, instead of succeeding with a result, the handler is not run.
+ *
+ * If the given cancel token is already cancelled and the receiving future already has a result, the cancel token "wins": the handler is not run.
+ *
+ * Cancelling a callback causes it to be immediately discarded.
+ * The future will no longer reference it, and it may be deallocated.
+ */
+-(void) thenDo:(TOCFutureThenHandler)resultHandler
+        unless:(TOCCancelToken*)unlessCancelledToken;
+
+/*!
+ * Eventually runs a 'catch' handler on the receiving future's failure, unless cancelled.
+ *
+ * @discussion If the receiving future has already failed, the handler is run inline.
+ *
+ * @param failureHandler The block to run when the future fails.
+ *
+ * @param unlessCancelledToken If this token is cancelled before the future completes, the completion handler will be discarded instead of run.
+ * A nil cancel token corresponds to an immortal cancel token.
+ *
+ * If the receiving future succeeds with a result, instead of failing, the handler is not run.
+ *
+ * If the receiving future has already failed and the given cancel token has already been cancelled, the cancellation "wins": the handler is not run.
+ *
+ * Cancelling a callback causes it to be immediately discarded.
+ * The future will no longer reference it, and it may be deallocated.
+ */
+-(void) catchDo:(TOCFutureCatchHandler)failureHandler
+         unless:(TOCCancelToken*)unlessCancelledToken;
+
+/*!
+ * Eventually evaluates a 'finally' continuation on the receiving future, once it has completed with a result or failed.
+ *
+ * @param completionContinuation The block to evaluate when the future completes with a result or fails.
+ *
+ * @param unlessCancelledToken If this token is cancelled before the receiving future completes, the continuation is cancelled.
+ * The resulting future will immediately transition to the failed state, with the given token as its failure value.
+ * The cancel token may be nil, in which case it acts like a cancel token that is never cancelled.
+ *
+ * @result A future for the eventual result of evaluating the given 'finally' block on the receiving future once it has completed.
+ * If the given cancellation token is cancelled before the receiving future completes, the resulting future immediately fails with the cancellation token as its failure.
+ *
+ * @discussion If the receiving future has already completed, the continuation is run inline.
+ *
+ * If the continuation returns a future, instead of a normal value, then this method's result is automatically flattened to match that future instead of containing it.
+ *
+ * If the receiving future has already completed and the given cancel token has already been cancelled, the cancellation "wins": the continuation is not run.
+ *
+ * Cancelling a callback causes it to be immediately discarded.
+ * The future will no longer reference it, and it may be deallocated.
+ */
+-(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation
+               unless:(TOCCancelToken*)unlessCancelledToken;
+
+/*!
  * Eventually evaluates a 'then' continuation on the receiving future's result, or else propagates the receiving future's failure.
  *
  * @result A future for the eventual result of evaluating the given 'then' block on the receiving future's result, or else a failure if the receiving future fails.
- * If the given cancellation token is cancelled before the future completes, the resulting future ends up with the cancellation token as its failure.
+ * If the given cancellation token is cancelled before the receiving future completes, the resulting future immediately fails with the cancellation token as its failure.
  *
- * @param resultContinuation The block to run when the future succeeds with a result.
+ * @param resultContinuation The block to evaluate when the future succeeds with a result.
  *
- * @param unlessCancelledToken If this token is cancelled before the future completes, the continuation is cancelled.
+ * @param unlessCancelledToken If this token is cancelled before the receiving future completes, the continuation is cancelled.
  * The resulting future will immediately transition to the failed state, with the given token as its failure value.
  * The cancel token may be nil, in which case it acts like a cancel token that is never cancelled.
  *
@@ -166,53 +230,36 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * If the continuation returns a future, instead of a normal value, then this method's result is automatically flattened to match that future instead of containing it.
  *
  * If the given cancel token is already cancelled and the receiving future already has a result, the cancel token "wins": the continuation is not run.
+ *
+ * Cancelling a callback causes it to be immediately discarded.
+ * The future will no longer reference it, and it may be deallocated.
  */
 -(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation
             unless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
- * Eventually matches the receiving future's result, or else evaluates a 'catch' continuation on the receiving future's failure.
+ * Eventually matches the receiving future's result, or else evaluates a 'catch' continuation on the receiving future's failure, unless cancelled.
+ *
+ * @param resultContinuation The continuation to evaluate when the future fails.
+ *
+ * @param unlessCancelledToken If this token is cancelled before the receiving future fails, the continuation is cancelled.
+ * The resulting future will immediately transition to the failed state, with the given token as its failure value.
+ * The cancel token may be nil, in which case it acts like a cancel token that is never cancelled.
  *
  * @result A future for the eventual result of the receiving future, or else the eventual result of running the receiving future's failure through the given 'catch' block.
+ * If the given cancellation token is cancelled before the receiving future completes, the resulting future immediately fails with the cancellation token as its failure.
  *
  * @discussion If the receiving future has already failed, the continuation is run inline.
  *
  * If the continuation returns a future, instead of a normal value, then this method's result is automatically flattened to match that future instead of containing it.
+ *
+ * If the receiving future has already failed and the given cancel token has already been cancelled, the cancellation "wins": the continuation is not run.
+ *
+ * Cancelling a callback causes it to be immediately discarded.
+ * The future will no longer reference it, and it may be deallocated.
  */
 -(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation
-unless:(TOCCancelToken*)unlessCancelledToken;
-
-/*!
- * Eventually evaluates a 'finally' continuation on the receiving future, once it has completed with a result or failed.
- *
- * @result A future for the eventual result of evaluating the given 'finally' block on the receiving future once it has completed.
- *
- * @discussion If the receiving future has already completed, the continuation is run inline.
- *
- * If the continuation returns a future, instead of a normal value, then this method's result is automatically flattened to match that future instead of containing it.
- */
--(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation
-               unless:(TOCCancelToken*)unlessCancelledToken;
-
-/*!
- * Eventually runs a 'then' handler on the receiving future's result.
- *
- * @discussion If the receiving future has already succeeded with a result, the handler is run inline.
- *
- * If the receiving future fails, instead of succeeding with a result, the handler is not run.
- */
--(void) thenDo:(TOCFutureThenHandler)resultHandler
-        unless:(TOCCancelToken*)unlessCancelledToken;
-
-/*!
- * Eventually runs a 'catch' handler on the receiving future's failure.
- *
- * @discussion If the receiving future has already failed, the handler is run inline.
- *
- * If the receiving future succeeds with a result, instead of failing, the handler is not run.
- */
--(void) catchDo:(TOCFutureCatchHandler)failureHandler
-         unless:(TOCCancelToken*)unlessCancelledToken;
+             unless:(TOCCancelToken*)unlessCancelledToken;
 
 @end
 
@@ -224,6 +271,9 @@ unless:(TOCCancelToken*)unlessCancelledToken;
  * It can be accessed and controlled from multiple threads concurrently.
  *
  * Use trySetResult/trySetFailure to cause the future to complete with a result or fail with a failure.
+ *
+ * If a future source is deallocated before its future completes, its future becomes immortal.
+ * Immortal futures never complete with a result or failure, and discard their callbacks without running them (to allow dealloc to occur).
  */
 @interface TOCFutureSource : NSObject
 
@@ -247,6 +297,8 @@ unless:(TOCCancelToken*)unlessCancelledToken;
  * If the given result is a future and this method succeeds, then the receiving future source will collapse to match the future instead of containing it.
  *
  * When the future source is set to match an incomplete future, it remains incomplete (but still set) until that future completes.
+ *
+ * If you try to make set a future source's result to its own future, its future becomes immortal and discards all callbacks.
  */
 -(bool) trySetResult:(id)finalResult;
 

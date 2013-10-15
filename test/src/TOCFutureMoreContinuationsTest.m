@@ -98,4 +98,44 @@
     testFutureHasResult(f2, @2);
 }
 
+-(void) testUnless_Immediate {
+    TOCCancelToken* cc = [TOCCancelToken cancelledToken];
+    
+    testFutureHasResult([[TOCFuture futureWithResult:@1] unless:nil], @1);
+    testFutureHasResult([[TOCFuture futureWithResult:@2] unless:[TOCCancelToken immortalToken]], @2);
+    
+    testFutureHasFailure([[TOCFuture futureWithFailure:@3] unless:nil], @3);
+    testFutureHasFailure([[TOCFuture futureWithFailure:@4] unless:[TOCCancelToken immortalToken]], @4);
+    
+    testFutureHasFailure([[TOCFuture futureWithResult:@5] unless:cc], cc);
+    testFutureHasFailure([[TOCFuture futureWithFailure:@6] unless:cc], cc);
+}
+-(void) testUnless_DeferredCompletion {
+    TOCCancelTokenSource* c = [TOCCancelTokenSource new];
+    TOCFutureSource* s = [TOCFutureSource new];
+    
+    TOCFuture* f = [s.future unless:c.token];
+    test([f isIncomplete]);
+    [s trySetResult:@1];
+    testFutureHasResult(f, @1);
+}
+-(void) testUnless_DeferredFailure {
+    TOCCancelTokenSource* c = [TOCCancelTokenSource new];
+    TOCFutureSource* s = [TOCFutureSource new];
+    
+    TOCFuture* f = [s.future unless:c.token];
+    test([f isIncomplete]);
+    [s trySetFailure:@2];
+    testFutureHasFailure(f, @2);
+}
+-(void) testUnless_DeferredCancel {
+    TOCCancelTokenSource* c = [TOCCancelTokenSource new];
+    TOCFutureSource* s = [TOCFutureSource new];
+    
+    TOCFuture* f = [s.future unless:c.token];
+    test([f isIncomplete]);
+    [c cancel];
+    testFutureHasFailure(f, c.token);
+}
+
 @end

@@ -28,7 +28,11 @@
 }
 
 -(TOCFuture*) unless:(TOCCancelToken*)unlessCancelledToken {
-    if (unlessCancelledToken == nil) return self;
+    // optimistically do nothing, when given immortal cancel tokens
+    if (![unlessCancelledToken canStillBeCancelled] && ![unlessCancelledToken isAlreadyCancelled]) {
+        return self;
+    }
+    
     return [self finally:^(TOCFuture *completed) { return completed; }
                   unless:unlessCancelledToken];
 }
