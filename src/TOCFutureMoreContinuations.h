@@ -84,7 +84,7 @@
  * @param unlessCancelledToken The cancellation token that can be used to cause the resulting future to immediately fail with the cancellation token as its failure value.
  * A nil cancellation token corresponds to an immortal cancellation token.
  *
- * @result A future will either contain the same result/failure as the receiving future, or else the given cancellation token when it is cancelled.
+ * @result A future that will either contain the same result/failure as the receiving future, or else the given cancellation token when it is cancelled.
  *
  * @discussion If the receiving future is already completed and the given cancellation token is already cancelled, the cancellation "wins".
  * The resulting future will fail with the cancellation token as its failure value.

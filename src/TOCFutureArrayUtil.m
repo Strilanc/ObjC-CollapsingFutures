@@ -65,7 +65,7 @@
     
     __block int nextIndexMinusOne = -1;
     TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
-        NSUInteger i = (NSUInteger)OSAtomicIncrement32(&nextIndexMinusOne);
+        NSUInteger i = (NSUInteger)OSAtomicIncrement32Barrier(&nextIndexMinusOne);
         [resultSources[i] forceSetResult:completed];
     };
     

@@ -137,6 +137,8 @@ static TOCCancelToken* SharedImmortalToken = nil;
                  unless:(TOCCancelToken*)unlessCancelledToken {
     require(cancelHandler != nil);
     
+    // fair warning: the following code is very difficult to get right.
+    
     // optimistically do less work
     if (unlessCancelledToken == nil) {
         [self whenCancelledDo:cancelHandler];
@@ -156,7 +158,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
     __block int callCount = 0;
     __block Remover removeHandlerFromOtherToSelf = nil;
     Remover onSecondCallRemoveHandlerFromOtherToSelf = ^{
-        if (OSAtomicIncrement32(&callCount) == 1) return;
+        if (OSAtomicIncrement32Barrier(&callCount) == 1) return;
         assert(removeHandlerFromOtherToSelf != nil);
         removeHandlerFromOtherToSelf();
         removeHandlerFromOtherToSelf = nil;
