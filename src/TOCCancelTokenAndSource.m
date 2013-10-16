@@ -107,16 +107,16 @@ typedef void (^SettledHandler)(int state);
     require(settledHandler != nil);
     @synchronized(self) {
         if (state == TOKEN_STATE_MORTAL) {
-            // without this line, one of the tests fails.
-            // probably because ARC doesn't deal with blocks on the stack properly.
-            // @todo: investigate
-            SettledHandler handlerFixed = settledHandler;
+            // to ensure we don't end up with two distinct copies of the block, move it to a local
+            // (otherwise one copy will be made when adding to the array, and another when storing to the remove closure)
+            // (so without this line, the added handler wouldn't be guaranteed removable, because the remover will try to remove the wrong instance)
+            SettledHandler singleCopyOfHandler = [settledHandler copy];
             
-            [removableSettledHandlers addObject:handlerFixed];
+            [removableSettledHandlers addObject:singleCopyOfHandler];
 
             return ^{
                 @synchronized(self) {
-                    [removableSettledHandlers removeObject:handlerFixed];
+                    [removableSettledHandlers removeObject:singleCopyOfHandler];
                 }
             };
         }
