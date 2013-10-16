@@ -185,7 +185,7 @@
 @end
 
 @implementation TOCFutureSource {
-@public TOCCancelTokenSource* completionSource;
+@private TOCCancelTokenSource* completionSource;
 }
 
 @synthesize future;
