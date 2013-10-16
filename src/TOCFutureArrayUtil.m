@@ -20,7 +20,7 @@
     __block int remaining = (int)[futures count] + 1;
     TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
         if (OSAtomicDecrement32(&remaining) > 0) return;
-        [resultSource forceSetResult:futures];
+        [resultSource trySetResult:futures];
     };
     
     for (TOCFuture* item in futures) {
