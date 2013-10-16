@@ -2,28 +2,24 @@
 #import "Internal.h"
 #include <libkern/OSAtomic.h>
 
-#define TOKEN_STATE_IMMORTAL 0 // nil defaults to immortal, so must use default int
-#define TOKEN_STATE_CANCELLED -1
-#define TOKEN_STATE_MORTAL 1
-
 typedef void (^Remover)(void);
-typedef void (^SettledHandler)(int state);
+typedef void (^SettledHandler)(enum TOCCancelTokenState state);
 
 static TOCCancelToken* SharedCancelledToken = nil;
 static TOCCancelToken* SharedImmortalToken = nil;
 
 @implementation TOCCancelToken {
-@private NSMutableArray* cancelHandlers;
-@private NSMutableSet* removableSettledHandlers; // run when the token is cancelled or immortal
-@private int state;
+@private NSMutableArray* _cancelHandlers;
+@private NSMutableSet* _removableSettledHandlers; // run when the token is cancelled or immortal
+@private enum TOCCancelTokenState _state;
 }
 
 +(void) initialize {
     SharedCancelledToken = [TOCCancelToken new];
-    SharedCancelledToken->state = TOKEN_STATE_CANCELLED;
+    SharedCancelledToken->_state = TOCCancelTokenState_Cancelled;
 
     SharedImmortalToken = [TOCCancelToken new];
-    assert(SharedImmortalToken->state == TOKEN_STATE_IMMORTAL); // default state should be immortal
+    assert(SharedImmortalToken->_state == TOCCancelTokenState_Immortal); // default state should be immortal
 }
 
 +(TOCCancelToken *)cancelledToken {
@@ -36,27 +32,27 @@ static TOCCancelToken* SharedImmortalToken = nil;
 
 +(TOCCancelToken*) __ForSource_cancellableToken {
     TOCCancelToken* token = [TOCCancelToken new];
-    token->cancelHandlers = [NSMutableArray array];
-    token->removableSettledHandlers = [NSMutableSet set];
-    token->state = TOKEN_STATE_MORTAL;
+    token->_cancelHandlers = [NSMutableArray array];
+    token->_removableSettledHandlers = [NSMutableSet set];
+    token->_state = TOCCancelTokenState_StillCancellable;
     return token;
 }
 -(bool) __ForSource_tryImmortalize {
     NSSet* settledHandlersSnapshot;
     @synchronized(self) {
-        if (state != TOKEN_STATE_MORTAL) return false;
-        state = TOKEN_STATE_IMMORTAL;
+        if (_state != TOCCancelTokenState_StillCancellable) return false;
+        _state = TOCCancelTokenState_Immortal;
         
         // need to copy+clear settled handlers, instead of just nil-ing the ref, because indirect references to it escape and may be kept alive indefinitely
-        settledHandlersSnapshot = [removableSettledHandlers copy];
-        [removableSettledHandlers removeAllObjects];
-        removableSettledHandlers = nil;
+        settledHandlersSnapshot = [_removableSettledHandlers copy];
+        [_removableSettledHandlers removeAllObjects];
+        _removableSettledHandlers = nil;
 
-        cancelHandlers = nil;
+        _cancelHandlers = nil;
     }
     
     for (SettledHandler handler in settledHandlersSnapshot) {
-        handler(state);
+        handler(_state);
     }
     return true;
 }
@@ -64,45 +60,45 @@ static TOCCancelToken* SharedImmortalToken = nil;
     NSArray* cancelHandlersSnapshot;
     NSSet* settledHandlersSnapshot;
     @synchronized(self) {
-        if (state != TOKEN_STATE_MORTAL) return false;
-        state = TOKEN_STATE_CANCELLED;
+        if (_state != TOCCancelTokenState_StillCancellable) return false;
+        _state = TOCCancelTokenState_Cancelled;
         
-        cancelHandlersSnapshot = cancelHandlers;
-        cancelHandlers = nil;
+        cancelHandlersSnapshot = _cancelHandlers;
+        _cancelHandlers = nil;
 
         // need to copy+clear settled handlers, instead of just nil-ing the ref, because indirect references to it escape and may be kept alive indefinitely
-        settledHandlersSnapshot = [removableSettledHandlers copy];
-        [removableSettledHandlers removeAllObjects];
-        removableSettledHandlers = nil;
+        settledHandlersSnapshot = [_removableSettledHandlers copy];
+        [_removableSettledHandlers removeAllObjects];
+        _removableSettledHandlers = nil;
     }
     
     for (TOCCancelHandler handler in cancelHandlersSnapshot) {
         handler();
     }
     for (SettledHandler handler in settledHandlersSnapshot) {
-        handler(state);
+        handler(_state);
     }
     return true;
 }
 
+-(enum TOCCancelTokenState)state {
+    @synchronized(self) {
+        return _state;
+    }
+}
 -(bool)isAlreadyCancelled {
-    return [self __peekTokenState] == TOKEN_STATE_CANCELLED;
+    return self.state == TOCCancelTokenState_Cancelled;
 }
 -(bool)canStillBeCancelled {
-    return [self __peekTokenState] == TOKEN_STATE_MORTAL;
-}
--(int)__peekTokenState {
-    @synchronized(self) {
-        return state;
-    }
+    return self.state == TOCCancelTokenState_StillCancellable;
 }
 
 -(void)whenCancelledDo:(TOCCancelHandler)cancelHandler {
     require(cancelHandler != nil);
     @synchronized(self) {
-        if (state == TOKEN_STATE_IMMORTAL) return;
-        if (state == TOKEN_STATE_MORTAL) {
-            [cancelHandlers addObject:cancelHandler];
+        if (_state == TOCCancelTokenState_Immortal) return;
+        if (_state == TOCCancelTokenState_StillCancellable) {
+            [_cancelHandlers addObject:cancelHandler];
             return;
         }
     }
@@ -113,23 +109,23 @@ static TOCCancelToken* SharedImmortalToken = nil;
 -(Remover)__removable_whenSettledDo:(SettledHandler)settledHandler {
     require(settledHandler != nil);
     @synchronized(self) {
-        if (state == TOKEN_STATE_MORTAL) {
+        if (_state == TOCCancelTokenState_StillCancellable) {
             // to ensure we don't end up with two distinct copies of the block, move it to a local
             // (otherwise one copy will be made when adding to the array, and another when storing to the remove closure)
             // (so without this line, the added handler wouldn't be guaranteed removable, because the remover will try to remove the wrong instance)
             SettledHandler singleCopyOfHandler = [settledHandler copy];
             
-            [removableSettledHandlers addObject:singleCopyOfHandler];
+            [_removableSettledHandlers addObject:singleCopyOfHandler];
 
             return ^{
                 @synchronized(self) {
-                    [removableSettledHandlers removeObject:singleCopyOfHandler];
+                    [_removableSettledHandlers removeObject:singleCopyOfHandler];
                 }
             };
         }
     }
     
-    settledHandler(state);
+    settledHandler(_state);
     return nil;
 }
 
@@ -144,11 +140,11 @@ static TOCCancelToken* SharedImmortalToken = nil;
         [self whenCancelledDo:cancelHandler];
         return;
     }
-    int peekOtherState = [unlessCancelledToken __peekTokenState];
-    if (unlessCancelledToken == self || peekOtherState == TOKEN_STATE_CANCELLED) {
+    enum TOCCancelTokenState peekOtherState = unlessCancelledToken.state;
+    if (unlessCancelledToken == self || peekOtherState == TOCCancelTokenState_Cancelled) {
         return;
     }
-    if (peekOtherState == TOKEN_STATE_IMMORTAL) {
+    if (peekOtherState == TOCCancelTokenState_Immortal) {
         [self whenCancelledDo:cancelHandler];
         return;
     }
@@ -165,13 +161,13 @@ static TOCCancelToken* SharedImmortalToken = nil;
     };
     
     // make the cancel-each-other cycle, running the cancel handler if self is cancelled first
-    __block Remover removeHandlerFromSelfToOther = [self __removable_whenSettledDo:^(int finalState){
-        if (finalState == TOKEN_STATE_CANCELLED) {
+    __block Remover removeHandlerFromSelfToOther = [self __removable_whenSettledDo:^(enum TOCCancelTokenState finalState){
+        if (finalState == TOCCancelTokenState_Cancelled) {
             cancelHandler();
         }
         onSecondCallRemoveHandlerFromOtherToSelf();
     }];
-    removeHandlerFromOtherToSelf = [unlessCancelledToken __removable_whenSettledDo:^(int finalState) {
+    removeHandlerFromOtherToSelf = [unlessCancelledToken __removable_whenSettledDo:^(enum TOCCancelTokenState finalState) {
         if (removeHandlerFromSelfToOther == nil) return; // only occurs when the handler was already run and discarded anyways
         removeHandlerFromSelfToOther();
         removeHandlerFromSelfToOther = nil;
@@ -183,8 +179,8 @@ static TOCCancelToken* SharedImmortalToken = nil;
 
 -(NSString*) description {
     @synchronized(self) {
-        if (state == TOKEN_STATE_IMMORTAL) return @"Uncancelled Token (Immortal)";
-        if (state == TOKEN_STATE_CANCELLED) return @"Cancelled Token";
+        if (_state == TOCCancelTokenState_Immortal) return @"Uncancelled Token (Immortal)";
+        if (_state == TOCCancelTokenState_Cancelled) return @"Cancelled Token";
         return @"Uncancelled Token";
     }
 }

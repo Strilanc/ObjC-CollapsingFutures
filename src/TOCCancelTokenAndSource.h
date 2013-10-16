@@ -1,6 +1,38 @@
 #import <Foundation/Foundation.h>
 
 /*!
+ * The states that a cancel token can be in.
+ *
+ * @discussion A nil cancel token is considered to be in the immortal state.
+ */
+enum TOCCancelTokenState {
+    /*!
+     * The cancel token is not cancelled and will never be cancelled.
+     *
+     * @discussion All 'whenCancelledDo' handlers given to tokens in this state will be discarded without being run.
+     */
+    TOCCancelTokenState_Immortal = 0, // note: immortal must be the default (0), to ensure nil acts like an immortal token when you get its state
+
+    /*!
+     * The cancel token is already cancelled.
+     *
+     * @discussion All 'whenCancelledDo' handlers given to tokens in this state will be run inline.
+     */
+    TOCCancelTokenState_Cancelled = 1,
+
+    /*!
+     * The cancel token is not cancelled, but may become cancelled (or immortal).
+     *
+     * @discussion All 'whenCancelledDo' handlers given to tokens in this state will be stored.
+     * The callbacks will be run when the token becomes cancelled. or discarded when it becomes immortal.
+     *
+     * Note that the state of a token that can still be cancelled is volatile.
+     * While you checked that a token was still cancellable, it may have already transitioned to being cancelled or immortal.
+     */
+    TOCCancelTokenState_StillCancellable = 2
+};
+
+/*!
  * The type of block passed to TOCCancelToken's whenCancelled method.
  * The block is called when the token has been cancelled.
  */
@@ -9,7 +41,7 @@ typedef void (^TOCCancelHandler)(void);
 /*!
  * Notifies you when operations should be cancelled.
  * 
- * @discussion A cancel token can be in three states: cancelled, can-be-cancelled, and immortal.
+ * @discussion A cancel token can be in three states: cancelled, still-cancellable, and immortal.
  *
  * The nil cancel token is considered to be immortal.
  *
@@ -17,9 +49,9 @@ typedef void (^TOCCancelHandler)(void);
  *
  * A token in the cancelled state is permanently cancelled, and will immediately run+discard any cancel handlers being registered to it.
  *
- * A token in the can-be-cancelled state can be cancelled by its source, causing it to run+discard all registered cancel handlers and transition to the cancelled state.
+ * A token in the still-cancellable state can be cancelled by its source, causing it to run+discard all registered cancel handlers and transition to the cancelled state.
  *
- * A token in the can-be-cancelled state can also transition to the immortal state, if its source is deallocated, causing it to discard all registered cancel handlers without running them.
+ * A token in the still-cancellable state can also transition to the immortal state, if its source is deallocated, causing it to discard all registered cancel handlers without running them.
  *
  * TOCCancelToken is thread safe.
  * It can be accessed from multiple threads concurrently.
@@ -52,14 +84,27 @@ typedef void (^TOCCancelHandler)(void);
 +(TOCCancelToken *)immortalToken;
 
 /*!
- * Determines if the token is in the cancelled state, as opposed to being can-be-cancelled or immortal.
+ * Returns the current state of the receiving cancel token: cancelled, immortal, or still-cancellable.
+ *
+ * @discussion Note that the state of a token that can still be cancelled is volatile.
+ * While you checked that a token was still cancellable, it may have already transitioned to being cancelled or immortal.
+ */
+-(enum TOCCancelTokenState) state;
+
+/*!
+ * Determines if the token is in the cancelled state, as opposed to being still-cancellable or immortal.
  */
 -(bool)isAlreadyCancelled;
 
 /*!
- * Determines if the token is in the can-be-cancelled state, as opposed to being cancelled or immortal.
+ * Determines if the token is in the still-cancellable state, as opposed to being cancelled or immortal.
+ *
+ * @discussion Note that the state of a token that can still be cancelled is volatile.
+ * While you checked that canStillBeCancelled returned true, the token may have already transitioned to being cancelled or immortal.
  */
 -(bool)canStillBeCancelled;
+
+// note: do NOT include an isImmortal method. A nil cancel token is supposed to act like an immortal token, but [nil isImmortal] would return false
 
 /*!
  * Registers a cancel handler block to be called once the receiving token is cancelled.

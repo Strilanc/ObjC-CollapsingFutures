@@ -29,7 +29,7 @@
 
 -(TOCFuture*) unless:(TOCCancelToken*)unlessCancelledToken {
     // optimistically do nothing, when given immortal cancel tokens
-    if (![unlessCancelledToken canStillBeCancelled] && ![unlessCancelledToken isAlreadyCancelled]) {
+    if (unlessCancelledToken.state == TOCCancelTokenState_Immortal) {
         return self;
     }
     

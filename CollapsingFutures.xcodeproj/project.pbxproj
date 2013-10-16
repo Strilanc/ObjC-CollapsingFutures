@@ -151,8 +151,8 @@
 			children = (
 				A1209B291808E51B00D6831C /* TOCCancelTokenTest.m */,
 				A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */,
-				A1209B2F180DD50200D6831C /* TOCFutureMoreContinuationsTest.m */,
 				A1A019671807641000A052A6 /* TOCFutureExtraTest.m */,
+				A1209B2F180DD50200D6831C /* TOCFutureMoreContinuationsTest.m */,
 				A1209B31180DD52A00D6831C /* TOCFutureSourceTest.m */,
 				A1A019681807641000A052A6 /* TOCFutureTest.m */,
 			);
