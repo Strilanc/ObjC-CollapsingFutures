@@ -63,6 +63,7 @@
     
     NSMutableArray* resultSources = [NSMutableArray array];
     
+    require(futures.count <= INT_MAX);
     __block int nextIndexMinusOne = -1;
     TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
         NSUInteger i = (NSUInteger)OSAtomicIncrement32Barrier(&nextIndexMinusOne);
