@@ -4,7 +4,7 @@
 
 +(VoidBlock*) voidBlock:(void(^)(void))block {
     VoidBlock* b = [VoidBlock new];
-    b->block = [block copy];
+    b->block = block;
     return b;
 }
 -(void)run {
