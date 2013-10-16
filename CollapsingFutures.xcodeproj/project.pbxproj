@@ -162,6 +162,8 @@
 		A1A019C5180774B600A052A6 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A1209B33180DF3C200D6831C /* Internal.h */,
+				A1209B34180DF3C200D6831C /* Internal.m */,
 				A1209B25180888E800D6831C /* TOCCancelTokenAndSource.h */,
 				A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */,
 				A1A019C6180774B600A052A6 /* TOCFutureAndSource.h */,
@@ -173,8 +175,6 @@
 				A1209B2B180DD34F00D6831C /* TOCFutureMoreContinuations.h */,
 				A1209B2C180DD34F00D6831C /* TOCFutureMoreContinuations.m */,
 				A1A019CA180774B600A052A6 /* TwistedOakCollapsingFutures.h */,
-				A1209B33180DF3C200D6831C /* Internal.h */,
-				A1209B34180DF3C200D6831C /* Internal.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
