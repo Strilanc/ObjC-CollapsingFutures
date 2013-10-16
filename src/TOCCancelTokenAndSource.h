@@ -46,6 +46,8 @@ typedef void (^TOCCancelHandler)(void);
  *
  * @discussion Immortal tokens do not hold onto cancel handlers.
  * Cancel handlers given to an immortal token's whenCancelledDo will not be retained, stored, or called.
+ *
+ * This method is guaranteed to return a non-nil result, even though a nil cancel token is supposed to be treated exactly like an immortal token.
  */
 +(TOCCancelToken *)immortalToken;
 
