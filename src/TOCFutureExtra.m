@@ -4,7 +4,7 @@
 @implementation TOCFuture (TOCFutureExtra)
 
 -(bool)hasFailedWithCancel {
-    return [self hasFailed] && [[self forceGetFailure] isKindOfClass:[TOCCancelToken class]];
+    return self.hasFailed && [self.forceGetFailure isKindOfClass:[TOCCancelToken class]];
 }
 
 +(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
@@ -23,7 +23,7 @@
     require(thread != nil);
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
-
+    
     [VoidBlock performBlock:^{ [resultSource forceSetResult:operation()]; }
                    onThread:thread];
     

@@ -3,10 +3,10 @@
 int testTargetHits = 0;
 
 bool futureHasResult(TOCFuture* future, id result) {
-    return [future hasResult] && [[future forceGetResult] isEqual:result];
+    return future.hasResult && [future.forceGetResult isEqual:result];
 }
 bool futureHasFailure(TOCFuture* future, id failure) {
-    return [future hasFailed] && [[future forceGetFailure] isEqual:failure];
+    return future.hasFailed && [future.forceGetFailure isEqual:failure];
 }
 bool testPassesConcurrently_helper(bool (^check)(void), NSTimeInterval delay) {
     NSTimeInterval t = [[NSProcessInfo processInfo] systemUptime] + delay;
@@ -15,7 +15,7 @@ bool testPassesConcurrently_helper(bool (^check)(void), NSTimeInterval delay) {
     return check();
 }
 bool testCompletesConcurrently_helper(TOCFuture* future, NSTimeInterval delay) {
-    return testPassesConcurrently_helper(^bool{ return ![future isIncomplete]; }, delay);
+    return testPassesConcurrently_helper(^bool{ return !future.isIncomplete; }, delay);
 }
 
 @implementation DeallocCounter

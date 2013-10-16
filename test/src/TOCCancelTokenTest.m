@@ -10,39 +10,39 @@
 -(void) testCancelTokenSourceCancel {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
     TOCCancelToken* c = s.token;
-    test([c canStillBeCancelled]);
-    test(![c isAlreadyCancelled]);
+    test(c.canStillBeCancelled);
+    test(!c.isAlreadyCancelled);
     
     [s cancel];
-    test([c isAlreadyCancelled]);
-    test(![c canStillBeCancelled]);
+    test(c.isAlreadyCancelled);
+    test(!c.canStillBeCancelled);
     
     [s cancel];
-    test([c isAlreadyCancelled]);
-    test(![c canStillBeCancelled]);
+    test(c.isAlreadyCancelled);
+    test(!c.canStillBeCancelled);
     test(c.state == TOCCancelTokenState_Cancelled);
 }
 -(void) testCancelTokenSourceTryCancel {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
     TOCCancelToken* c = s.token;
-    test([c canStillBeCancelled]);
-    test(![c isAlreadyCancelled]);
+    test(c.canStillBeCancelled);
+    test(!c.isAlreadyCancelled);
     test(c.state == TOCCancelTokenState_StillCancellable);
     
     test([s tryCancel]);
-    test([c isAlreadyCancelled]);
-    test(![c canStillBeCancelled]);
+    test(c.isAlreadyCancelled);
+    test(!c.canStillBeCancelled);
     test(c.state == TOCCancelTokenState_Cancelled);
     
     test(![s tryCancel]);
-    test([c isAlreadyCancelled]);
-    test(![c canStillBeCancelled]);
+    test(c.isAlreadyCancelled);
+    test(!c.canStillBeCancelled);
     test(c.state == TOCCancelTokenState_Cancelled);
 }
 -(void) testImmortalCancelToken {
-    TOCCancelToken* c = [TOCCancelToken immortalToken];
-    test(![c canStillBeCancelled]);
-    test(![c isAlreadyCancelled]);
+    TOCCancelToken* c = TOCCancelToken.immortalToken;
+    test(!c.canStillBeCancelled);
+    test(!c.isAlreadyCancelled);
     test(c.state == TOCCancelTokenState_Immortal);
     
     testDoesNotHitTarget([c whenCancelledDo:^{
@@ -50,9 +50,9 @@
     }]);
 }
 -(void) testCancelledCancelToken {
-    TOCCancelToken* c = [TOCCancelToken cancelledToken];
-    test(![c canStillBeCancelled]);
-    test([c isAlreadyCancelled]);
+    TOCCancelToken* c = TOCCancelToken.cancelledToken;
+    test(!c.canStillBeCancelled);
+    test(c.isAlreadyCancelled);
     test(c.state == TOCCancelTokenState_Cancelled);
     
     __block bool hit = false;
@@ -160,8 +160,8 @@
     }
     
     test(d.lostTokenCount == 2);
-    test([c1 isAlreadyCancelled]);
-    test([c2 isAlreadyCancelled]);
+    test(c1.isAlreadyCancelled);
+    test(c2.isAlreadyCancelled);
 }
 -(void) testDealloc_AfterCancel {
     DeallocCounter* d = [DeallocCounter new];
@@ -205,9 +205,9 @@
     }
 
     test(d.lostTokenCount == 2);
-    test([c1 isAlreadyCancelled]);
-    test(![c2 isAlreadyCancelled]);
-    test(![c2 canStillBeCancelled]);
+    test(c1.isAlreadyCancelled);
+    test(!c2.isAlreadyCancelled);
+    test(!c2.canStillBeCancelled);
 }
 
 -(void) testSelfOnCancelledUnlesCancelledIsConsistentBeforeAndAfter {
@@ -232,9 +232,9 @@
 
 -(void) testOnCancelledUnlesCancelledWhenBothCancelledDoesNotRunCallback {
     __block int hit1 = 0;
-    [[TOCCancelToken cancelledToken] whenCancelledDo:^{
+    [TOCCancelToken.cancelledToken whenCancelledDo:^{
         hit1++;
-    } unless:[TOCCancelToken cancelledToken]];
+    } unless:TOCCancelToken.cancelledToken];
     test(hit1 == 0);
 }
 

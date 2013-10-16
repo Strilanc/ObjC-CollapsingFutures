@@ -58,7 +58,7 @@
                               afterDelay:0.1];
     
     // churn run loop so timer can complete
-    for (int i = 0; i < 5 && [f isIncomplete]; i++) {
+    for (int i = 0; i < 5 && f.isIncomplete; i++) {
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
     }
     
@@ -76,20 +76,20 @@
                                     afterDelay:100.0];
     
     // churn run loop so timer can complete
-    for (int i = 0; i < 5 && [f isIncomplete]; i++) {
+    for (int i = 0; i < 5 && f.isIncomplete; i++) {
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
     }
     
-    test([f isIncomplete]);
+    test(f.isIncomplete);
 }
 
 -(void)testHasFailedWithCancel {
-    test(![[TOCFutureSource new].future hasFailedWithCancel]);
-    test(![[TOCFuture futureWithResult:@0] hasFailedWithCancel]);
-    test(![[TOCFuture futureWithResult:[TOCCancelToken cancelledToken]] hasFailedWithCancel]);
-    test(![[TOCFuture futureWithFailure:@0] hasFailedWithCancel]);
+    test(![TOCFutureSource new].future.hasFailedWithCancel);
+    test(![TOCFuture futureWithResult:@0].hasFailedWithCancel);
+    test(![TOCFuture futureWithResult:TOCCancelToken.cancelledToken].hasFailedWithCancel);
+    test(![TOCFuture futureWithFailure:@0].hasFailedWithCancel);
     
-    test([[TOCFuture futureWithFailure:[TOCCancelToken cancelledToken]] hasFailedWithCancel]);
+    test([TOCFuture futureWithFailure:TOCCancelToken.cancelledToken].hasFailedWithCancel);
 }
 
 @end

@@ -75,7 +75,7 @@
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
     TOCFuture* f2 = [f then:^(id value) { test([value isEqual:@"X"]); return @2; }];
-    test([f2 isIncomplete]);
+    test(f2.isIncomplete);
     [s trySetResult:@"X"];
     testFutureHasResult(f2, @2);
 }
@@ -83,7 +83,7 @@
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
     TOCFuture* f2 = [f then:^(id value) { test(false); return @2; }];
-    test([f2 isIncomplete]);
+    test(f2.isIncomplete);
     [s trySetFailure:@"X"];
     testFutureHasFailure(f2, @"X");
 }
@@ -101,7 +101,7 @@
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
     TOCFuture* f2 = [f catch:^(id value) { test(false); return @2; }];
-    test([f2 isIncomplete]);
+    test(f2.isIncomplete);
     [s trySetResult:@"X"];
     testFutureHasResult(f2, @"X");
 }
@@ -109,7 +109,7 @@
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
     TOCFuture* f2 = [f catch:^(id value) { test([value isEqual:@"X"]); return @2; }];
-    test([f2 isIncomplete]);
+    test(f2.isIncomplete);
     [s trySetFailure:@"X"];
     testFutureHasResult(f2, @2);
 }
@@ -127,7 +127,7 @@
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
     TOCFuture* f2 = [f finally:^(id value) { testFutureHasResult(value, @"X"); return @2; }];
-    test([f2 isIncomplete]);
+    test(f2.isIncomplete);
     [s trySetResult:@"X"];
     testFutureHasResult(f2, @2);
 }
@@ -135,19 +135,19 @@
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
     TOCFuture* f2 = [f finally:^(id value) { testFutureHasFailure(value, @"X"); return @2; }];
-    test([f2 isIncomplete]);
+    test(f2.isIncomplete);
     [s trySetFailure:@"X"];
     testFutureHasResult(f2, @2);
 }
 
 -(void) testUnless_Immediate {
-    TOCCancelToken* cc = [TOCCancelToken cancelledToken];
+    TOCCancelToken* cc = TOCCancelToken.cancelledToken;
     
     testFutureHasResult([[TOCFuture futureWithResult:@1] unless:nil], @1);
-    testFutureHasResult([[TOCFuture futureWithResult:@2] unless:[TOCCancelToken immortalToken]], @2);
+    testFutureHasResult([[TOCFuture futureWithResult:@2] unless:TOCCancelToken.immortalToken], @2);
     
     testFutureHasFailure([[TOCFuture futureWithFailure:@3] unless:nil], @3);
-    testFutureHasFailure([[TOCFuture futureWithFailure:@4] unless:[TOCCancelToken immortalToken]], @4);
+    testFutureHasFailure([[TOCFuture futureWithFailure:@4] unless:TOCCancelToken.immortalToken], @4);
     
     testFutureHasFailure([[TOCFuture futureWithResult:@5] unless:cc], cc);
     testFutureHasFailure([[TOCFuture futureWithFailure:@6] unless:cc], cc);
@@ -157,7 +157,7 @@
     TOCFutureSource* s = [TOCFutureSource new];
     
     TOCFuture* f = [s.future unless:c.token];
-    test([f isIncomplete]);
+    test(f.isIncomplete);
     [s trySetResult:@1];
     testFutureHasResult(f, @1);
 }
@@ -166,7 +166,7 @@
     TOCFutureSource* s = [TOCFutureSource new];
     
     TOCFuture* f = [s.future unless:c.token];
-    test([f isIncomplete]);
+    test(f.isIncomplete);
     [s trySetFailure:@2];
     testFutureHasFailure(f, @2);
 }
@@ -175,7 +175,7 @@
     TOCFutureSource* s = [TOCFutureSource new];
     
     TOCFuture* f = [s.future unless:c.token];
-    test([f isIncomplete]);
+    test(f.isIncomplete);
     [c cancel];
     testFutureHasFailure(f, c.token);
 }

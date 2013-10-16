@@ -14,14 +14,14 @@
     }
     
     TOCFuture *future = [TOCFuture new];
-    future->_completionToken = [TOCCancelToken cancelledToken];
+    future->_completionToken = TOCCancelToken.cancelledToken;
     future->_ifDoneHasSucceeded = true;
     future->_value = resultValue;
     return future;
 }
 +(TOCFuture *)futureWithFailure:(id)failureValue {
     TOCFuture *future = [TOCFuture new];
-    future->_completionToken = [TOCCancelToken cancelledToken];
+    future->_completionToken = TOCCancelToken.cancelledToken;
     future->_ifDoneHasSucceeded = false;
     future->_value = failureValue;
     return future;
@@ -87,7 +87,7 @@
     }
 }
 -(bool)isIncomplete {
-    return ![_completionToken isAlreadyCancelled];
+    return !_completionToken.isAlreadyCancelled;
 }
 -(bool)hasResult {
     return self.state == TOCFutureState_CompletedWithResult;
@@ -96,11 +96,11 @@
     return self.state == TOCFutureState_Failed;
 }
 -(id)forceGetResult {
-    require([self hasResult]);
+    require(self.hasResult);
     return _value;
 }
 -(id)forceGetFailure {
-    require([self hasFailed]);
+    require(self.hasFailed);
     return _value;
 }
 

@@ -16,8 +16,8 @@
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
-    require([futures count] < INT_MAX);
-    __block int remaining = (int)[futures count] + 1;
+    require(futures.count < INT_MAX);
+    __block int remaining = (int)futures.count + 1;
     TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
         if (OSAtomicDecrement32(&remaining) > 0) return;
         [resultSource trySetResult:futures];
@@ -31,7 +31,7 @@
     doneHandler(nil);
     
     [unlessCancelledToken whenCancelledDo:^{ [resultSource trySetFailure:unlessCancelledToken]; }
-                                   unless:[resultSource.future cancelledOnCompletionToken]];
+                                   unless:resultSource.future.cancelledOnCompletionToken];
     
     return resultSource.future;
 }
@@ -44,8 +44,8 @@
     return [[self finallyAllUnless:unlessCancelledToken] then:^id(NSArray* completedFutures) {
         NSMutableArray* results = [NSMutableArray array];
         for (TOCFuture* item in completedFutures) {
-            if ([item hasFailed]) return [TOCFuture futureWithFailure:completedFutures];
-            [results addObject:[item forceGetResult]];
+            if (item.hasFailed) return [TOCFuture futureWithFailure:completedFutures];
+            [results addObject:item.forceGetResult];
         }
         return results;
     }];

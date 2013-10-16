@@ -12,12 +12,12 @@
 -(void)testFailedFuture {
     TOCFuture* f = [TOCFuture futureWithFailure:@"X"];
 
-    test(![f isIncomplete]);
-    test([f hasFailed]);
-    test(![f hasResult]);
-    test([[f forceGetFailure] isEqual:@"X"]);
-    testThrows([f forceGetResult]);
-    test([f description] != nil);
+    test(!f.isIncomplete);
+    test(f.hasFailed);
+    test(!f.hasResult);
+    test([f.forceGetFailure isEqual:@"X"]);
+    testThrows(f.forceGetResult);
+    test(f.description != nil);
     test(f.state == TOCFutureState_Failed);
 
     // redundant check of continuations all in one place
@@ -31,12 +31,12 @@
 -(void)testSucceededFuture {
     TOCFuture* f = [TOCFuture futureWithResult:@"X"];
     
-    test(![f isIncomplete]);
-    test(![f hasFailed]);
-    test([f hasResult]);
-    test([[f forceGetResult] isEqual:@"X"]);
-    testThrows([f forceGetFailure]);
-    test([f description] != nil);
+    test(!f.isIncomplete);
+    test(!f.hasFailed);
+    test(f.hasResult);
+    test([f.forceGetResult isEqual:@"X"]);
+    testThrows(f.forceGetFailure);
+    test(f.description != nil);
     test(f.state == TOCFutureState_CompletedWithResult);
     
     // redundant check of continuations all in one place
@@ -90,7 +90,7 @@
     testDoesNotHitTarget([[TOCFutureSource new].future finally:^id(TOCFuture* completed) { hitTarget; return nil; } unless:nil]);
     testHitsTarget([[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { testFutureHasResult(completed, @7); hitTarget; return nil; } unless:nil]);
     testHitsTarget([[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { testFutureHasFailure(completed, @8); hitTarget; return nil; } unless:nil]);
-    test([[[TOCFutureSource new].future finally:^id(TOCFuture* completed) { return @1; } unless:nil] isIncomplete]);
+    test([[TOCFutureSource new].future finally:^id(TOCFuture* completed) { return @1; } unless:nil].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { return @2; } unless:nil], @2);
     testFutureHasResult([[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { return @3; } unless:nil], @3);
     
@@ -98,7 +98,7 @@
     testDoesNotHitTarget([[TOCFutureSource new].future finally:^id(TOCFuture* completed) { hitTarget; return nil; } unless:c.token]);
     testHitsTarget([[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { testFutureHasResult(completed, @7); hitTarget; return nil; } unless:c.token]);
     testHitsTarget([[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { testFutureHasFailure(completed, @8); hitTarget; return nil; } unless:c.token]);
-    test([[[TOCFutureSource new].future finally:^id(TOCFuture* completed) { return @1; } unless:c.token] isIncomplete]);
+    test([[TOCFutureSource new].future finally:^id(TOCFuture* completed) { return @1; } unless:c.token].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { return @2; } unless:c.token], @2);
     testFutureHasResult([[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { return @3; } unless:c.token], @3);
     
@@ -106,9 +106,9 @@
     testDoesNotHitTarget([[TOCFutureSource new].future finally:^id(TOCFuture* completed) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { hitTarget; return nil; } unless:c.token]);
-    test([[[TOCFutureSource new].future finally:^id(TOCFuture* completed) { return @1; } unless:c.token] hasFailedWithCancel]);
-    test([[[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { return @2; } unless:c.token] hasFailedWithCancel]);
-    test([[[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { return @3; } unless:c.token] hasFailedWithCancel]);
+    test([[TOCFutureSource new].future finally:^id(TOCFuture* completed) { return @1; } unless:c.token].hasFailedWithCancel);
+    test([[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { return @2; } unless:c.token].hasFailedWithCancel);
+    test([[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { return @3; } unless:c.token].hasFailedWithCancel);
 }
 
 -(void)testThenDoUnless_Immediate {
@@ -131,7 +131,7 @@
     testDoesNotHitTarget([[TOCFutureSource new].future then:^id(id result) { hitTarget; return nil; } unless:nil]);
     testHitsTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { test([result isEqual:@7]); hitTarget; return nil; } unless:nil]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] then:^id(id result) { hitTarget; return nil; } unless:nil]);
-    test([[[TOCFutureSource new].future then:^id(id result) { return @1; } unless:nil] isIncomplete]);
+    test([[TOCFutureSource new].future then:^id(id result) { return @1; } unless:nil].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] then:^id(id result) { return @2; } unless:nil], @2);
     testFutureHasFailure([[TOCFuture futureWithFailure:@8] then:^id(id result) { return @3; } unless:nil], @8);
     
@@ -139,7 +139,7 @@
     testDoesNotHitTarget([[TOCFutureSource new].future then:^id(id result) { hitTarget; return nil; } unless:c.token]);
     testHitsTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { test([result isEqual:@7]); hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] then:^id(id result) { hitTarget; return nil; } unless:c.token]);
-    test([[[TOCFutureSource new].future then:^id(id result) { return @1; } unless:c.token] isIncomplete]);
+    test([[TOCFutureSource new].future then:^id(id result) { return @1; } unless:c.token].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] then:^id(id result) { return @2; } unless:c.token], @2);
     testFutureHasFailure([[TOCFuture futureWithFailure:@8] then:^id(id result) { return @3; } unless:c.token], @8);
     
@@ -147,9 +147,9 @@
     testDoesNotHitTarget([[TOCFutureSource new].future then:^id(id result) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] then:^id(id result) { hitTarget; return nil; } unless:c.token]);
-    test([[[TOCFutureSource new].future then:^id(id result) { return @1; } unless:c.token] hasFailedWithCancel]);
-    test([[[TOCFuture futureWithResult:@7] then:^id(id result) { return @2; } unless:c.token] hasFailedWithCancel]);
-    test([[[TOCFuture futureWithFailure:@8] then:^id(id result) { return @3; } unless:c.token] hasFailedWithCancel]);
+    test([[TOCFutureSource new].future then:^id(id result) { return @1; } unless:c.token].hasFailedWithCancel);
+    test([[TOCFuture futureWithResult:@7] then:^id(id result) { return @2; } unless:c.token].hasFailedWithCancel);
+    test([[TOCFuture futureWithFailure:@8] then:^id(id result) { return @3; } unless:c.token].hasFailedWithCancel);
 }
 
 -(void)testCatchDoUnless_Immediate {
@@ -172,7 +172,7 @@
     testDoesNotHitTarget([[TOCFutureSource new].future catch:^id(id failure) { hitTarget; return nil; } unless:nil]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catch:^id(id failure) { hitTarget; return nil; } unless:nil]);
     testHitsTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { test([failure isEqual:@8]); hitTarget; return nil; } unless:nil]);
-    test([[[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:nil] isIncomplete]);
+    test([[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:nil].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] catch:^id(id failure) { return @2; } unless:nil], @7);
     testFutureHasResult([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { return @3; } unless:nil], @3);
     
@@ -180,7 +180,7 @@
     testDoesNotHitTarget([[TOCFutureSource new].future catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
     testHitsTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { test([failure isEqual:@8]); hitTarget; return nil; } unless:c.token]);
-    test([[[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:c.token] isIncomplete]);
+    test([[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:c.token].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] catch:^id(id failure) { return @2; } unless:c.token], @7);
     testFutureHasResult([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { return @3; } unless:c.token], @3);
     
@@ -188,9 +188,9 @@
     testDoesNotHitTarget([[TOCFutureSource new].future catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
-    test([[[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:c.token] hasFailedWithCancel]);
-    test([[[TOCFuture futureWithResult:@7] catch:^id(id failure) { return @2; } unless:c.token] hasFailedWithCancel]);
-    test([[[TOCFuture futureWithFailure:@8] catch:^id(id failure) { return @3; } unless:c.token] hasFailedWithCancel]);
+    test([[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:c.token].hasFailedWithCancel);
+    test([[TOCFuture futureWithResult:@7] catch:^id(id failure) { return @2; } unless:c.token].hasFailedWithCancel);
+    test([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { return @3; } unless:c.token].hasFailedWithCancel);
 }
 
 @end
