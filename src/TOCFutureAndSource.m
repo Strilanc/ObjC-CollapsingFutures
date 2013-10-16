@@ -125,10 +125,6 @@
                unless:(TOCCancelToken *)unlessCancelledToken {
     require(completionContinuation != nil);
     
-    if ([unlessCancelledToken isAlreadyCancelled] && [completionToken isAlreadyCancelled]) {
-        return [TOCFuture futureWithFailure:unlessCancelledToken];
-    }
-
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
     [self finallyDo:^(TOCFuture *completed) {
@@ -136,7 +132,7 @@
     } unless:unlessCancelledToken];
     [unlessCancelledToken whenCancelledDo:^{
         [resultSource trySetFailure:unlessCancelledToken];
-    } unless:completionToken];
+    } unless:resultSource.future->completionToken];
     
     return resultSource.future;
 }
