@@ -30,14 +30,14 @@ static TOCCancelToken* SharedImmortalToken = nil;
     return SharedImmortalToken;
 }
 
-+(TOCCancelToken*) __ForSource_cancellableToken {
++(TOCCancelToken*) _ForSource_cancellableToken {
     TOCCancelToken* token = [TOCCancelToken new];
     token->_cancelHandlers = [NSMutableArray array];
     token->_removableSettledHandlers = [NSMutableSet set];
     token->_state = TOCCancelTokenState_StillCancellable;
     return token;
 }
--(bool) __ForSource_tryImmortalize {
+-(bool) _ForSource_tryImmortalize {
     NSSet* settledHandlersSnapshot;
     @synchronized(self) {
         if (_state != TOCCancelTokenState_StillCancellable) return false;
@@ -56,7 +56,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
     }
     return true;
 }
--(bool) __ForSource_tryCancel {
+-(bool) _ForSource_tryCancel {
     NSArray* cancelHandlersSnapshot;
     NSSet* settledHandlersSnapshot;
     @synchronized(self) {
@@ -106,7 +106,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
     cancelHandler();
 }
 
--(Remover)__removable_whenSettledDo:(SettledHandler)settledHandler {
+-(Remover)_removable_whenSettledDo:(SettledHandler)settledHandler {
     require(settledHandler != nil);
     @synchronized(self) {
         if (_state == TOCCancelTokenState_StillCancellable) {
@@ -161,13 +161,13 @@ static TOCCancelToken* SharedImmortalToken = nil;
     };
     
     // make the cancel-each-other cycle, running the cancel handler if self is cancelled first
-    __block Remover removeHandlerFromSelfToOther = [self __removable_whenSettledDo:^(enum TOCCancelTokenState finalState){
+    __block Remover removeHandlerFromSelfToOther = [self _removable_whenSettledDo:^(enum TOCCancelTokenState finalState){
         if (finalState == TOCCancelTokenState_Cancelled) {
             cancelHandler();
         }
         onSecondCallRemoveHandlerFromOtherToSelf();
     }];
-    removeHandlerFromOtherToSelf = [unlessCancelledToken __removable_whenSettledDo:^(enum TOCCancelTokenState finalState) {
+    removeHandlerFromOtherToSelf = [unlessCancelledToken _removable_whenSettledDo:^(enum TOCCancelTokenState finalState) {
         if (removeHandlerFromSelfToOther == nil) return; // only occurs when the handler was already run and discarded anyways
         removeHandlerFromSelfToOther();
         removeHandlerFromSelfToOther = nil;
@@ -194,19 +194,19 @@ static TOCCancelToken* SharedImmortalToken = nil;
 -(TOCCancelTokenSource*) init {
     self = [super init];
     if (self) {
-        self->token = [TOCCancelToken __ForSource_cancellableToken];
+        self->token = [TOCCancelToken _ForSource_cancellableToken];
     }
     return self;
 }
 
 -(void) dealloc {
-    [token __ForSource_tryImmortalize];
+    [token _ForSource_tryImmortalize];
 }
 -(void) cancel {
     [self tryCancel];
 }
 -(bool)tryCancel {
-    return [token __ForSource_tryCancel];
+    return [token _ForSource_tryCancel];
 }
 
 -(NSString*) description {

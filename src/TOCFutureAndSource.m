@@ -27,34 +27,34 @@
     return future;
 }
 
-+(TOCFuture*) __ForSource__completableFutureWithCompletionToken:(TOCCancelToken*)completionToken {
++(TOCFuture*) _ForSource_completableFutureWithCompletionToken:(TOCCancelToken*)completionToken {
     TOCFuture* future = [TOCFuture new];
     future->_completionToken = completionToken;
     return future;
 }
 
--(bool) __ForSource__tryStartFutureSet {
+-(bool) _ForSource_tryStartFutureSet {
     @synchronized(self) {
         if (_hasBeenSet) return false;
         _hasBeenSet = true;
     }
     return true;
 }
--(void) __ForSource__forceFinishFutureSet:(TOCFuture*)finalValue {
+-(void) _ForSource_forceFinishFutureSet:(TOCFuture*)finalValue {
     require(finalValue != nil);
-    require([self __trySet:finalValue->_value
-                 succeeded:finalValue->_ifDoneHasSucceeded
-                isUnwiring:true]);
+    require([self _trySet:finalValue->_value
+                succeeded:finalValue->_ifDoneHasSucceeded
+               isUnwiring:true]);
 }
--(bool) __ForSource__trySet:(id)finalValue
-                  succeeded:(bool)succeeded {
-    return [self __trySet:finalValue
-                succeeded:succeeded
-               isUnwiring:false];
+-(bool) _ForSource_trySet:(id)finalValue
+                succeeded:(bool)succeeded {
+    return [self _trySet:finalValue
+               succeeded:succeeded
+              isUnwiring:false];
 }
--(bool) __trySet:(id)finalValue
-       succeeded:(bool)succeeded
-      isUnwiring:(bool)unwiring {
+-(bool) _trySet:(id)finalValue
+      succeeded:(bool)succeeded
+     isUnwiring:(bool)unwiring {
     
     require(![finalValue isKindOfClass:[TOCFuture class]]);
     
@@ -207,7 +207,7 @@
     self = [super init];
     if (self) {
         self->completionSource = [TOCCancelTokenSource new];
-        self->future = [TOCFuture __ForSource__completableFutureWithCompletionToken:self->completionSource.token];
+        self->future = [TOCFuture _ForSource_completableFutureWithCompletionToken:self->completionSource.token];
     }
     return self;
 }
@@ -215,7 +215,7 @@
 -(bool) trySetResult:(id)finalResult {
     // automatic flattening
     if ([finalResult isKindOfClass:[TOCFuture class]]) {
-        if (![future __ForSource__tryStartFutureSet]) return false;
+        if (![future _ForSource_tryStartFutureSet]) return false;
         
         // optimize self-dependence into immortality
         if (finalResult == future) {
@@ -224,17 +224,17 @@
         }
         
         [(TOCFuture*)finalResult finallyDo:^(TOCFuture *completed) {
-            [future __ForSource__forceFinishFutureSet:completed];
+            [future _ForSource_forceFinishFutureSet:completed];
             [completionSource cancel];
         } unless:nil];
         
         return true;
     }
     
-    return [future __ForSource__trySet:finalResult succeeded:true] && [completionSource tryCancel];
+    return [future _ForSource_trySet:finalResult succeeded:true] && [completionSource tryCancel];
 }
 -(bool) trySetFailure:(id)finalFailure {
-    return [future __ForSource__trySet:finalFailure succeeded:false] && [completionSource tryCancel];
+    return [future _ForSource_trySet:finalFailure succeeded:false] && [completionSource tryCancel];
 }
 
 -(void) forceSetResult:(id)finalResult {
