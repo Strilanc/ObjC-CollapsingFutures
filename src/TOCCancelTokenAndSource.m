@@ -130,7 +130,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
     }
     
     settledHandler(state);
-    return ^{};
+    return nil;
 }
 
 -(void) whenCancelledDo:(TOCCancelHandler)cancelHandler
@@ -159,7 +159,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
     __block Remover removeHandlerFromOtherToSelf = nil;
     Remover onSecondCallRemoveHandlerFromOtherToSelf = ^{
         if (OSAtomicIncrement32Barrier(&callCount) == 1) return;
-        assert(removeHandlerFromOtherToSelf != nil);
+        if (removeHandlerFromOtherToSelf == nil) return; // only occurs when the handler was already run and discarded anyways
         removeHandlerFromOtherToSelf();
         removeHandlerFromOtherToSelf = nil;
     };
@@ -172,6 +172,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
         onSecondCallRemoveHandlerFromOtherToSelf();
     }];
     removeHandlerFromOtherToSelf = [unlessCancelledToken __removable_whenSettledDo:^(int finalState) {
+        if (removeHandlerFromSelfToOther == nil) return; // only occurs when the handler was already run and discarded anyways
         removeHandlerFromSelfToOther();
         removeHandlerFromSelfToOther = nil;
     }];
