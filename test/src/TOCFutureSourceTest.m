@@ -46,7 +46,8 @@
     test([[f forceGetFailure] isEqual:@"X"]);
     testThrows([f forceGetResult]);
     test([f description] != nil);
-    
+    test(f.state == TOCFutureState_Failed);
+
     testDoesNotHitTarget([f thenDo:^(id result) { hitTarget; }]);
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
@@ -65,7 +66,8 @@
     test([[f forceGetResult] isEqual:@"X"]);
     testThrows([f forceGetFailure]);
     test([f description] != nil);
-    
+    test(f.state == TOCFutureState_CompletedWithResult);
+
     testHitsTarget([f thenDo:^(id result) { hitTarget; }]);
     testDoesNotHitTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
@@ -83,7 +85,8 @@
     testThrows([f forceGetResult]);
     testThrows([f forceGetFailure]);
     test([f description] != nil);
-    
+    test(f.state == TOCFutureState_StillCompletable);
+
     testDoesNotHitTarget([f thenDo:^(id result) { hitTarget; }]);
     testDoesNotHitTarget([f catchDo:^(id result) { hitTarget; }]);
     testDoesNotHitTarget([f finallyDo:^(id result) { hitTarget; }]);
@@ -103,6 +106,7 @@
     test([[f forceGetFailure] isEqual:@"X"]);
     testThrows([f forceGetResult]);
     test([f description] != nil);
+    test(f.state == TOCFutureState_Failed);
     
     testDoesNotHitTarget([f thenDo:^(id result) { hitTarget; }]);
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
@@ -122,6 +126,7 @@
     test([[f forceGetResult] isEqual:@"X"]);
     testThrows([f forceGetFailure]);
     test([f description] != nil);
+    test(f.state == TOCFutureState_CompletedWithResult);
     
     testHitsTarget([f thenDo:^(id result) { hitTarget; }]);
     testDoesNotHitTarget([f catchDo:^(id result) { hitTarget; }]);
@@ -141,6 +146,7 @@
     testThrows([f forceGetResult]);
     testThrows([f forceGetFailure]);
     test([f description] != nil);
+    test(f.state == TOCFutureState_StillCompletable);
     
     testDoesNotHitTarget([f thenDo:^(id result) { hitTarget; }]);
     testDoesNotHitTarget([f catchDo:^(id result) { hitTarget; }]);
@@ -148,6 +154,17 @@
     test([[f then:^(id result) { return @2; }] isIncomplete]);
     test([[f catch:^(id result) { return @3; }] isIncomplete]);
     test([[f finally:^(id result) { return @4; }]isIncomplete]);
+}
+-(void)testImmortalFutureFromSource {
+    TOCFuture* f;
+    @autoreleasepool {
+        f = [TOCFutureSource new].future;
+    }
+    
+    test(f.state == TOCFutureState_EternallyIncomplete);
+    test(f.isIncomplete);
+    test(!f.hasFailed);
+    test(!f.hasResult);
 }
 
 -(void)testCyclicCollapsedFutureIsIncomplete {

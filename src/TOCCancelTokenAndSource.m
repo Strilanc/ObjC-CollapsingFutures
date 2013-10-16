@@ -17,7 +17,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
 +(void) initialize {
     SharedCancelledToken = [TOCCancelToken new];
     SharedCancelledToken->_state = TOCCancelTokenState_Cancelled;
-
+    
     SharedImmortalToken = [TOCCancelToken new];
     assert(SharedImmortalToken->_state == TOCCancelTokenState_Immortal); // default state should be immortal
 }
@@ -47,7 +47,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
         settledHandlersSnapshot = [_removableSettledHandlers copy];
         [_removableSettledHandlers removeAllObjects];
         _removableSettledHandlers = nil;
-
+        
         _cancelHandlers = nil;
     }
     
@@ -65,7 +65,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
         
         cancelHandlersSnapshot = _cancelHandlers;
         _cancelHandlers = nil;
-
+        
         // need to copy+clear settled handlers, instead of just nil-ing the ref, because indirect references to it escape and may be kept alive indefinitely
         settledHandlersSnapshot = [_removableSettledHandlers copy];
         [_removableSettledHandlers removeAllObjects];
@@ -116,7 +116,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
             SettledHandler singleCopyOfHandler = [settledHandler copy];
             
             [_removableSettledHandlers addObject:singleCopyOfHandler];
-
+            
             return ^{
                 @synchronized(self) {
                     [_removableSettledHandlers removeObject:singleCopyOfHandler];

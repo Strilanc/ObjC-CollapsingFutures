@@ -18,6 +18,7 @@
     test([[f forceGetFailure] isEqual:@"X"]);
     testThrows([f forceGetResult]);
     test([f description] != nil);
+    test(f.state == TOCFutureState_Failed);
 
     // redundant check of continuations all in one place
     testDoesNotHitTarget([f thenDo:^(id result) { hitTarget; }]);
@@ -36,6 +37,7 @@
     test([[f forceGetResult] isEqual:@"X"]);
     testThrows([f forceGetFailure]);
     test([f description] != nil);
+    test(f.state == TOCFutureState_CompletedWithResult);
     
     // redundant check of continuations all in one place
     testHitsTarget([f thenDo:^(id result) { hitTarget; }]);

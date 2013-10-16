@@ -20,34 +20,40 @@
     [s cancel];
     test([c isAlreadyCancelled]);
     test(![c canStillBeCancelled]);
+    test(c.state == TOCCancelTokenState_Cancelled);
 }
 -(void) testCancelTokenSourceTryCancel {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
     TOCCancelToken* c = s.token;
     test([c canStillBeCancelled]);
     test(![c isAlreadyCancelled]);
+    test(c.state == TOCCancelTokenState_StillCancellable);
     
     test([s tryCancel]);
     test([c isAlreadyCancelled]);
     test(![c canStillBeCancelled]);
+    test(c.state == TOCCancelTokenState_Cancelled);
     
     test(![s tryCancel]);
     test([c isAlreadyCancelled]);
     test(![c canStillBeCancelled]);
+    test(c.state == TOCCancelTokenState_Cancelled);
 }
 -(void) testImmortalCancelToken {
     TOCCancelToken* c = [TOCCancelToken immortalToken];
     test(![c canStillBeCancelled]);
     test(![c isAlreadyCancelled]);
+    test(c.state == TOCCancelTokenState_Immortal);
     
-    [c whenCancelledDo:^{
-        test(false);
-    }];
+    testDoesNotHitTarget([c whenCancelledDo:^{
+        hitTarget;
+    }]);
 }
 -(void) testCancelledCancelToken {
     TOCCancelToken* c = [TOCCancelToken cancelledToken];
     test(![c canStillBeCancelled]);
     test([c isAlreadyCancelled]);
+    test(c.state == TOCCancelTokenState_Cancelled);
     
     __block bool hit = false;
     [c whenCancelledDo:^{
@@ -74,8 +80,7 @@
     }
     
     test(d.lostTokenCount == 1);
-    test(![c isAlreadyCancelled]);
-    test(![c canStillBeCancelled]);
+    test(c.state == TOCCancelTokenState_Immortal);
 }
 -(void) testConditionalCancelCallback {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
@@ -125,10 +130,8 @@
     }
     
     test(d.lostTokenCount == 2);
-    test(![c1 isAlreadyCancelled]);
-    test(![c1 canStillBeCancelled]);
-    test(![c2 isAlreadyCancelled]);
-    test(![c2 canStillBeCancelled]);
+    test(c1.state == TOCCancelTokenState_Immortal);
+    test(c2.state == TOCCancelTokenState_Immortal);
 }
 -(void) testConditionalCancelCallbackCanDeallocOnCancel {
     DeallocCounter* d = [DeallocCounter new];

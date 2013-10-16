@@ -10,15 +10,10 @@ enum TOCCancelTokenState {
      * The cancel token is not cancelled and will never be cancelled.
      *
      * @discussion All 'whenCancelledDo' handlers given to tokens in this state will be discarded without being run.
+     *
+     * A token becomes immortal when its source is deallocated without having cancelled the token.
      */
     TOCCancelTokenState_Immortal = 0, // note: immortal must be the default (0), to ensure nil acts like an immortal token when you get its state
-
-    /*!
-     * The cancel token is already cancelled.
-     *
-     * @discussion All 'whenCancelledDo' handlers given to tokens in this state will be run inline.
-     */
-    TOCCancelTokenState_Cancelled = 1,
 
     /*!
      * The cancel token is not cancelled, but may become cancelled (or immortal).
@@ -29,7 +24,14 @@ enum TOCCancelTokenState {
      * Note that the state of a token that can still be cancelled is volatile.
      * While you checked that a token was still cancellable, it may have already transitioned to being cancelled or immortal.
      */
-    TOCCancelTokenState_StillCancellable = 2
+    TOCCancelTokenState_StillCancellable = 1,
+
+    /*!
+     * The cancel token is already cancelled.
+     *
+     * @discussion All 'whenCancelledDo' handlers given to tokens in this state will be run inline.
+     */
+    TOCCancelTokenState_Cancelled = 2
 };
 
 /*!

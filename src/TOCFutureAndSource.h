@@ -1,6 +1,60 @@
 #import <Foundation/Foundation.h>
 #import "TOCCancelTokenAndSource.h"
 
+/*!
+ * The states that a future can be in.
+ */
+enum TOCFutureState {
+    /*!
+     * The future has not completed or failed.
+     * It will never complete or fail.
+     *
+     * @discussion Eternally incomplete futures are stable and unchanging.
+     * They are guaranteed to remain incomplete until deallocated.
+     *
+     * All completion continuations/handlers given to futures in this state will be discarded without being run.
+     *
+     * A future becomes eternally incomplete when its source is deallocated without having set the future.
+     */
+    TOCFutureState_EternallyIncomplete = 0,
+
+    /*!
+     * The future has not completed or failed, yet.
+     *
+     * @discussion All completion continuations/handlers given to futures in this state will be stored.
+     * They will be run when the future completes or fails. or they will be discarded when the future becomes eternally incomplete.
+     *
+     * Note that the state of a future that can still be completed is volatile.
+     * While you checked that a future could still be completed, it may have already transitioned to being completed, failed, or eternally incomplete.
+     *
+     * A future may still be incomplete after its source has set the future's result, when the result is itself a future.
+     * Until the future used as the result has finished, the future being set is considered completable.
+     */
+    TOCFutureState_StillCompletable = 1,
+    
+    /*!
+     * The future has completed with a result.
+     *
+     * @discussion Completed futures are stable and unchanging.
+     * They are guaranteed to remain completed with the same result until deallocated.
+     *
+     * All completion continuations/handlers given to futures in this state will be run immediately.
+     * (Except failure handlers, which will of course be immediately discared instead of being run.)
+     */
+    TOCFutureState_CompletedWithResult = 2,
+
+    /*!
+     * The future has failed.
+     *
+     * @discussion Failed futures are stable and unchanging.
+     * They are guaranteed to remain failed with the same failure value until deallocated.
+     *
+     * All completion continuations/handlers given to futures in this state will be run immediately.
+     * (Except failure handlers, which will of course be immediately discared instead of being run.)
+     */
+    TOCFutureState_Failed = 3
+};
+
 @class TOCFuture;
 
 /*!
@@ -94,7 +148,17 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 -(TOCCancelToken*) cancelledOnCompletionToken;
 
 /*!
+ * Returns the current state of the receiving future: completed-with-result, failed, still-completable, or eternally-incomplete.
+ *
+ * @discussion Note that the state of a future that can still be completed is volatile.
+ * While you checked that the future was still completable, it may have already transitioned to being completed-with-result, failed, or eternally-incomplete.
+ */
+-(enum TOCFutureState) state;
+
+/*!
  * Determines if the receiving future has not yet completed or failed.
+ *
+ * @discussion Futures in both the StillCompletable and EternallyIncomplete states are considered incomplete.
  */
 -(bool)isIncomplete;
 
