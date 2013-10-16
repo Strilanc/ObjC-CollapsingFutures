@@ -8,6 +8,11 @@
 
 @implementation TOCFutureMoreContinuationsTest
 
+-(void)testFinallyDo_Immediate {
+    testDoesNotHitTarget([[TOCFutureSource new].future finallyDo:^(TOCFuture* completed) { hitTarget; }]);
+    testHitsTarget([[TOCFuture futureWithResult:@7] finallyDo:^(TOCFuture* completed) { testFutureHasResult(completed, @7); hitTarget; }]);
+    testHitsTarget([[TOCFuture futureWithFailure:@8] finallyDo:^(TOCFuture* completed) { testFutureHasFailure(completed, @8); hitTarget; }]);
+}
 -(void)testFinallyDo_DeferredResult {
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
@@ -21,6 +26,11 @@
     testHitsTarget([s trySetFailure:@"X"]);
 }
 
+-(void)testThenDo_Immediate {
+    testDoesNotHitTarget([[TOCFutureSource new].future thenDo:^(id result) { hitTarget; }]);
+    testHitsTarget([[TOCFuture futureWithResult:@7] thenDo:^(id result) { test([result isEqual:@7]); hitTarget; }]);
+    testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] thenDo:^(id result) { hitTarget; }]);
+}
 -(void)testThenDo_DeferredResult {
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
@@ -34,6 +44,11 @@
     testDoesNotHitTarget([s trySetFailure:@"X"]);
 }
 
+-(void)testCatchDo_Immediate {
+    testDoesNotHitTarget([[TOCFutureSource new].future catchDo:^(id failure) { hitTarget; }]);
+    testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catchDo:^(id failure) { hitTarget; }]);
+    testHitsTarget([[TOCFuture futureWithFailure:@8] catchDo:^(id failure) { test([failure isEqual:@8]); hitTarget; }]);
+}
 -(void)testCatchDo_DeferredResult {
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
