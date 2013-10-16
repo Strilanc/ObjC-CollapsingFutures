@@ -13,7 +13,7 @@
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
-    dispatch_async(queue, ^{ [resultSource trySetResult:operation()]; });
+    dispatch_async(queue, ^{ [resultSource forceSetResult:operation()]; });
     
     return resultSource.future;
 }
@@ -24,7 +24,7 @@
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
 
-    [VoidBlock performBlock:^{ [resultSource trySetResult:operation()]; }
+    [VoidBlock performBlock:^{ [resultSource forceSetResult:operation()]; }
                    onThread:thread];
     
     return resultSource.future;
