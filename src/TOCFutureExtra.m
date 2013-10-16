@@ -3,6 +3,10 @@
 
 @implementation TOCFuture (TOCFutureExtra)
 
+-(bool)hasFailedWithCancel {
+    return [self hasFailed] && [[self forceGetFailure] isKindOfClass:[TOCCancelToken class]];
+}
+
 +(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
                           dispatchedOnQueue:(dispatch_queue_t)queue {
     require(operation != nil);

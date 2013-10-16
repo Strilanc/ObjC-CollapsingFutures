@@ -1,7 +1,6 @@
 #import <SenTestingKit/SenTestingKit.h>
 
-#import "TOCFutureAndSource.h"
-#import "TOCFutureMoreContinuations.h"
+#import "TwistedOakCollapsingFutures.h"
 #import "TestUtil.h"
 
 @interface TOCFutureTest : SenTestCase
@@ -105,9 +104,9 @@
     testDoesNotHitTarget([[TOCFutureSource new].future finally:^id(TOCFuture* completed) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { hitTarget; return nil; } unless:c.token]);
-    testFutureHasFailure([[TOCFutureSource new].future finally:^id(TOCFuture* completed) { return @1; } unless:c.token], c.token);
-    testFutureHasFailure([[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { return @2; } unless:c.token], c.token);
-    testFutureHasFailure([[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { return @3; } unless:c.token], c.token);
+    test([[[TOCFutureSource new].future finally:^id(TOCFuture* completed) { return @1; } unless:c.token] hasFailedWithCancel]);
+    test([[[TOCFuture futureWithResult:@7] finally:^id(TOCFuture* completed) { return @2; } unless:c.token] hasFailedWithCancel]);
+    test([[[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture* completed) { return @3; } unless:c.token] hasFailedWithCancel]);
 }
 
 -(void)testThenDoUnless_Immediate {
@@ -146,9 +145,9 @@
     testDoesNotHitTarget([[TOCFutureSource new].future then:^id(id result) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] then:^id(id result) { hitTarget; return nil; } unless:c.token]);
-    testFutureHasFailure([[TOCFutureSource new].future then:^id(id result) { return @1; } unless:c.token], c.token);
-    testFutureHasFailure([[TOCFuture futureWithResult:@7] then:^id(id result) { return @2; } unless:c.token], c.token);
-    testFutureHasFailure([[TOCFuture futureWithFailure:@8] then:^id(id result) { return @3; } unless:c.token], c.token);
+    test([[[TOCFutureSource new].future then:^id(id result) { return @1; } unless:c.token] hasFailedWithCancel]);
+    test([[[TOCFuture futureWithResult:@7] then:^id(id result) { return @2; } unless:c.token] hasFailedWithCancel]);
+    test([[[TOCFuture futureWithFailure:@8] then:^id(id result) { return @3; } unless:c.token] hasFailedWithCancel]);
 }
 
 -(void)testCatchDoUnless_Immediate {
@@ -187,9 +186,9 @@
     testDoesNotHitTarget([[TOCFutureSource new].future catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
-    testFutureHasFailure([[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:c.token], c.token);
-    testFutureHasFailure([[TOCFuture futureWithResult:@7] catch:^id(id failure) { return @2; } unless:c.token], c.token);
-    testFutureHasFailure([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { return @3; } unless:c.token], c.token);
+    test([[[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:c.token] hasFailedWithCancel]);
+    test([[[TOCFuture futureWithResult:@7] catch:^id(id failure) { return @2; } unless:c.token] hasFailedWithCancel]);
+    test([[[TOCFuture futureWithFailure:@8] catch:^id(id failure) { return @3; } unless:c.token] hasFailedWithCancel]);
 }
 
 @end

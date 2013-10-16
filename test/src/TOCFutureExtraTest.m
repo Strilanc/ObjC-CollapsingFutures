@@ -83,4 +83,13 @@
     test([f isIncomplete]);
 }
 
+-(void)testHasFailedWithCancel {
+    test(![[TOCFutureSource new].future hasFailedWithCancel]);
+    test(![[TOCFuture futureWithResult:@0] hasFailedWithCancel]);
+    test(![[TOCFuture futureWithResult:[TOCCancelToken cancelledToken]] hasFailedWithCancel]);
+    test(![[TOCFuture futureWithFailure:@0] hasFailedWithCancel]);
+    
+    test([[TOCFuture futureWithFailure:[TOCCancelToken cancelledToken]] hasFailedWithCancel]);
+}
+
 @end
