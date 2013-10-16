@@ -27,9 +27,9 @@
     return future;
 }
 
-+(TOCFuture*) __ForSource__completableFuture:(TOCCancelToken*)token {
++(TOCFuture*) __ForSource__completableFutureWithCompletionToken:(TOCCancelToken*)completionToken {
     TOCFuture* future = [TOCFuture new];
-    future->completionToken = token;
+    future->completionToken = completionToken;
     return future;
 }
 
@@ -194,7 +194,7 @@
     self = [super init];
     if (self) {
         self->completionSource = [TOCCancelTokenSource new];
-        self->future = [TOCFuture __ForSource__completableFuture:self->completionSource.token];
+        self->future = [TOCFuture __ForSource__completableFutureWithCompletionToken:self->completionSource.token];
     }
     return self;
 }

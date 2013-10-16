@@ -9,22 +9,29 @@
 typedef void (^Remover)(void);
 typedef void (^SettledHandler)(int state);
 
+static TOCCancelToken* SharedCancelledToken = nil;
+static TOCCancelToken* SharedImmortalToken = nil;
+
 @implementation TOCCancelToken {
 @private NSMutableArray* cancelHandlers;
 @private NSMutableSet* removableSettledHandlers; // run when the token is cancelled or immortal
 @private int state;
 }
 
++(void) initialize {
+    SharedCancelledToken = [TOCCancelToken new];
+    SharedCancelledToken->state = TOKEN_STATE_CANCELLED;
+
+    SharedImmortalToken = [TOCCancelToken new];
+    assert(SharedImmortalToken->state == TOKEN_STATE_IMMORTAL); // default state should be immortal
+}
+
 +(TOCCancelToken *)cancelledToken {
-    TOCCancelToken* token = [TOCCancelToken new];
-    token->state = TOKEN_STATE_CANCELLED;
-    return token;
+    return SharedCancelledToken;
 }
 
 +(TOCCancelToken *)immortalToken {
-    TOCCancelToken* token = [TOCCancelToken new];
-    assert(token->state == TOKEN_STATE_IMMORTAL); // default state should be immortal
-    return token;
+    return SharedImmortalToken;
 }
 
 +(TOCCancelToken*) __ForSource_cancellableToken {
