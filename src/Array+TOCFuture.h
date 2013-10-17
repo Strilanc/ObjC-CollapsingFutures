@@ -119,6 +119,6 @@
  *
  * @see TOCAsyncOperationWithResultLastingUntilCancelled
  */
--(TOCFuture*) asyncRaceOperationsWithWinnerLastingUntil:(TOCCancelToken*)untilCancelledToken;
+-(TOCFuture*) asyncRaceOperationsWithWinningResultLastingUntil:(TOCCancelToken*)untilCancelledToken;
 
 @end

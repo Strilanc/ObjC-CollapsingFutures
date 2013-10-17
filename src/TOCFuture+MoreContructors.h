@@ -1,8 +1,23 @@
 #import <Foundation/Foundation.h>
 #import "TOCFutureAndSource.h"
 #import "TOCFutureTypeDefs.h"
+#import "TOCTimeout.h"
 
 @interface TOCFuture (MoreConstructors)
+
+/**
+ * Returns a future that has already failed with a timeout failure.
+ *
+ * A timeout failure is just an instance of TOCTimeout.
+ */
++(TOCFuture*) futureWithTimeoutFailure;
+
+/**
+ * Returns a future that has already failed with a cancellation failure.
+ *
+ * A cancellation failure is just an instance of TOCCancelToken.
+ */
++(TOCFuture*) futureWithCancelFailure;
 
 /*!
  * Returns a future that completes with the value returned by a function run via grand central dispatch.
@@ -107,9 +122,9 @@
  * This method is unable to forward its result before the given asynchronous operation confirms it was cancelled (by cancelling the future it returned).
  * Otherwise it would be possible to leak a result that needed to be cleaned up, due to the operation's completion racing with timing out.
  */
-+(TOCFuture*) futureWithResultFromAsyncOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
-                                     withTimeout:(NSTimeInterval)timeoutPeriodInSeconds
-                                          unless:(TOCCancelToken*)unlessCancelledToken;
++(TOCFuture*) futureWithResultFromAsyncCancellableOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
+                                                withTimeout:(NSTimeInterval)timeoutPeriodInSeconds
+                                                     unless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Returns a future for the eventual result of an asynchronous operation, unless the operation times out.
@@ -130,7 +145,7 @@
  * This method is unable to forward its result before the given asynchronous operation confirms it was cancelled due to the timeout (by cancelling the future it returned).
  * Otherwise it would be possible to leak a result that needed to be cleaned up, due to the operation's completion racing with timing out.
  */
-+(TOCFuture*) futureWithResultFromAsyncOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
-                                     withTimeout:(NSTimeInterval)timeoutPeriodInSeconds;
++(TOCFuture*) futureWithResultFromAsyncCancellableOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
+                                                withTimeout:(NSTimeInterval)timeoutPeriodInSeconds;
 
 @end

@@ -194,6 +194,11 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 -(bool)hasFailedWithCancel;
 
 /*!
+ * Determines if the receiving future has failed with a TOCTimeout instance as its failure value.
+ */
+-(bool)hasFailedWithTimeout;
+
+/*!
  * Returns the receiving future's result, unless it doesn't have one in which case an exception is raised.
  *
  * @pre hasResult must be true
@@ -444,5 +449,21 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * @discussion If the receiving future source has already been set, this method has no effect but raises an exception.
  */
 -(void) forceSetFailedWithCancel;
+
+/*!
+ * Attempts to make the receiving source's future fail with an instance of TOCTimeout as its failure value.
+ *
+ * @result True when the future was successfully set, false when the future was already set.
+ *
+ * @discussion If the receiving future source has already been set, this method has no effect (and returns false).
+ */
+-(bool) trySetFailedWithTimeout;
+
+/*!
+ * Forces the receiving future source to fail with an instance of TOCTimeout as its failure value.
+ *
+ * @discussion If the receiving future source has already been set, this method has no effect but raises an exception.
+ */
+-(void) forceSetFailedWithTimeout;
 
 @end

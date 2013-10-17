@@ -271,6 +271,7 @@
     test([f trySetFailedWithCancel]);
     test(f.future.state == TOCFutureState_Failed);
     test(f.future.hasFailedWithCancel);
+    test([f.future.forceGetFailure isKindOfClass:[TOCCancelToken class]]);
     
     test(![f trySetFailedWithCancel]);
     test(f.future.state == TOCFutureState_Failed);
@@ -283,10 +284,38 @@
     [f forceSetFailedWithCancel];
     test(f.future.state == TOCFutureState_Failed);
     test(f.future.hasFailedWithCancel);
+    test([f.future.forceGetFailure isKindOfClass:[TOCCancelToken class]]);
     
     testThrows([f forceSetFailedWithCancel]);
     test(f.future.state == TOCFutureState_Failed);
     test(f.future.hasFailedWithCancel);
+}
+
+-(void) testTrySetFailedWithTimeout {
+    TOCFutureSource* f = [TOCFutureSource new];
+    test(f.future.state == TOCFutureState_AbleToBeSet);
+    
+    test([f trySetFailedWithTimeout]);
+    test(f.future.state == TOCFutureState_Failed);
+    test(f.future.hasFailedWithTimeout);
+    test([f.future.forceGetFailure isKindOfClass:[TOCTimeout class]]);
+    
+    test(![f trySetFailedWithTimeout]);
+    test(f.future.state == TOCFutureState_Failed);
+    test(f.future.hasFailedWithTimeout);
+}
+-(void) testForceSetFailedWithTimeout {
+    TOCFutureSource* f = [TOCFutureSource new];
+    test(f.future.state == TOCFutureState_AbleToBeSet);
+    
+    [f forceSetFailedWithTimeout];
+    test(f.future.state == TOCFutureState_Failed);
+    test(f.future.hasFailedWithTimeout);
+    test([f.future.forceGetFailure isKindOfClass:[TOCTimeout class]]);
+    
+    testThrows([f forceSetFailedWithTimeout]);
+    test(f.future.state == TOCFutureState_Failed);
+    test(f.future.hasFailedWithTimeout);
 }
 
 @end

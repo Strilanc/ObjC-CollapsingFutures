@@ -1,5 +1,6 @@
 #import "TOCFutureAndSource.h"
 #import "TOCInternal.h"
+#import "TOCTimeout.h"
 
 @implementation TOCFuture {
 @private id _value;
@@ -104,6 +105,9 @@
 }
 -(bool)hasFailedWithCancel {
     return self.hasFailed && [self.forceGetFailure isKindOfClass:[TOCCancelToken class]];
+}
+-(bool)hasFailedWithTimeout {
+    return self.hasFailed && [self.forceGetFailure isKindOfClass:[TOCTimeout class]];
 }
 -(id)forceGetResult {
     force(self.hasResult);
@@ -246,6 +250,9 @@
 -(bool) trySetFailedWithCancel {
     return [self trySetFailure:TOCCancelToken.cancelledToken];
 }
+-(bool) trySetFailedWithTimeout {
+    return [self trySetFailure:[TOCTimeout new]];
+}
 
 -(void) forceSetResult:(id)finalResult {
     force([self trySetResult:finalResult]);
@@ -255,6 +262,9 @@
 }
 -(void) forceSetFailedWithCancel {
     force([self trySetFailedWithCancel]);
+}
+-(void) forceSetFailedWithTimeout {
+    force([self trySetFailedWithTimeout]);
 }
 
 -(NSString*) description {

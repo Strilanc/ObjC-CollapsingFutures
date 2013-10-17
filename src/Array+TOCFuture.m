@@ -77,7 +77,7 @@
     return [resultSources map:^(TOCFutureSource* source) { return source.future; }];
 }
 
--(TOCFuture*) asyncRaceOperationsWithWinnerLastingUntil:(TOCCancelToken*)untilCancelledToken {
+-(TOCFuture*) asyncRaceOperationsWithWinningResultLastingUntil:(TOCCancelToken*)untilCancelledToken {
     NSArray* starters = [self copy]; // remove volatility (i.e. ensure not externally mutable)
     require(starters.count > 0);
     require([starters allItemsAreKindOfClass:NSClassFromString(@"NSBlock")]);
