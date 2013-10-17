@@ -282,7 +282,7 @@
     TOCFutureSource* d = [TOCFutureSource new];
     [s.token whenCancelledTryCancelFutureSource:d];
     test(s.token.state == TOCCancelTokenState_StillCancellable);
-    test(d.future.state == TOCFutureState_StillCompletable);
+    test(d.future.state == TOCFutureState_AbleToBeSet);
     
     [s cancel];
     test(s.token.state == TOCCancelTokenState_Cancelled);
@@ -293,7 +293,7 @@
     TOCFutureSource* d = [TOCFutureSource new];
     [s.token whenCancelledTryCancelFutureSource:d];
     test(s.token.state == TOCCancelTokenState_StillCancellable);
-    test(d.future.state == TOCFutureState_StillCompletable);
+    test(d.future.state == TOCFutureState_AbleToBeSet);
     
     [d trySetResult:nil];
     test(s.token.state == TOCCancelTokenState_StillCancellable);

@@ -42,9 +42,10 @@
 }
 -(void) _ForSource_forceFinishFutureSet:(TOCFuture*)finalValue {
     require(finalValue != nil);
-    require([self _trySet:finalValue->_value
-                succeeded:finalValue->_ifDoneHasSucceeded
-               isUnwiring:true]);
+    bool flatteningFutureSucceeded = [self _trySet:finalValue->_value
+                                         succeeded:finalValue->_ifDoneHasSucceeded
+                                        isUnwiring:true];
+    force(flatteningFutureSucceeded);
 }
 -(bool) _ForSource_trySet:(id)finalValue
                 succeeded:(bool)succeeded {
@@ -79,11 +80,17 @@
             return _ifDoneHasSucceeded ? TOCFutureState_CompletedWithResult : TOCFutureState_Failed;
             
         case TOCCancelTokenState_Immortal:
-            return TOCFutureState_EternallyIncomplete;
+            return TOCFutureState_Immortal;
             
-        default:
-            require(completionState == TOCCancelTokenState_StillCancellable);
-            return TOCFutureState_StillCompletable;
+        case TOCCancelTokenState_StillCancellable:
+            @synchronized(self) {
+                return _hasBeenSet ? TOCFutureState_Flattening : TOCFutureState_AbleToBeSet;
+            }
+            
+        default: {
+            bool completionStateIsRecognized = false;
+            force(completionStateIsRecognized);
+        }
     }
 }
 -(bool)isIncomplete {
@@ -99,11 +106,11 @@
     return self.hasFailed && [self.forceGetFailure isKindOfClass:[TOCCancelToken class]];
 }
 -(id)forceGetResult {
-    require(self.hasResult);
+    force(self.hasResult);
     return _value;
 }
 -(id)forceGetFailure {
-    require(self.hasFailed);
+    force(self.hasFailed);
     return _value;
 }
 
@@ -152,7 +159,8 @@
     return resultSource.future;
 }
 
--(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation unless:(TOCCancelToken *)unlessCancelledToken {
+-(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation
+            unless:(TOCCancelToken *)unlessCancelledToken {
     require(resultContinuation != nil);
     
     return [self finally:^id(TOCFuture *completed) {
@@ -178,21 +186,19 @@
 }
 
 -(NSString*) description {
-    @synchronized(self) {
-        enum TOCCancelTokenState completionState = _completionToken.state;
-        
-        if (completionState == TOCCancelTokenState_Immortal) {
+    switch (self.state) {
+        case TOCFutureState_CompletedWithResult:
+            return [NSString stringWithFormat:@"Future with Result: %@", _value];
+        case TOCFutureState_Failed:
+            return [NSString stringWithFormat:@"Future with Failure: %@", _value];
+        case TOCFutureState_Flattening:
+            return @"Incomplete Future [Flattening Result]";
+        case TOCFutureState_Immortal:
             return @"Incomplete Future [Eternal]";
-        }
-        
-        if (completionState == TOCCancelTokenState_StillCancellable) {
-            if (_hasBeenSet) return @"Incomplete Future [Set]";
+        case TOCFutureState_AbleToBeSet:
             return @"Incomplete Future";
-        }
-        
-        return [NSString stringWithFormat:@"Future with %@: %@",
-                _ifDoneHasSucceeded ? @"Result" : @"Failure",
-                _value];
+        default:
+            return @"Future in an unrecognized state";
     }
 }
 
@@ -242,13 +248,13 @@
 }
 
 -(void) forceSetResult:(id)finalResult {
-    require([self trySetResult:finalResult]);
+    force([self trySetResult:finalResult]);
 }
 -(void) forceSetFailure:(id)finalFailure {
-    require([self trySetFailure:finalFailure]);
+    force([self trySetFailure:finalFailure]);
 }
 -(void) forceSetFailedWithCancel {
-    require([self trySetFailedWithCancel]);
+    force([self trySetFailedWithCancel]);
 }
 
 -(NSString*) description {

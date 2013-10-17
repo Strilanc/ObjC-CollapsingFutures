@@ -3,7 +3,13 @@
 #define require(expr) \
     if (!(expr)) \
         @throw([NSException exceptionWithName:NSInvalidArgumentException \
-                                       reason:[NSString stringWithFormat:@"Precondition failed: require(%@)", (@#expr)] \
+                                       reason:[NSString stringWithFormat:@"A precondition ( require(%@) ) was not satisfied. ", (@#expr)] \
+                                     userInfo:nil])
+
+#define force(expr) \
+    if (!(expr)) \
+        @throw([NSException exceptionWithName:NSInternalInconsistencyException \
+                                       reason:[NSString stringWithFormat:@"A forced operation ( force(%@) ) failed to succeed.", (@#expr)] \
                                      userInfo:nil])
 
 @interface VoidBlock : NSObject { @public void (^block)(void); }

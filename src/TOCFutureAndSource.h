@@ -9,17 +9,21 @@ enum TOCFutureState {
      * The future has not completed or failed.
      * It will never complete or fail.
      *
-     * @discussion Eternally incomplete futures are stable and unchanging.
+     * @discussion Immortal futures eternally incomplete.
+     * They are stable and unchanging.
      * They are guaranteed to remain incomplete until deallocated.
      *
      * All completion continuations/handlers given to futures in this state will be discarded without being run.
      *
-     * A future becomes eternally incomplete when its source is deallocated without having set the future.
+     * A future becomes immortal when its source is deallocated without having set the future.
+     *
+     * A future can also become immortal due to a flattening cycle being detected, such as when a future is set to be its own result.
      */
-    TOCFutureState_EternallyIncomplete = 0,
+    TOCFutureState_Immortal = 0,
 
     /*!
-     * The future has not completed or failed, yet.
+     * The future's source can still accept a result or failure.
+     * The future is (perhaps temporarily) incomplete.
      *
      * @discussion All completion continuations/handlers given to futures in this state will be stored.
      * They will be run when the future completes or fails. or they will be discarded when the future becomes eternally incomplete.
@@ -27,10 +31,13 @@ enum TOCFutureState {
      * Note that the state of a future that can still be completed is volatile.
      * While you checked that a future could still be completed, it may have already transitioned to being completed, failed, or eternally incomplete.
      *
-     * A future may still be incomplete after its source has set the future's result, when the result is itself a future.
-     * Until the future used as the result has finished, the future being set is considered completable.
+     * AbleToBeSet futures transition to the CompletedWithResult state when their source is given a (non-future) result.
+     *
+     * AbleToBeSet futures transition to the Flattening state when their source is given a result that is itself a future.
+     *
+     * AbleToBeSet futures transition to the Failed state when their source is given a failure.
      */
-    TOCFutureState_StillCompletable = 1,
+    TOCFutureState_AbleToBeSet = 1,
     
     /*!
      * The future has completed with a result.
@@ -52,7 +59,16 @@ enum TOCFutureState {
      * All completion continuations/handlers given to futures in this state will be run immediately.
      * (Except failure handlers, which will of course be immediately discared instead of being run.)
      */
-    TOCFutureState_Failed = 3
+    TOCFutureState_Failed = 3,
+
+    /*!
+     * The future has been set to a result, but that result is a future that is not yet complete.
+     *
+     * @discussion All completion continuations/handlers given to futures in this state will be stored.
+     * They will be run when the future completes or fails, or they will be discarded if the future becomes eternally incomplete.
+     */
+    TOCFutureState_Flattening = 4,
+    
 };
 
 @class TOCFuture;
@@ -360,8 +376,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * Allowed to be nil.
  * Allowed to be a future.
  *
- * @discussion
- * If the receiving future source has already been set, this method has no effect and returns false.
+ * @discussion If the receiving future source has already been set, this method has no effect (and returns false).
  *
  * If the given result is a future and this method succeeds, then the receiving future source will collapse to match the future instead of containing it.
  *
@@ -380,8 +395,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * Allowed to be nil.
  * Allowed to be a future.
  *
- * @discussion
- * If the receiving future source has already been set, this method has no effect and returns false.
+ * @discussion If the receiving future source has already been set, this method has no effect (and returns false).
  *
  * No automatic collapse occurs when the given failure is a future. The receiving future source will just contain a failure that is a future, instead of matching that future.
  */
@@ -394,8 +408,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * Allowed to be nil.
  * Allowed to be a future.
  *
- * @discussion
- * If the receiving future source has already been set, this method has no effect and raises an exception.
+ * @discussion If the receiving future source has already been set, this method has no effect but raises an exception.
  *
  * If the given result is a future and this method succeeds, then the receiving future source will collapse to match the future instead of containing it.
  *
@@ -410,15 +423,26 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * Allowed to be nil.
  * Allowed to be a future.
  *
- * @discussion
- * If the receiving future source has already been set, this method has no effect and raises an exception if it was already set.
+ * @discussion If the receiving future source has already been set, this method has no effect but raises an exception.
  *
  * No automatic collapse occurs when the given failure is a future. The receiving future source will just contain a failure that is a future, instead of matching that future.
  */
 -(void) forceSetFailure:(id)finalFailure;
 
+/*!
+ * Attempts to make the receiving source's future fail with a cancellation token as its failure value.
+ *
+ * @result True when the future was successfully set, false when the future was already set.
+ *
+ * @discussion If the receiving future source has already been set, this method has no effect (and returns false).
+ */
 -(bool) trySetFailedWithCancel;
 
+/*!
+ * Forces the receiving future source to fail with a cancellation token as its failure value.
+ *
+ * @discussion If the receiving future source has already been set, this method has no effect but raises an exception.
+ */
 -(void) forceSetFailedWithCancel;
 
 @end
