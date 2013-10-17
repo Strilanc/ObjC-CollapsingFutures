@@ -192,7 +192,7 @@
         case TOCFutureState_Failed:
             return [NSString stringWithFormat:@"Future with Failure: %@", _value];
         case TOCFutureState_Flattening:
-            return @"Incomplete Future [Flattening Result]";
+            return @"Incomplete Future [Set, Flattening Result]";
         case TOCFutureState_Immortal:
             return @"Incomplete Future [Eternal]";
         case TOCFutureState_AbleToBeSet:

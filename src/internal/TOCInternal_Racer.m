@@ -41,12 +41,14 @@
                 // winner?
                 [futureWinningRacerSource trySetResult:racer];
             } else if (OSAtomicIncrement32(&failedRacerCount) == (int)racers.count) {
+                // prefer to fail with a cancellation over failing with a list of cancellations
+                if (untilCancelledToken.isAlreadyCancelled) return;
+                
                 // everyone is a failure, thus so are we
                 NSArray* allFailures = [racers map:^(Racer* r) { return r.futureResult.forceGetFailure; }];
                 [futureWinningRacerSource trySetFailure:allFailures];
             }
         } unless:untilCancelledToken];
-        
     }
 
     // once there's a winner, cancel the other racers

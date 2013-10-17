@@ -179,10 +179,15 @@ static TOCCancelToken* SharedImmortalToken = nil;
 }
 
 -(NSString*) description {
-    @synchronized(self) {
-        if (_state == TOCCancelTokenState_Immortal) return @"Uncancelled Token (Immortal)";
-        if (_state == TOCCancelTokenState_Cancelled) return @"Cancelled Token";
-        return @"Uncancelled Token";
+    switch (self.state) {
+        case TOCCancelTokenState_Cancelled:
+            return @"Cancelled Token";
+        case TOCCancelTokenState_Immortal:
+             return @"Uncancelled Token (Immortal)";
+        case TOCCancelTokenState_StillCancellable:
+            return @"Uncancelled Token";
+        default:
+            return @"Cancel token in an unrecognized state";
     }
 }
 
