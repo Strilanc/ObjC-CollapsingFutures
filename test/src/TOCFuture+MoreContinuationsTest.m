@@ -1,6 +1,6 @@
 #import <SenTestingKit/SenTestingKit.h>
 
-#import "TOCFutureMoreContinuations.h"
+#import "TOCFuture+MoreContinuations.h"
 #import "TestUtil.h"
 
 @interface TOCFutureMoreContinuationsTest : SenTestCase

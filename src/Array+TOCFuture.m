@@ -1,10 +1,11 @@
-#import "TOCFutureArrayUtil.h"
+#import "Array+TOCFuture.h"
+#import "TOCFuture+MoreContinuations.h"
 #import "TOCInternal.h"
 #import "TOCInternal_Array+Functional.h"
 #import "TOCInternal_Racer.h"
 #include <libkern/OSAtomic.h>
 
-@implementation NSArray (TOCFutureArrayUtil)
+@implementation NSArray (TOCFuture)
 
 -(TOCFuture*) finallyAll {
     return [self finallyAllUnless:nil];

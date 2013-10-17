@@ -1,7 +1,7 @@
 #import "TOCInternal_Racer.h"
 #import "TOCInternal.h"
 #import "TOCInternal_Array+Functional.h"
-#import "TOCFutureMoreContinuations.h"
+#import "TOCFuture+MoreContinuations.h"
 #include <libkern/OSAtomic.h>
 
 @implementation Racer

@@ -1,5 +1,8 @@
 #import <Foundation/Foundation.h>
 
+@class TOCFuture;
+@class TOCCancelToken;
+
 /*!
  * A block that starts an asynchronous operation whose result must be terminated when the given "until"-type cancel token is cancelled.
  *

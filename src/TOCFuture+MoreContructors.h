@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "TOCFutureAndSource.h"
 
-@interface TOCFuture (TOCFutureExtra)
+@interface TOCFuture (MoreConstructors)
 
 /*!
  * Returns a future that completes with the value returned by a function run via grand central dispatch.

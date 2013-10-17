@@ -1,7 +1,7 @@
-#import "TOCFutureExtra.h"
+#import "TOCFuture+MoreContructors.h"
 #import "TOCInternal.h"
 
-@implementation TOCFuture (TOCFutureExtra)
+@implementation TOCFuture (MoreConstructors)
 
 +(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
                           dispatchedOnQueue:(dispatch_queue_t)queue {

@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
-#import "TOCFutureMoreContinuations.h"
+#import "TOCFutureAndSource.h"
 #import "TOCFutureTypeDefs.h"
 
-@interface NSArray (TOCFutureArrayUtil)
+@interface NSArray (TOCFuture)
 
 /*!
  * Returns a future that succeeds with all of the futures in the receiving array, once they have all completed or failed, unless cancelled.

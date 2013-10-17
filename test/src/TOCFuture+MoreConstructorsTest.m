@@ -1,6 +1,6 @@
 #import <SenTestingKit/SenTestingKit.h>
 
-#import "TOCFutureExtra.h"
+#import "TOCFuture+MoreContructors.h"
 #import "TestUtil.h"
 
 @interface TOCFutureExtraTest : SenTestCase
