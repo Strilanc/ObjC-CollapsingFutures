@@ -1,5 +1,5 @@
 #import "TOCFutureAndSource.h"
-#import "Internal.h"
+#import "TOCInternal.h"
 
 @implementation TOCFuture {
 @private id _value;
@@ -95,6 +95,9 @@
 -(bool)hasFailed {
     return self.state == TOCFutureState_Failed;
 }
+-(bool)hasFailedWithCancel {
+    return self.hasFailed && [self.forceGetFailure isKindOfClass:[TOCCancelToken class]];
+}
 -(id)forceGetResult {
     require(self.hasResult);
     return _value;
@@ -144,9 +147,7 @@
     [self finallyDo:^(TOCFuture *completed) {
         [resultSource trySetResult:completionContinuation(completed)];
     } unless:unlessCancelledToken];
-    [unlessCancelledToken whenCancelledDo:^{
-        [resultSource trySetFailure:unlessCancelledToken];
-    } unless:resultSource.future->_completionToken];
+    [unlessCancelledToken whenCancelledTryCancelFutureSource:resultSource];
     
     return resultSource.future;
 }
@@ -236,12 +237,18 @@
 -(bool) trySetFailure:(id)finalFailure {
     return [future _ForSource_trySet:finalFailure succeeded:false] && [completionSource tryCancel];
 }
+-(bool) trySetFailedWithCancel {
+    return [self trySetFailure:TOCCancelToken.cancelledToken];
+}
 
 -(void) forceSetResult:(id)finalResult {
     require([self trySetResult:finalResult]);
 }
 -(void) forceSetFailure:(id)finalFailure {
     require([self trySetFailure:finalFailure]);
+}
+-(void) forceSetFailedWithCancel {
+    require([self trySetFailedWithCancel]);
 }
 
 -(NSString*) description {

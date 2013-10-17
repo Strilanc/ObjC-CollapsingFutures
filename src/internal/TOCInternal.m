@@ -1,4 +1,4 @@
-#import "Internal.h"
+#import "TOCInternal.h"
 
 @implementation VoidBlock
 

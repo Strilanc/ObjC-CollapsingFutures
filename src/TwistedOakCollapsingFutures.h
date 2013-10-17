@@ -3,3 +3,4 @@
 #import "TOCFutureArrayUtil.h"
 #import "TOCFutureExtra.h"
 #import "TOCFutureMoreContinuations.h"
+#import "TOCFutureTypeDefs.h"

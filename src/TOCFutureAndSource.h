@@ -173,6 +173,11 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 -(bool)hasFailed;
 
 /*!
+ * Determines if the receiving future has failed with a cancellation token as its failure value.
+ */
+-(bool)hasFailedWithCancel;
+
+/*!
  * Returns the receiving future's result, unless it doesn't have one in which case an exception is raised.
  *
  * @pre hasResult must be true
@@ -411,5 +416,9 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  * No automatic collapse occurs when the given failure is a future. The receiving future source will just contain a failure that is a future, instead of matching that future.
  */
 -(void) forceSetFailure:(id)finalFailure;
+
+-(bool) trySetFailedWithCancel;
+
+-(void) forceSetFailedWithCancel;
 
 @end

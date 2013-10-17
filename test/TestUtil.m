@@ -2,6 +2,16 @@
 
 int testTargetHits = 0;
 
+vm_size_t peekAllocatedMemoryInBytes(void) {
+    struct task_basic_info info;
+    mach_msg_type_number_t size = sizeof(info);
+    kern_return_t kerr = task_info(mach_task_self(),
+                                   TASK_BASIC_INFO,
+                                   (task_info_t)&info,
+                                   &size);
+    assert(kerr == KERN_SUCCESS);
+    return info.resident_size;
+}
 bool futureHasResult(TOCFuture* future, id result) {
     return future.hasResult && [future.forceGetResult isEqual:result];
 }

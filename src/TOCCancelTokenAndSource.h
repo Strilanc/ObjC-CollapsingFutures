@@ -1,5 +1,9 @@
 #import <Foundation/Foundation.h>
 
+@class TOCCancelTokenSource;
+
+@class TOCFutureSource;
+
 /*!
  * The states that a cancel token can be in.
  *
@@ -138,6 +142,18 @@ typedef void (^TOCCancelHandler)(void);
  */
 -(void) whenCancelledDo:(TOCCancelHandler)cancelHandler
                  unless:(TOCCancelToken*)unlessCancelledToken;
+
+/*!
+ * Causes the given cancel token source to be cancelled when the receiving cancel token is cancelled.
+ */
+-(void) whenCancelledCancelSource:(TOCCancelTokenSource*)cancelTokenSource;
+
+/*!
+ * Attempts to set the given future source to fail with a cancellation when the receiving cancel token is cancelled.
+ *
+ * @discussion No effect when the future source completes or fails before the receiving cancel token is cancelled.
+ */
+-(void) whenCancelledTryCancelFutureSource:(TOCFutureSource*)futureSource;
 
 @end
 

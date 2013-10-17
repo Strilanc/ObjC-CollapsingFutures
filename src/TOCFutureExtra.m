@@ -1,11 +1,7 @@
 #import "TOCFutureExtra.h"
-#import "Internal.h"
+#import "TOCInternal.h"
 
 @implementation TOCFuture (TOCFutureExtra)
-
--(bool)hasFailedWithCancel {
-    return self.hasFailed && [self.forceGetFailure isKindOfClass:[TOCCancelToken class]];
-}
 
 +(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
                           dispatchedOnQueue:(dispatch_queue_t)queue {
@@ -58,7 +54,7 @@
     
     [unlessCancelledToken whenCancelledDo:^{
         [timer invalidate];
-        [resultSource trySetFailure:unlessCancelledToken];
+        [resultSource trySetFailedWithCancel];
     }];
     
     return resultSource.future;

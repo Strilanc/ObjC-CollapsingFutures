@@ -1,5 +1,5 @@
 #import "TOCFutureMoreContinuations.h"
-#import "Internal.h"
+#import "TOCInternal.h"
 
 @implementation TOCFuture (MoreContinuations)
 

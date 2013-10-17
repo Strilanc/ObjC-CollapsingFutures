@@ -177,7 +177,7 @@
     TOCFuture* f = [s.future unless:c.token];
     test(f.isIncomplete);
     [c cancel];
-    testFutureHasFailure(f, c.token);
+    test(f.hasFailedWithCancel);
 }
 
 @end

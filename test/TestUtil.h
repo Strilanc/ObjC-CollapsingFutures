@@ -1,6 +1,9 @@
+#import <SenTestingKit/SenTestingKit.h>
 #import <Foundation/Foundation.h>
 #import "TOCFutureAndSource.h"
+#import <mach/mach.h>
 
+vm_size_t peekAllocatedMemoryInBytes(void);
 bool testPassesConcurrently_helper(bool (^check)(void), NSTimeInterval delay);
 bool testCompletesConcurrently_helper(TOCFuture* future, NSTimeInterval timeout);
 bool futureHasResult(TOCFuture* future, id result);

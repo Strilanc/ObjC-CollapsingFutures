@@ -1,5 +1,6 @@
 #import "TOCCancelTokenAndSource.h"
-#import "Internal.h"
+#import "TOCFutureAndSource.h"
+#import "TOCInternal.h"
 #include <libkern/OSAtomic.h>
 
 typedef void (^Remover)(void);
@@ -183,6 +184,18 @@ static TOCCancelToken* SharedImmortalToken = nil;
         if (_state == TOCCancelTokenState_Cancelled) return @"Cancelled Token";
         return @"Uncancelled Token";
     }
+}
+
+-(void) whenCancelledCancelSource:(TOCCancelTokenSource*)otherSource {
+    require(otherSource != nil);
+    [self whenCancelledDo:^{ [otherSource cancel]; }
+                   unless:otherSource.token];
+}
+
+-(void) whenCancelledTryCancelFutureSource:(TOCFutureSource*)futureSource {
+    require(futureSource != nil);
+    [self whenCancelledDo:^{ [futureSource trySetFailedWithCancel]; }
+                   unless:futureSource.future.cancelledOnCompletionToken];
 }
 
 @end

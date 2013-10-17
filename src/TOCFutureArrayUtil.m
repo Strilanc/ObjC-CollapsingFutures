@@ -1,5 +1,7 @@
 #import "TOCFutureArrayUtil.h"
-#import "Internal.h"
+#import "TOCInternal.h"
+#import "TOCInternal_Array+Functional.h"
+#import "TOCInternal_Racer.h"
 #include <libkern/OSAtomic.h>
 
 @implementation NSArray (TOCFutureArrayUtil)
@@ -10,9 +12,7 @@
 
 -(TOCFuture*) finallyAllUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
-    for (TOCFuture* item in futures) {
-        require([item isKindOfClass:[TOCFuture class]]);
-    }
+    require([self allItemsAreKindOfClass:[TOCFuture class]]);
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
@@ -30,7 +30,7 @@
     
     doneHandler(nil);
     
-    [unlessCancelledToken whenCancelledDo:^{ [resultSource trySetFailure:unlessCancelledToken]; }
+    [unlessCancelledToken whenCancelledDo:^{ [resultSource trySetFailedWithCancel]; }
                                    unless:resultSource.future.cancelledOnCompletionToken];
     
     return resultSource.future;
@@ -57,9 +57,7 @@
 
 -(NSArray*) orderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
-    for (TOCFuture* item in futures) {
-        require([item isKindOfClass:[TOCFuture class]]);
-    }
+    require([self allItemsAreKindOfClass:[TOCFuture class]]);
     
     NSMutableArray* resultSources = [NSMutableArray array];
     
@@ -75,11 +73,14 @@
         [[item unless:unlessCancelledToken] finallyDo:doneHandler];
     }
     
-    NSMutableArray* results = [NSMutableArray array];
-    for (TOCFutureSource* source in resultSources) {
-        [results addObject:source.future];
-    }
-    return [results copy];
+    return [resultSources map:^(TOCFutureSource* source) { return source.future; }];
+}
+
+-(TOCFuture*) asyncRaceAsynchronousResultUntilCancelledOperationsUntil:(TOCCancelToken*)untilCancelledToken {
+    NSArray* starters = [self copy]; // remove volatility (i.e. ensure not externally mutable)
+    require(starters.count > 0);
+
+    return [Racer asyncRace:self until:untilCancelledToken];
 }
 
 @end

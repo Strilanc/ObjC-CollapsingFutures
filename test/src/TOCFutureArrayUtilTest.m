@@ -79,5 +79,11 @@
     [s trySetResult:@""];
     testFutureHasResult(f, (@[@1, @"", @3]));
 }
+-(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil {
+    testThrows([@[] asyncRaceAsynchronousResultUntilCancelledOperationsUntil:nil]);
+    
+    // todo: finish testing
+    test(false);
+}
 
 @end

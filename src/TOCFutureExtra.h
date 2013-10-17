@@ -4,11 +4,6 @@
 @interface TOCFuture (TOCFutureExtra)
 
 /*!
- * Determines if the receiving future has failed with a cancellation token as its failure value.
- */
--(bool)hasFailedWithCancel;
-
-/*!
  * Returns a future that completes with the value returned by a function run via grand central dispatch.
  *
  * @param operation The operation to eventually evaluate.
