@@ -8,7 +8,7 @@
 
 @synthesize canceller, futureResult;
 
-+(Racer*) racerStartedFrom:(AsynchronousUntilCancelledOperationStarter)starter
++(Racer*) racerStartedFrom:(TOCAsyncOperationWithResultLastingUntilCancelled)starter
                      until:(TOCCancelToken*)untilCancelledToken {
     require(starter != nil);
     

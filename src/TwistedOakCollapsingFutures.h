@@ -4,3 +4,4 @@
 #import "Array+TOCFuture.h"
 #import "TOCFuture+MoreContinuations.h"
 #import "TOCFuture+MoreContructors.h"
+#import "TOCTimeout.h"

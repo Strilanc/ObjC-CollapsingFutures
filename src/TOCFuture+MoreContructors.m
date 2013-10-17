@@ -1,5 +1,8 @@
 #import "TOCFuture+MoreContructors.h"
+#import "TOCFuture+MoreContinuations.h"
 #import "TOCInternal.h"
+#import "TOCTimeout.h"
+#import "Array+TOCFuture.h"
 
 @implementation TOCFuture (MoreConstructors)
 
@@ -27,25 +30,26 @@
 }
 
 +(TOCFuture*) futureWithResult:(id)resultValue
-                    afterDelay:(NSTimeInterval)delay {
+                    afterDelay:(NSTimeInterval)delayInSeconds {
     return [self futureWithResult:resultValue
-                       afterDelay:delay
+                       afterDelay:delayInSeconds
                            unless:nil];
 }
 +(TOCFuture*) futureWithResult:(id)resultValue
-                    afterDelay:(NSTimeInterval)delay
+                    afterDelay:(NSTimeInterval)delayInSeconds
                         unless:(TOCCancelToken*)unlessCancelledToken {
-    require(delay >= 0);
+    require(delayInSeconds >= 0);
+    require(!isnan(delayInSeconds));
     
-    if (delay == 0) return [TOCFuture futureWithResult:resultValue];
+    if (delayInSeconds == 0) return [TOCFuture futureWithResult:resultValue];
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
-    if (delay == INFINITY) return resultSource.future;
+    if (delayInSeconds == INFINITY) return resultSource.future;
     
     VoidBlock* target = [VoidBlock voidBlock:^{
         [resultSource trySetResult:resultValue];
     }];
-    NSTimer* timer = [NSTimer timerWithTimeInterval:delay
+    NSTimer* timer = [NSTimer timerWithTimeInterval:delayInSeconds
                                              target:target
                                            selector:[target runSelector]
                                            userInfo:nil
@@ -55,9 +59,80 @@
     [unlessCancelledToken whenCancelledDo:^{
         [timer invalidate];
         [resultSource trySetFailedWithCancel];
-    }];
+    } unless:resultSource.future.cancelledOnCompletionToken];
     
     return resultSource.future;
+}
+
++(TOCFuture*) futureWithResultFromAsyncOperationWithResultLastingUntilCancelled:(TOCAsyncOperationWithResultLastingUntilCancelled)asyncOperationWithResultLastingUntilCancelled
+                                                           withOperationTimeout:(NSTimeInterval)timeoutPeriodInSeconds
+                                                                          until:(TOCCancelToken*)untilCancelledToken {
+    require(asyncOperationWithResultLastingUntilCancelled != nil);
+    require(timeoutPeriodInSeconds >= 0);
+    require(!isnan(timeoutPeriodInSeconds));
+
+    if (timeoutPeriodInSeconds == 0) {
+        return [TOCFuture futureWithFailure:[TOCTimeout new]];
+    }
+    if (timeoutPeriodInSeconds == INFINITY) {
+        return asyncOperationWithResultLastingUntilCancelled(untilCancelledToken);
+    }
+    
+    TOCAsyncOperationWithResultLastingUntilCancelled timeoutOperation = ^(TOCCancelToken* internalUntilCancelledToken) {
+        return [TOCFuture futureWithResult:[TOCFuture futureWithFailure:[TOCTimeout new]]
+                                afterDelay:timeoutPeriodInSeconds
+                                    unless:internalUntilCancelledToken];
+    };
+    
+    NSArray* racingOperations = @[asyncOperationWithResultLastingUntilCancelled, timeoutOperation];
+    return [racingOperations asyncRaceOperationsWithWinnerLastingUntil:untilCancelledToken];
+}
+
++(TOCFuture*) futureWithResultFromAsyncOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
+                                     withTimeout:(NSTimeInterval)timeoutPeriodInSeconds
+                                          unless:(TOCCancelToken*)unlessCancelledToken {
+    require(asyncCancellableOperation != nil);
+    require(timeoutPeriodInSeconds >= 0);
+    require(!isnan(timeoutPeriodInSeconds));
+
+    if (timeoutPeriodInSeconds == 0) {
+        return [TOCFuture futureWithFailure:[TOCTimeout new]];
+    }
+    if (timeoutPeriodInSeconds == INFINITY) {
+        return asyncCancellableOperation(unlessCancelledToken);
+    }
+    
+    // start the timeout countdown, making sure it cancels if the caller cancels
+    TOCFuture* futureTimeout = [TOCFuture futureWithResult:nil
+                                                afterDelay:timeoutPeriodInSeconds
+                                                    unless:unlessCancelledToken];
+
+    // start the operation, ensuring it cancels if the timeout finishes or is cancelled
+    TOCFuture* futureOperationResult = asyncCancellableOperation(futureTimeout.cancelledOnCompletionToken);
+
+    // wait for the operation to finish or be cancelled or timeout
+    return [futureOperationResult finally:^(TOCFuture* completedOperationResult) {
+        // detect when cancellation was due to timeout, and report appropriately
+        bool wasCancelled = completedOperationResult.hasFailedWithCancel;
+        bool wasNotCancelledExternally = !unlessCancelledToken.isAlreadyCancelled;
+        bool wasTimeout = wasCancelled && wasNotCancelledExternally;
+        if (wasTimeout) {
+            return [TOCFuture futureWithFailure:[TOCTimeout new]];
+        }
+        
+        return completedOperationResult;
+    }];
+}
+
++(TOCFuture*) futureWithResultFromAsyncOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
+                                     withTimeout:(NSTimeInterval)timeoutPeriodInSeconds {
+    require(asyncCancellableOperation != nil);
+    require(timeoutPeriodInSeconds >= 0);
+    require(!isnan(timeoutPeriodInSeconds));
+
+    return [self futureWithResultFromAsyncOperation:asyncCancellableOperation
+                                        withTimeout:timeoutPeriodInSeconds
+                                             unless:nil];
 }
 
 @end

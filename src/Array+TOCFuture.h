@@ -94,7 +94,7 @@
 -(NSArray*) asyncOrderedByCompletion;
 
 /*!
- * Runs all the AsynchronousUntilCancelledOperationStarter blocks in the array, racing the asynchronous operations they start against each other, and returns the winner as a future.
+ * Runs all the TOCAsyncOperationWithResultLastingUntilCancelled blocks in the array, racing the asynchronous operations they start against each other, and returns the winner as a future.
  * IMPORTANT: An operation's result MUST be cleaned up if the cancel token given to the starter is cancelled EVEN IF the operation has already completed.
  *
  * @param untilCancelledToken When this token is cancelled, both the race AND THE WINNING RESULT are cancelled, terminated, cleaned up, and generally DEAD.
@@ -102,9 +102,9 @@
  * @result A future that will contain the result of the first asynchronous operation to complete, or else fail with the failures of every operation.
  * If the untilCancelledToken is cancelled before the race is over, the resulting future fails with a cancellation.
  *
- * @pre All items in the array must be AsynchronousUntilCancelledOperationStarter blocks.
+ * @pre All items in the array must be TOCAsyncOperationWithResultLastingUntilCancelled blocks.
  *
- * @discussion An AsynchronousUntilCancelledOperationStarter block takes an untilCancelledToken and returns a TOCFuture*.
+ * @discussion An TOCAsyncOperationWithResultLastingUntilCancelled block takes an untilCancelledToken and returns a TOCFuture*.
  * The block is expected to start an asynchronous operation whose result is terminated when the token is cancelled, even if the operation has already completed.
  *
  * The untilCancelledTokens given to each racing operation are dependent, but distinct, from the untilCancelledToken given to this method.
@@ -117,8 +117,8 @@
  * CAUTION: When writing the racing operations within the scope of the token being passed to this method, it is easy to accidentally use the wrong untilCancelledToken.
  * Double-check that the racing operation is depending on the token given to it by this method, and not the token you're giving to this method.
  *
- * @see AsynchronousUntilCancelledOperationStarter
+ * @see TOCAsyncOperationWithResultLastingUntilCancelled
  */
--(TOCFuture*) asyncRaceAsynchronousResultUntilCancelledOperationsUntil:(TOCCancelToken*)untilCancelledToken;
+-(TOCFuture*) asyncRaceOperationsWithWinnerLastingUntil:(TOCCancelToken*)untilCancelledToken;
 
 @end
