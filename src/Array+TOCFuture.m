@@ -7,11 +7,11 @@
 
 @implementation NSArray (TOCFuture)
 
--(TOCFuture*) finallyAll {
-    return [self finallyAllUnless:nil];
+-(TOCFuture*) asyncFinallyAll {
+    return [self asyncFinallyAllUnless:nil];
 }
 
--(TOCFuture*) finallyAllUnless:(TOCCancelToken*)unlessCancelledToken {
+-(TOCFuture*) asyncFinallyAllUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
     require([self allItemsAreKindOfClass:[TOCFuture class]]);
     
@@ -37,12 +37,12 @@
     return resultSource.future;
 }
 
--(TOCFuture*) thenAll {
-    return [self thenAllUnless:nil];
+-(TOCFuture*) asyncThenAll {
+    return [self asyncThenAllUnless:nil];
 }
 
--(TOCFuture*) thenAllUnless:(TOCCancelToken*)unlessCancelledToken {
-    return [[self finallyAllUnless:unlessCancelledToken] then:^id(NSArray* completedFutures) {
+-(TOCFuture*) asyncThenAllUnless:(TOCCancelToken*)unlessCancelledToken {
+    return [[self asyncFinallyAllUnless:unlessCancelledToken] then:^id(NSArray* completedFutures) {
         NSMutableArray* results = [NSMutableArray array];
         for (TOCFuture* item in completedFutures) {
             if (item.hasFailed) return [TOCFuture futureWithFailure:completedFutures];
@@ -52,11 +52,11 @@
     }];
 }
 
--(NSArray*) orderedByCompletion {
-    return [self orderedByCompletionUnless:nil];
+-(NSArray*) asyncOrderedByCompletion {
+    return [self asyncOrderedByCompletionUnless:nil];
 }
 
--(NSArray*) orderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken {
+-(NSArray*) asyncOrderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
     require([self allItemsAreKindOfClass:[TOCFuture class]]);
     
@@ -81,7 +81,7 @@
     NSArray* starters = [self copy]; // remove volatility (i.e. ensure not externally mutable)
     require(starters.count > 0);
     require([starters allItemsAreKindOfClass:NSClassFromString(@"NSBlock")]);
-
+    
     return [Racer asyncRace:starters until:untilCancelledToken];
 }
 

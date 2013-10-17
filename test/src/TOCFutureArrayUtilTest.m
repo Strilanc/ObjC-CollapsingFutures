@@ -8,12 +8,12 @@
 @implementation TOCFutureArrayUtilTest
 
 -(void)testOrderedByCompletion {
-    test([[@[] orderedByCompletion] isEqual:@[]]);
-    testThrows([(@[@1]) orderedByCompletion]);
+    test([[@[] asyncOrderedByCompletion] isEqual:@[]]);
+    testThrows([(@[@1]) asyncOrderedByCompletion]);
     
     NSArray* s = (@[[TOCFutureSource new], [TOCFutureSource new], [TOCFutureSource new]]);
     NSArray* f = (@[[s[0] future], [s[1] future], [s[2] future]]);
-    NSArray* g = [f orderedByCompletion];
+    NSArray* g = [f asyncOrderedByCompletion];
     test(g.count == f.count);
     
     test(((TOCFuture*)g[0]).isIncomplete);
@@ -30,16 +30,16 @@
     testFutureHasResult(g[2], @"C");
     
     // ordered by continuations, so after completion should preserve ordering of original array
-    NSArray* g2 = [f orderedByCompletion];
+    NSArray* g2 = [f asyncOrderedByCompletion];
     testFutureHasResult(g2[0], @"C");
     testFutureHasResult(g2[1], @"A");
     testFutureHasFailure(g2[2], @"B");
 }
 -(void) testFinallyAll {
-    testThrows([@[@1] finallyAll]);
-    test([[@[] finallyAll].forceGetResult isEqual:@[]]);
+    testThrows([@[@1] asyncFinallyAll]);
+    test([[@[] asyncFinallyAll].forceGetResult isEqual:@[]]);
     
-    TOCFuture* f = [(@[fut(@1), futfail(@2)]) finallyAll];
+    TOCFuture* f = [(@[fut(@1), futfail(@2)]) asyncFinallyAll];
     test(f.hasResult);
     NSArray* x = f.forceGetResult;
     test(x.count == 2);
@@ -48,7 +48,7 @@
 }
 -(void) testFinallyAll_Incomplete {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) finallyAll];
+    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) asyncFinallyAll];
     test(f.isIncomplete);
     
     [s trySetFailure:@""];
@@ -60,12 +60,12 @@
     testFutureHasResult(x[2], @3);
 }
 -(void) testThenAll {
-    testThrows([@[@1] thenAll]);
-    test([[@[] thenAll].forceGetResult isEqual:@[]]);
-    test([[(@[fut(@3)]) thenAll].forceGetResult isEqual:(@[@3])]);
-    test([[(@[fut(@1), fut(@2)]) thenAll].forceGetResult isEqual:(@[@1, @2])]);
+    testThrows([@[@1] asyncThenAll]);
+    test([[@[] asyncThenAll].forceGetResult isEqual:@[]]);
+    test([[(@[fut(@3)]) asyncThenAll].forceGetResult isEqual:(@[@3])]);
+    test([[(@[fut(@1), fut(@2)]) asyncThenAll].forceGetResult isEqual:(@[@1, @2])]);
     
-    TOCFuture* f = [(@[fut(@1), futfail(@2)]) thenAll];
+    TOCFuture* f = [(@[fut(@1), futfail(@2)]) asyncThenAll];
     test(f.hasFailed);
     NSArray* x = f.forceGetFailure;
     test(x.count == 2);
@@ -74,7 +74,7 @@
 }
 -(void) testThenAll_Incomplete {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) thenAll];
+    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) asyncThenAll];
     test(f.isIncomplete);
     [s trySetResult:@""];
     testFutureHasResult(f, (@[@1, @"", @3]));

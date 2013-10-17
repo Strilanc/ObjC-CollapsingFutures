@@ -16,7 +16,7 @@
  *
  * A nil cancel token is treated like a cancel token that can never be cancelled.
  */
--(TOCFuture*) finallyAllUnless:(TOCCancelToken*)unlessCancelledToken;
+-(TOCFuture*) asyncFinallyAllUnless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Returns a future that succeeds with all of the futures in the receiving array, once they have all completed or failed.
@@ -29,7 +29,7 @@
  *
  * The future returned by this method always succeeds with a result. It is guaranteed to not contain a failure.
  */
--(TOCFuture*) finallyAll;
+-(TOCFuture*) asyncFinallyAll;
 
 /*!
  * Eventually gets all of the results from the futures in the receiving array, unless cancelled.
@@ -42,11 +42,11 @@
  *
  * @discussion Can be thought of as flipping an Array-of-Futures into a Future-of-Array in the 'obvious' way.
  *
- * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] thenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
+ * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] asyncThenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
  *
  * A nil cancel token is treated like a cancel token that can never be cancelled.
  */
--(TOCFuture*) thenAllUnless:(TOCCancelToken*)unlessCancelledToken;
+-(TOCFuture*) asyncThenAllUnless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Eventually gets all of the results from the futures in the receiving array.
@@ -58,9 +58,9 @@
  *
  * @discussion Can be thought of as flipping an Array-of-Futures into a Future-of-Array in the 'obvious' way.
  *
- * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] thenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
+ * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] asyncThenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
  */
--(TOCFuture*) thenAll;
+-(TOCFuture*) asyncThenAll;
 
 /*!
  * Immediately returns an array containing futures matching those in the receiving array, but with futures that will complete later placed later in the array, unless cancelled.
@@ -77,7 +77,7 @@
  *
  * A nil cancel token is treated like a cancel token that can never be cancelled.
  */
--(NSArray*) orderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken;
+-(NSArray*) asyncOrderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Immediately returns an array containing futures matching those in the receiving array, but with futures that will complete later placed later in the array.
@@ -91,7 +91,7 @@
  * The order that futures completed in in the past is not remembered.
  * Futures that had already completed will end up in the same order in the returned array as they were in the receiving array.
  */
--(NSArray*) orderedByCompletion;
+-(NSArray*) asyncOrderedByCompletion;
 
 /*!
  * Runs all the AsynchronousUntilCancelledOperationStarter blocks in the array, racing the asynchronous operations they start against each other, and returns the winner as a future.
