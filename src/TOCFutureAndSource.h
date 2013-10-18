@@ -389,7 +389,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * If you try to make set a future source's result to its own future, its future becomes immortal and discards all callbacks.
  */
--(bool) trySetResult:(id)finalResult;
+-(bool) trySetResult:(id)result;
 
 /*!
  * Attempts to set the receiving future source to fail with the given failure.
@@ -404,7 +404,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * No automatic collapse occurs when the given failure is a future. The receiving future source will just contain a failure that is a future, instead of matching that future.
  */
--(bool) trySetFailure:(id)finalFailure;
+-(bool) trySetFailure:(id)failure;
 
 /*!
  * Sets the receiving future source to complete with the given result, or else raises an exception if it was already set.
@@ -419,7 +419,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * When the future source is set to match an incomplete future, it remains incomplete (but still set) until that future completes.
  */
--(void) forceSetResult:(id)finalResult;
+-(void) forceSetResult:(id)result;
 
 /*!
  * Sets the receiving future source to fail with the given failure, or else raises an exception.
@@ -432,7 +432,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * No automatic collapse occurs when the given failure is a future. The receiving future source will just contain a failure that is a future, instead of matching that future.
  */
--(void) forceSetFailure:(id)finalFailure;
+-(void) forceSetFailure:(id)failure;
 
 /*!
  * Attempts to make the receiving source's future fail with a cancellation token as its failure value.
