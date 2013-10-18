@@ -209,7 +209,7 @@
 @end
 
 @implementation TOCFutureSource {
-@private TOCCancelTokenSource* completionSource;
+@private TOCCancelTokenSource* _completionSource;
 }
 
 @synthesize future;
@@ -217,8 +217,8 @@
 -(TOCFutureSource*) init {
     self = [super init];
     if (self) {
-        self->completionSource = [TOCCancelTokenSource new];
-        self->future = [TOCFuture _ForSource_completableFutureWithCompletionToken:self->completionSource.token];
+        self->_completionSource = [TOCCancelTokenSource new];
+        self->future = [TOCFuture _ForSource_completableFutureWithCompletionToken:self->_completionSource.token];
     }
     return self;
 }
@@ -226,26 +226,28 @@
 -(bool) trySetResult:(id)finalResult {
     // automatic flattening
     if ([finalResult isKindOfClass:[TOCFuture class]]) {
+        TOCFuture* futureFinalResult = finalResult;
+
         if (![future _ForSource_tryStartFutureSet]) return false;
         
         // optimize self-dependence into immortality
-        if (finalResult == future) {
-            completionSource = nil;
+        if (futureFinalResult == future) {
+            _completionSource = nil;
             return true;
         }
         
-        [(TOCFuture*)finalResult finallyDo:^(TOCFuture *completed) {
-            [future _ForSource_forceFinishFutureSet:completed];
-            [completionSource cancel];
-        } unless:nil];
+        [futureFinalResult.cancelledOnCompletionToken whenCancelledDo:^{
+            [self->future _ForSource_forceFinishFutureSet:futureFinalResult];
+            [self->_completionSource cancel];
+        }];
         
         return true;
     }
     
-    return [future _ForSource_trySet:finalResult succeeded:true] && [completionSource tryCancel];
+    return [future _ForSource_trySet:finalResult succeeded:true] && [_completionSource tryCancel];
 }
 -(bool) trySetFailure:(id)finalFailure {
-    return [future _ForSource_trySet:finalFailure succeeded:false] && [completionSource tryCancel];
+    return [future _ForSource_trySet:finalFailure succeeded:false] && [_completionSource tryCancel];
 }
 -(bool) trySetFailedWithCancel {
     return [self trySetFailure:TOCCancelToken.cancelledToken];

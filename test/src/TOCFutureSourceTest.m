@@ -317,5 +317,30 @@
     test(f.future.state == TOCFutureState_Failed);
     test(f.future.hasFailedWithTimeout);
 }
+-(void) testImmortalPropagatesWhenFlattening {
+    TOCFuture* f1;
+    TOCFuture* f2;
+    @autoreleasepool {
+        TOCFutureSource* s1 = [TOCFutureSource new];
+        TOCFutureSource* s2 = [TOCFutureSource new];
+        f1 = s1.future;
+        f2 = s2.future;
+        [s2 forceSetResult:s1.future];
+    }
+    test(f1.state == TOCFutureState_Immortal);
+    test(f2.state == TOCFutureState_Immortal);
+}
+-(void) testUnwrappingWorksWhenSourceGoesAway {
+    TOCFuture* f1;
+    TOCFutureSource* s2 = [TOCFutureSource new];
+    @autoreleasepool {
+        TOCFutureSource* s1 = [TOCFutureSource new];
+        f1 = s1.future;
+        [s1 forceSetResult:s2.future];
+    }
+    test(f1.state == TOCFutureState_Flattening);
+    [s2 trySetResult:@2];
+    testFutureHasResult(f1, @2);
+}
 
 @end
