@@ -238,10 +238,9 @@
     test(hit1 == 0);
 }
 
--(void) testWhenCancelledCancelSource {
+-(void) testCancelTokenSourceUntil {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
-    TOCCancelTokenSource* d = [TOCCancelTokenSource new];
-    [s.token whenCancelledCancelSource:d];
+    TOCCancelTokenSource* d = [TOCCancelTokenSource cancelTokenSourceUntil:s.token];
     test(s.token.state == TOCCancelTokenState_StillCancellable);
     test(d.token.state == TOCCancelTokenState_StillCancellable);
     
@@ -249,10 +248,9 @@
     test(s.token.state == TOCCancelTokenState_Cancelled);
     test(d.token.state == TOCCancelTokenState_Cancelled);
 }
--(void) testWhenCancelledCancelSource_Reverse {
+-(void) testCancelTokenSourceUntil_Reverse {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
-    TOCCancelTokenSource* d = [TOCCancelTokenSource new];
-    [s.token whenCancelledCancelSource:d];
+    TOCCancelTokenSource* d = [TOCCancelTokenSource cancelTokenSourceUntil:s.token];
     test(s.token.state == TOCCancelTokenState_StillCancellable);
     test(d.token.state == TOCCancelTokenState_StillCancellable);
     
@@ -260,15 +258,14 @@
     test(s.token.state == TOCCancelTokenState_StillCancellable);
     test(d.token.state == TOCCancelTokenState_Cancelled);
 }
--(void) testWhenCancelledCancelSource_CleansUpEagerly {
+-(void) testCancelTokenSourceUntil_CleansUpEagerly {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
     vm_size_t memoryBefore = peekAllocatedMemoryInBytes();
     int repeats     = 5000;
     vm_size_t slack = 100000;
     for (int i = 0; i < repeats; i++) {
         @autoreleasepool {
-            TOCCancelTokenSource* d = [TOCCancelTokenSource new];
-            [s.token whenCancelledCancelSource:d];
+            TOCCancelTokenSource* d = [TOCCancelTokenSource cancelTokenSourceUntil:s.token];
             [d cancel];
         }
     }
@@ -277,10 +274,9 @@
     test(!likelyIsNotCleaningUp);
 }
 
--(void) testWhenCancelledTryCancelFutureSource {
+-(void) testFutureSourceUntil {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
-    TOCFutureSource* d = [TOCFutureSource new];
-    [s.token whenCancelledTryCancelFutureSource:d];
+    TOCFutureSource* d = [TOCFutureSource futureSourceUntil:s.token];
     test(s.token.state == TOCCancelTokenState_StillCancellable);
     test(d.future.state == TOCFutureState_AbleToBeSet);
     
@@ -288,10 +284,9 @@
     test(s.token.state == TOCCancelTokenState_Cancelled);
     test(d.future.hasFailedWithCancel);
 }
--(void) testWhenCancelledTryCancelFutureSource_Reverse {
+-(void) testFutureSourceUntil_Reverse {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
-    TOCFutureSource* d = [TOCFutureSource new];
-    [s.token whenCancelledTryCancelFutureSource:d];
+    TOCFutureSource* d = [TOCFutureSource futureSourceUntil:s.token];
     test(s.token.state == TOCCancelTokenState_StillCancellable);
     test(d.future.state == TOCFutureState_AbleToBeSet);
     
@@ -299,15 +294,14 @@
     test(s.token.state == TOCCancelTokenState_StillCancellable);
     test(d.future.state == TOCFutureState_CompletedWithResult);
 }
--(void) testWhenCancelledTryCancelFutureSource_CleansUpEagerly {
+-(void) testFutureSourceUntil_CleansUpEagerly {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
     vm_size_t memoryBefore = peekAllocatedMemoryInBytes();
     int repeats     = 5000;
     vm_size_t slack = 100000;
     for (int i = 0; i < repeats; i++) {
         @autoreleasepool {
-            TOCFutureSource* d = [TOCFutureSource new];
-            [s.token whenCancelledTryCancelFutureSource:d];
+            TOCFutureSource* d = [TOCFutureSource futureSourceUntil:s.token];
             [d trySetResult:nil];
         }
     }

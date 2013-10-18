@@ -466,4 +466,15 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  */
 -(void) forceSetFailedWithTimeout;
 
+/*!
+ * Creates and returns a future source that is dependent on the given cancel token.
+ * If the cancel token is cancelled, and the future source has not set its future yet, its future is automatically cancelled.
+ *
+ * @param untilCancelledToken The token that causes the resulting source's future to fail with a cancellation, if it wasn't set yet.
+ * Allowed to be nil, in which case the returned future source is just a normal future source.
+ *
+ * @result A future source that depends on the given cancel token.
+ */
++(TOCFutureSource*) futureSourceUntil:(TOCCancelToken*)untilCancelledToken;
+
 @end

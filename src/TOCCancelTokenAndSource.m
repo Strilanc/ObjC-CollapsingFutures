@@ -191,18 +191,6 @@ static TOCCancelToken* SharedImmortalToken = nil;
     }
 }
 
--(void) whenCancelledCancelSource:(TOCCancelTokenSource*)otherSource {
-    require(otherSource != nil);
-    [self whenCancelledDo:^{ [otherSource cancel]; }
-                   unless:otherSource.token];
-}
-
--(void) whenCancelledTryCancelFutureSource:(TOCFutureSource*)futureSource {
-    require(futureSource != nil);
-    [self whenCancelledDo:^{ [futureSource trySetFailedWithCancel]; }
-                   unless:futureSource.future.cancelledOnCompletionToken];
-}
-
 @end
 
 @implementation TOCCancelTokenSource
@@ -215,6 +203,13 @@ static TOCCancelToken* SharedImmortalToken = nil;
         self->token = [TOCCancelToken _ForSource_cancellableToken];
     }
     return self;
+}
+
++(TOCCancelTokenSource*) cancelTokenSourceUntil:(TOCCancelToken*)untilCancelledToken {
+    TOCCancelTokenSource* source = [TOCCancelTokenSource new];
+    [untilCancelledToken whenCancelledDo:^{ [source cancel]; }
+                                  unless:source.token];
+    return source;
 }
 
 -(void) dealloc {

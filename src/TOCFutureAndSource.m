@@ -202,12 +202,10 @@ enum StartUnwrapResult {
                unless:(TOCCancelToken *)unlessCancelledToken {
     require(completionContinuation != nil);
     
-    TOCFutureSource* resultSource = [TOCFutureSource new];
+    TOCFutureSource* resultSource = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
     
-    [self finallyDo:^(TOCFuture *completed) {
-        [resultSource trySetResult:completionContinuation(completed)];
-    } unless:unlessCancelledToken];
-    [unlessCancelledToken whenCancelledTryCancelFutureSource:resultSource];
+    [self finallyDo:^(TOCFuture *completed) { [resultSource trySetResult:completionContinuation(completed)]; }
+             unless:unlessCancelledToken];
     
     return resultSource.future;
 }
@@ -270,6 +268,13 @@ enum StartUnwrapResult {
         self->future = [TOCFuture _ForSource_completableFutureWithCompletionToken:self->_completionSource.token];
     }
     return self;
+}
+
++(TOCFutureSource*) futureSourceUntil:(TOCCancelToken*)untilCancelledToken {
+    TOCFutureSource* source = [TOCFutureSource new];
+    [untilCancelledToken whenCancelledDo:^{ [source trySetFailedWithCancel]; }
+                                  unless:source.future.cancelledOnCompletionToken];
+    return source;
 }
 
 -(bool) trySetResult:(id)finalResult {

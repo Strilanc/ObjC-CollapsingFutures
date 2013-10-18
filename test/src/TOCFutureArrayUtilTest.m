@@ -160,9 +160,9 @@
     TOCFutureSource* s1 = [TOCFutureSource new];
     TOCFutureSource* s2 = [TOCFutureSource new];
     TOCFutureSource* s3 = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { [until whenCancelledTryCancelFutureSource:s1]; return s1.future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { [until whenCancelledTryCancelFutureSource:s2]; return s2.future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t3 = ^(TOCCancelToken* until) { [until whenCancelledTryCancelFutureSource:s3]; return s3.future; };
+    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s1 trySetFailedWithCancel]; }]; return s1.future; };
+    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s2 trySetFailedWithCancel]; }]; return s2.future; };
+    TOCAsyncOperationWithResultLastingUntilCancelled t3 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s3 trySetFailedWithCancel]; }]; return s3.future; };
     
     TOCFuture* f = [@[t1, t2, t3] asyncRaceOperationsWithWinningResultLastingUntil:nil];
     test(s1.future.isIncomplete);
@@ -179,8 +179,8 @@
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_CancelDuring_OperationsFailToCancel {
     TOCFutureSource* s1 = [TOCFutureSource new];
     TOCFutureSource* s2 = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { [until whenCancelledTryCancelFutureSource:s1]; return [TOCFutureSource new].future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { [until whenCancelledTryCancelFutureSource:s2]; return [TOCFutureSource new].future; };
+    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s1 trySetFailedWithCancel]; }]; return [TOCFutureSource new].future; };
+    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s2 trySetFailedWithCancel]; }]; return [TOCFutureSource new].future; };
     
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     TOCFuture* f = [@[t1, t2] asyncRaceOperationsWithWinningResultLastingUntil:c.token];
@@ -196,8 +196,8 @@
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_CancelDuringRaceRacersBeingCancelled {
     TOCFutureSource* s1 = [TOCFutureSource new];
     TOCFutureSource* s2 = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { [until whenCancelledTryCancelFutureSource:s1]; return s1.future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { [until whenCancelledTryCancelFutureSource:s2]; return s2.future; };
+    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s1 trySetFailedWithCancel]; }]; return s1.future; };
+    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s2 trySetFailedWithCancel]; }]; return s2.future; };
     
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     TOCFuture* f = [@[t1, t2] asyncRaceOperationsWithWinningResultLastingUntil:c.token];

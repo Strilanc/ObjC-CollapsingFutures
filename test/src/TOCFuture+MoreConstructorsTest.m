@@ -154,7 +154,7 @@
 }
 -(void) testFutureWithResultFromAsyncOperationWithResultLastingUntilCancelled_CancelDuring {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t = ^(TOCCancelToken* until) { [until whenCancelledTryCancelFutureSource:s]; return [TOCFutureSource new].future; };
+    TOCAsyncOperationWithResultLastingUntilCancelled t = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s trySetFailedWithCancel]; }]; return [TOCFutureSource new].future; };
 
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     TOCFuture* f = [TOCFuture futureWithResultFromAsyncOperationWithResultLastingUntilCancelled:t
@@ -168,7 +168,7 @@
 -(void) testFutureWithResultFromAsyncOperationWithResultLastingUntilCancelled_CancelAfter {
     TOCFutureSource* s = [TOCFutureSource new];
     TOCCancelTokenSource* d = [TOCCancelTokenSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t = ^(TOCCancelToken* until) { [until whenCancelledCancelSource:d]; return s.future; };
+    TOCAsyncOperationWithResultLastingUntilCancelled t = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [d tryCancel]; }]; return s.future; };
     
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     TOCFuture* f = [TOCFuture futureWithResultFromAsyncOperationWithResultLastingUntilCancelled:t
@@ -378,7 +378,7 @@
 }
 -(void) testFutureWithResultFromAsyncCancellableOperationWithTimeoutUnless_CancelDuring {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCAsyncCancellableOperation t = ^(TOCCancelToken* unless) { [unless whenCancelledTryCancelFutureSource:s]; return s.future; };
+    TOCAsyncCancellableOperation t = ^(TOCCancelToken* unless) { [unless whenCancelledDo:^{ [s trySetFailedWithCancel]; }]; return s.future; };
     
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     TOCFuture* f = [TOCFuture futureWithResultFromAsyncCancellableOperation:t

@@ -143,18 +143,6 @@ typedef void (^TOCCancelHandler)(void);
 -(void) whenCancelledDo:(TOCCancelHandler)cancelHandler
                  unless:(TOCCancelToken*)unlessCancelledToken;
 
-/*!
- * Causes the given cancel token source to be cancelled when the receiving cancel token is cancelled.
- */
--(void) whenCancelledCancelSource:(TOCCancelTokenSource*)cancelTokenSource;
-
-/*!
- * Attempts to set the given future source to fail with a cancellation when the receiving cancel token is cancelled.
- *
- * @discussion No effect when the future source completes or fails before the receiving cancel token is cancelled.
- */
--(void) whenCancelledTryCancelFutureSource:(TOCFutureSource*)futureSource;
-
 @end
 
 /*!
@@ -187,5 +175,18 @@ typedef void (^TOCCancelHandler)(void);
  * @result True if the token controlled by this source transitioned to the cancelled state, or false if the token was already cancelled.
  */
 -(bool) tryCancel;
+
+/*!
+ * Creates and returns a cancel token source that is dependent on the given cancel token.
+ * If the cancel token is cancelled, the resulting source is cancelled.
+ *
+ * @param untilCancelledToken The token whose cancellation forces the resulting cancel token source's token to be cancelled.
+ * Allowed to be nil, in which case the returned cancel token source is just a normal cancel token source.
+ *
+ * @result A cancel token source that depends on the given cancel token.
+ *
+ * @discussion The returned source can still be cancelled normally.
+ */
++(TOCCancelTokenSource*) cancelTokenSourceUntil:(TOCCancelToken*)untilCancelledToken;
 
 @end

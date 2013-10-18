@@ -14,8 +14,7 @@
     
     Racer* racer = [Racer new];
     
-    racer->canceller = [TOCCancelTokenSource new];
-    [untilCancelledToken whenCancelledCancelSource:racer->canceller];
+    racer->canceller = [TOCCancelTokenSource cancelTokenSourceUntil:untilCancelledToken];
     racer->futureResult = starter(racer.canceller.token);
     
     return racer;
@@ -29,8 +28,7 @@
                                                                              until:untilCancelledToken]; }];
     
     // make a podium for the winner, assuming the race isn't called off
-    TOCFutureSource* futureWinningRacerSource = [TOCFutureSource new];
-    [untilCancelledToken whenCancelledTryCancelFutureSource:futureWinningRacerSource];
+    TOCFutureSource* futureWinningRacerSource = [TOCFutureSource futureSourceUntil:untilCancelledToken];
     
     // tell each racer how to get on the podium (or how to be a failure)
     __block int failedRacerCount = 0;
