@@ -306,8 +306,9 @@ enum StartUnwrapResult {
         case StartUnwrapResult_Started: {
             // future will complete later
             // keep completion source alive in closure until it can be cancelled
-            // if futureFinalResult becomes immortal, the closure will be discarded and take the source with it (making the completion token immortal)
+            // if result becomes immortal, the closure will be discarded and take the source with it (making our future immortal as well)
             [result.cancelledOnCompletionToken whenCancelledDo:^{
+                // future must be ready to be accessed before we propagate completion
                 [future _ForSource_forceFinishUnwrap];
                 [cancelledOnCompletedSource cancel];
             }];
