@@ -322,7 +322,7 @@ enum StartUnwrapResult {
             // already checked StartUnwrapResult_AlreadySet above
             unexpectedEnum(startUnwrapResult);
     }
-
+    
     // this source is set (i.e. it can't be set anymore), even if its future is not completed yet or ever
     return true;
 }

@@ -1,4 +1,7 @@
 #import <Foundation/Foundation.h>
+#import "TOCInternal_Array+Functional.h"
+#import "TOCInternal_BlockObject.h"
+#import "TOCInternal_Racer.h"
 
 #define require(expr) \
     if (!(expr)) \
@@ -16,10 +19,3 @@
     @throw([NSException exceptionWithName:NSInternalInconsistencyException \
                                    reason:[NSString stringWithFormat:@"An unexpected enum value ( %@ = %d ) was encountered.", (@#expr), expr] \
                                  userInfo:nil])
-
-@interface VoidBlock : NSObject { @public void (^block)(void); }
-+(VoidBlock*) voidBlock:(void(^)(void))block;
--(void)run;
--(SEL)runSelector;
-+(void) performBlock:(void(^)(void))block onThread:(NSThread*)thread;
-@end

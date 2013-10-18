@@ -1,15 +1,15 @@
 #import <Foundation/Foundation.h>
 
-typedef id (^Projection)(id value);
-typedef bool (^Predicate)(id value);
+typedef id (^TOCInternal_Projection)(id value);
+typedef bool (^TOCInternal_Predicate)(id value);
 
-@interface NSArray (Functional)
+@interface NSArray (TOCInternal_Functional)
 
--(NSArray*) map:(Projection)projection;
+-(NSArray*) map:(TOCInternal_Projection)projection;
 
--(NSArray*) where:(Predicate)predicate;
+-(NSArray*) where:(TOCInternal_Predicate)predicate;
 
--(bool) allItemsSatisfy:(Predicate)predicate;
+-(bool) allItemsSatisfy:(TOCInternal_Predicate)predicate;
 
 -(bool) allItemsAreKindOfClass:(Class)classInstance;
 

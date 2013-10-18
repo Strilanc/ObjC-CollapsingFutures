@@ -1,18 +1,16 @@
-#import "TOCInternal_Racer.h"
 #import "TOCInternal.h"
-#import "TOCInternal_Array+Functional.h"
 #import "TOCFuture+MoreContinuations.h"
 #include <libkern/OSAtomic.h>
 
-@implementation Racer
+@implementation TOCInternal_Racer
 
 @synthesize canceller, futureResult;
 
-+(Racer*) racerStartedFrom:(TOCAsyncOperationWithResultLastingUntilCancelled)starter
++(TOCInternal_Racer*) racerStartedFrom:(TOCAsyncOperationWithResultLastingUntilCancelled)starter
                      until:(TOCCancelToken*)untilCancelledToken {
     require(starter != nil);
     
-    Racer* racer = [Racer new];
+    TOCInternal_Racer* racer = [TOCInternal_Racer new];
     
     racer->canceller = [TOCCancelTokenSource cancelTokenSourceUntil:untilCancelledToken];
     racer->futureResult = starter(racer.canceller.token);
@@ -24,7 +22,7 @@
                   until:(TOCCancelToken*)untilCancelledToken {
     
     // start all operations (as racers that can be individually cancelled after-the-fact)
-    NSArray* racers = [starters map:^(id starter) { return [Racer racerStartedFrom:starter
+    NSArray* racers = [starters map:^(id starter) { return [TOCInternal_Racer racerStartedFrom:starter
                                                                              until:untilCancelledToken]; }];
     
     // make a podium for the winner, assuming the race isn't called off
@@ -33,7 +31,7 @@
     // tell each racer how to get on the podium (or how to be a failure)
     __block int failedRacerCount = 0;
     require(racers.count <= INT_MAX);
-    for (Racer* racer in racers) {
+    for (TOCInternal_Racer* racer in racers) {
         [racer.futureResult finallyDo:^(TOCFuture *completed) {
             if (completed.hasResult) {
                 // winner?
@@ -43,15 +41,15 @@
                 if (untilCancelledToken.isAlreadyCancelled) return;
                 
                 // everyone is a failure, thus so are we
-                NSArray* allFailures = [racers map:^(Racer* r) { return r.futureResult.forceGetFailure; }];
+                NSArray* allFailures = [racers map:^(TOCInternal_Racer* r) { return r.futureResult.forceGetFailure; }];
                 [futureWinningRacerSource trySetFailure:allFailures];
             }
         } unless:untilCancelledToken];
     }
 
     // once there's a winner, cancel the other racers
-    [futureWinningRacerSource.future thenDo:^(Racer* winningRacer) {
-        for (Racer* racer in racers) {
+    [futureWinningRacerSource.future thenDo:^(TOCInternal_Racer* winningRacer) {
+        for (TOCInternal_Racer* racer in racers) {
             if (racer != winningRacer) {
                 [racer.canceller cancel];
             }
@@ -59,7 +57,7 @@
     }];
 
     // get the winning racer's result
-    TOCFuture* futureWinnerResult = [futureWinningRacerSource.future then:^id(Racer* winningRacer) { return winningRacer.futureResult; }];
+    TOCFuture* futureWinnerResult = [futureWinningRacerSource.future then:^id(TOCInternal_Racer* winningRacer) { return winningRacer.futureResult; }];
     
     return futureWinnerResult;
 }

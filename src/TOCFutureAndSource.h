@@ -20,7 +20,7 @@ enum TOCFutureState {
      * A future can also become immortal due to a flattening cycle being detected, such as when a future is set to be its own result.
      */
     TOCFutureState_Immortal = 0,
-
+    
     /*!
      * The future's source can still accept a result or failure.
      * The future is (perhaps temporarily) incomplete.
@@ -49,7 +49,7 @@ enum TOCFutureState {
      * (Except failure handlers, which will of course be immediately discared instead of being run.)
      */
     TOCFutureState_CompletedWithResult = 2,
-
+    
     /*!
      * The future has failed.
      *
@@ -60,7 +60,7 @@ enum TOCFutureState {
      * (Except failure handlers, which will of course be immediately discared instead of being run.)
      */
     TOCFutureState_Failed = 3,
-
+    
     /*!
      * The future has been set to a result, but that result is a future that is not yet complete.
      *
@@ -139,7 +139,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * @discussion
  * When the given resultValue is a future, automatic collapse makes the returned future equivalent to the given future.
-*/
+ */
 +(TOCFuture *)futureWithResult:(id)resultValue;
 
 /*!

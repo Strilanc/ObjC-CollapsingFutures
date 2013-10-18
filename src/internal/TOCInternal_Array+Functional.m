@@ -1,9 +1,8 @@
-#import "TOCInternal_Array+Functional.h"
 #import "TOCInternal.h"
 
-@implementation NSArray (Functional)
+@implementation NSArray (TOCInternal_Functional)
 
--(NSArray*) map:(Projection)projection {
+-(NSArray*) map:(TOCInternal_Projection)projection {
     require(projection != nil);
     
     NSMutableArray* results = [NSMutableArray arrayWithCapacity:self.count];
@@ -16,7 +15,7 @@
     return [results copy]; // remove mutability
 }
 
--(NSArray*) where:(Predicate)predicate {
+-(NSArray*) where:(TOCInternal_Predicate)predicate {
     require(predicate != nil);
     
     NSMutableArray* results = [NSMutableArray arrayWithCapacity:self.count];
@@ -29,7 +28,7 @@
     return [results copy]; // remove mutability
 }
 
--(bool) allItemsSatisfy:(Predicate)predicate {
+-(bool) allItemsSatisfy:(TOCInternal_Predicate)predicate {
     require(predicate != nil);
     
     for (id item in self) {

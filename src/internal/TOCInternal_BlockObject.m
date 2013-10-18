@@ -1,9 +1,9 @@
-#import "TOCInternal.h"
+#import "TOCInternal_BlockObject.h"
 
-@implementation VoidBlock
+@implementation TOCInternal_BlockObject
 
-+(VoidBlock*) voidBlock:(void(^)(void))block {
-    VoidBlock* b = [VoidBlock new];
++(TOCInternal_BlockObject*) voidBlock:(void(^)(void))block {
+    TOCInternal_BlockObject* b = [TOCInternal_BlockObject new];
     b->block = block;
     return b;
 }
@@ -19,7 +19,7 @@
         return;
     }
     
-    VoidBlock* voidBlock = [VoidBlock voidBlock:block];
+    TOCInternal_BlockObject* voidBlock = [TOCInternal_BlockObject voidBlock:block];
     [voidBlock performSelector:[voidBlock runSelector]
                       onThread:thread
                     withObject:block

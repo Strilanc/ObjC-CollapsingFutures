@@ -30,8 +30,8 @@
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
-    [VoidBlock performBlock:^{ [resultSource forceSetResult:operation()]; }
-                   onThread:thread];
+    [TOCInternal_BlockObject performBlock:^{ [resultSource forceSetResult:operation()]; }
+                                 onThread:thread];
     
     return resultSource.future;
 }
@@ -53,7 +53,7 @@
     TOCFutureSource* resultSource = [TOCFutureSource new];
     if (delayInSeconds == INFINITY) return resultSource.future;
     
-    VoidBlock* target = [VoidBlock voidBlock:^{
+    TOCInternal_BlockObject* target = [TOCInternal_BlockObject voidBlock:^{
         [resultSource trySetResult:resultValue];
     }];
     NSTimer* timer = [NSTimer timerWithTimeInterval:delayInSeconds

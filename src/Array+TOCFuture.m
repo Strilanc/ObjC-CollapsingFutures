@@ -1,8 +1,6 @@
 #import "Array+TOCFuture.h"
 #import "TOCFuture+MoreContinuations.h"
 #import "TOCInternal.h"
-#import "TOCInternal_Array+Functional.h"
-#import "TOCInternal_Racer.h"
 #include <libkern/OSAtomic.h>
 
 @implementation NSArray (TOCFuture)
@@ -82,7 +80,7 @@
     require(starters.count > 0);
     require([starters allItemsAreKindOfClass:NSClassFromString(@"NSBlock")]);
     
-    return [Racer asyncRace:starters until:untilCancelledToken];
+    return [TOCInternal_Racer asyncRace:starters until:untilCancelledToken];
 }
 
 @end
