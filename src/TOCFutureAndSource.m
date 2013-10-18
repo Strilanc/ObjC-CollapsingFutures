@@ -174,8 +174,12 @@ enum StartUnwrapResult {
           unless:(TOCCancelToken *)unlessCancelledToken {
     require(completionHandler != nil);
     
-    __unsafe_unretained TOCFuture* weakSelf = self;
-    [_completionToken whenCancelledDo:^{ completionHandler(weakSelf); }
+    // It is safe to reference 'self' here, despite it creating a reference cycle. The cycle is not self-sustaining.
+    // The reason comes down to future sources and tokens sources causing their future/token to discard callbacks when the source is deallocated.
+    // The cycle this call creates would be broken by a source being deallocated, but the source is not part of the created cycle.
+    // So it should be safe. The created cycle is still dependent.
+    // (If completionHandler has a closure including a source, the cycle would be self-sustaining whether or not we added this extra bit.)
+    [_completionToken whenCancelledDo:^{ completionHandler(self); }
                                unless:unlessCancelledToken];
 }
 
