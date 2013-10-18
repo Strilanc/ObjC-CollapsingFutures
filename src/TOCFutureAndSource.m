@@ -2,11 +2,24 @@
 #import "TOCInternal.h"
 #import "TOCTimeout.h"
 
+static NSObject* sharedUnwrapCycleDetectionLock;
+enum StartUnwrapResult {
+    StartUnwrapResult_CycleDetected,
+    StartUnwrapResult_Started,
+    StartUnwrapResult_StartedAndFinished,
+    StartUnwrapResult_AlreadySet
+};
+
 @implementation TOCFuture {
 @private id _value;
 @private bool _ifDoneHasSucceeded;
 @private bool _hasBeenSet;
 @private TOCCancelToken* _completionToken;
+@private TOCFuture* _unwrapTarget;
+}
+
++(void)initialize {
+    sharedUnwrapCycleDetectionLock = [NSObject new];
 }
 
 +(TOCFuture *)futureWithResult:(id)resultValue {
@@ -34,19 +47,57 @@
     return future;
 }
 
--(bool) _ForSource_tryStartFutureSet {
+-(enum StartUnwrapResult) _ForSource_tryStartUnwrapping:(TOCFuture*)targetFuture {
+    require(targetFuture != nil);
+    
     @synchronized(self) {
-        if (_hasBeenSet) return false;
+        if (_hasBeenSet) return StartUnwrapResult_AlreadySet;
         _hasBeenSet = true;
     }
-    return true;
+    
+    if (!targetFuture.isIncomplete) {
+        [self _forceUnwrap:targetFuture];
+        return StartUnwrapResult_StartedAndFinished;
+    }
+    
+    @synchronized(sharedUnwrapCycleDetectionLock) {
+        bool cycleDetected = false;
+        for (TOCFuture* f = targetFuture; f != nil && !cycleDetected; f = f->_unwrapTarget) {
+            cycleDetected = f == self;
+        }
+        if (cycleDetected) {
+            // Futures unwrapping in a cycle are immortal. No need to keep links around.
+            TOCFuture* f = targetFuture;
+            while (true) {
+                TOCFuture* n = f->_unwrapTarget;
+                if (n == nil) break;
+                f->_unwrapTarget = nil;
+                f = n;
+            }
+            
+            return StartUnwrapResult_CycleDetected;
+        }
+        self->_unwrapTarget = targetFuture;
+    }
+    
+    return StartUnwrapResult_Started;
 }
--(void) _ForSource_forceFinishFutureSet:(TOCFuture*)finalValue {
-    require(finalValue != nil);
-    bool flatteningFutureSucceeded = [self _trySet:finalValue->_value
-                                         succeeded:finalValue->_ifDoneHasSucceeded
+-(void) _forceUnwrap:(TOCFuture*)future {
+    force(future != nil);
+    force(!future.isIncomplete);
+    bool flatteningFutureSucceeded = [self _trySet:future->_value
+                                         succeeded:future->_ifDoneHasSucceeded
                                         isUnwiring:true];
     force(flatteningFutureSucceeded);
+}
+-(void) _ForSource_forceFinishUnwrap {
+    TOCFuture* target;
+    @synchronized(sharedUnwrapCycleDetectionLock) {
+        target = _unwrapTarget;
+        _unwrapTarget = nil;
+    }
+    [self _forceUnwrap:target];
+    
 }
 -(bool) _ForSource_trySet:(id)finalValue
                 succeeded:(bool)succeeded {
@@ -75,8 +126,8 @@
 }
 
 -(enum TOCFutureState) state {
-    enum TOCCancelTokenState completionState = _completionToken.state;
-    switch (completionState) {
+    enum TOCCancelTokenState completionCancelTokenState = _completionToken.state;
+    switch (completionCancelTokenState) {
         case TOCCancelTokenState_Cancelled:
             return _ifDoneHasSucceeded ? TOCFutureState_CompletedWithResult : TOCFutureState_Failed;
             
@@ -88,10 +139,8 @@
                 return _hasBeenSet ? TOCFutureState_Flattening : TOCFutureState_AbleToBeSet;
             }
             
-        default: {
-            bool completionStateIsRecognized = false;
-            force(completionStateIsRecognized);
-        }
+        default:
+            unexpectedEnum(completionCancelTokenState);
     }
 }
 -(bool)isIncomplete {
@@ -228,20 +277,27 @@
     if ([finalResult isKindOfClass:[TOCFuture class]]) {
         TOCFuture* futureFinalResult = finalResult;
 
-        if (![future _ForSource_tryStartFutureSet]) return false;
-        
-        // optimize self-dependence into immortality
-        if (futureFinalResult == future) {
-            _completionSource = nil;
-            return true;
+        enum StartUnwrapResult startUnwrapResult = [future _ForSource_tryStartUnwrapping:futureFinalResult];
+        switch (startUnwrapResult) {
+            case StartUnwrapResult_AlreadySet:
+                return false;
+            case StartUnwrapResult_StartedAndFinished:
+                [self->_completionSource cancel];
+                return true;
+            case StartUnwrapResult_CycleDetected:
+                _completionSource = nil;
+                return true;
+            case StartUnwrapResult_Started: {
+                TOCCancelTokenSource* sourceKeptAliveByCallback = _completionSource;
+                _completionSource = nil;
+                [futureFinalResult.cancelledOnCompletionToken whenCancelledDo:^{
+                    [self->future _ForSource_forceFinishUnwrap];
+                    [sourceKeptAliveByCallback cancel];
+                }];
+                return true;
+            } default:
+                unexpectedEnum(startUnwrapResult);
         }
-        
-        [futureFinalResult.cancelledOnCompletionToken whenCancelledDo:^{
-            [self->future _ForSource_forceFinishFutureSet:futureFinalResult];
-            [self->_completionSource cancel];
-        }];
-        
-        return true;
     }
     
     return [future _ForSource_trySet:finalResult succeeded:true] && [_completionSource tryCancel];

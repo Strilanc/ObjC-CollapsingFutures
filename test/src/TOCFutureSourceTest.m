@@ -342,5 +342,74 @@
     [s2 trySetResult:@2];
     testFutureHasResult(f1, @2);
 }
+-(void) testImmortalityCycleCollapses {
+    TOCFuture* f1;
+    TOCFuture* f2;
+    @autoreleasepool {
+        TOCFutureSource* s1 = [TOCFutureSource new];
+        TOCFutureSource* s2 = [TOCFutureSource new];
+        f1 = s1.future;
+        f2 = s2.future;
+        [s2 forceSetResult:s1.future];
+        [s1 forceSetResult:s2.future];
+    }
+    test(f1.state == TOCFutureState_Immortal);
+    test(f2.state == TOCFutureState_Immortal);
+}
+-(void) testImmortalityComplexCycleCollapses {
+    TOCFuture* f1;
+    TOCFuture* f2;
+    TOCFuture* f3;
+    TOCFuture* f4;
+    TOCFuture* f5;
+    TOCFuture* f6;
+    @autoreleasepool {
+        TOCFutureSource* s1 = [TOCFutureSource new];
+        TOCFutureSource* s2 = [TOCFutureSource new];
+        TOCFutureSource* s3 = [TOCFutureSource new];
+        TOCFutureSource* s4 = [TOCFutureSource new];
+        TOCFutureSource* s5 = [TOCFutureSource new];
+        TOCFutureSource* s6 = [TOCFutureSource new];
+        f1 = s1.future;
+        f2 = s2.future;
+        f3 = s3.future;
+        f4 = s4.future;
+        f5 = s5.future;
+        f6 = s6.future;
+        [s1 forceSetResult:s3.future];
+        [s2 forceSetResult:s3.future];
+        
+        [s3 forceSetResult:s4.future];
+        [s4 forceSetResult:s5.future];
+        [s5 forceSetResult:s6.future];
+        [s6 forceSetResult:s3.future];
+    }
+    test(f1.state == TOCFutureState_Immortal);
+    test(f2.state == TOCFutureState_Immortal);
+    test(f3.state == TOCFutureState_Immortal);
+    test(f4.state == TOCFutureState_Immortal);
+    test(f5.state == TOCFutureState_Immortal);
+    test(f6.state == TOCFutureState_Immortal);
+}
+-(void) testImmortalityCyclesCollapseEagerly {
+    TOCFuture* f1;
+    TOCFuture* f2;
+    TOCFuture* f3;
+    TOCFutureSource* s1;
+    @autoreleasepool {
+        s1 = [TOCFutureSource new];
+        TOCFutureSource* s2 = [TOCFutureSource new];
+        TOCFutureSource* s3 = [TOCFutureSource new];
+        f1 = s1.future;
+        f2 = s2.future;
+        f3 = s3.future;
+        [s1 forceSetResult:s3.future];
+        [s2 forceSetResult:s3.future];
+        [s3 forceSetResult:s2.future];
+    }
+    test(f1.state == TOCFutureState_Immortal);
+    test(f2.state == TOCFutureState_Immortal);
+    test(f3.state == TOCFutureState_Immortal);
+}
 
 @end

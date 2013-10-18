@@ -12,6 +12,11 @@
                                        reason:[NSString stringWithFormat:@"A forced operation ( force(%@) ) failed to succeed.", (@#expr)] \
                                      userInfo:nil])
 
+#define unexpectedEnum(expr) \
+    @throw([NSException exceptionWithName:NSInternalInconsistencyException \
+                                   reason:[NSString stringWithFormat:@"An unexpected enum value ( %@ = %d ) was encountered.", (@#expr), expr] \
+                                 userInfo:nil])
+
 @interface VoidBlock : NSObject { @public void (^block)(void); }
 +(VoidBlock*) voidBlock:(void(^)(void))block;
 -(void)run;
