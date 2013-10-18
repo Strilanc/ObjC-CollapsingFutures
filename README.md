@@ -6,7 +6,7 @@ This is a library implementing futures in Objective-C, featuring:
 - **Types**: `TOCFuture`, `TOCFutureSource`, `TOCCancelToken`, `TOCCancelTokenSource`
 - **Collapsing**: Automatic flattening. You never have to worry about how many times you need to unwrap/flatten a future. A `[TOCFuture futureWithResult:[TOCFuture futureWithResult:@1]]` is automatically a `[TOCFuture futureWithResult:@1]`.
 - **Cancellation**: Almost all asynchronous operations have a variant that accepts a `TOCCancelToken`. When the cancel token is cancelled, the operation immediately cleans up and completes with a cancellation failure (if it didn't already finish).
-- **Dealing with Immortality**: If a future or cancel token's source is deallocated without setting/cancelling its future or token, the future or token is marked as immortal and discards all of its callbacks. Accidentally making a future its own result (making flattening non-halting) also marks it as immortal. This makes it a lot harder to make a self-sustaining reference cycle involving futures.
+- **Immortality**: When a future or cancel token's source is lost, they are marked as immortal. This also occurs if a future's result cycles back to itself (preventing flattening from completing). Immortal futures and tokens discard their callbacks. This makes it a lot harder to accidentally create a self-sustaining reference cycle (you have to involve the sources).
 - **Documentation**: Doc comments on every method and type, covering corner cases and in some cases basic usage hints.
 
 
