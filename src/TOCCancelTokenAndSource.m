@@ -53,7 +53,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
     }
     
     for (SettledHandler handler in settledHandlersSnapshot) {
-        handler(_state);
+        handler(TOCCancelTokenState_Immortal);
     }
     return true;
 }
@@ -77,7 +77,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
         handler();
     }
     for (SettledHandler handler in settledHandlersSnapshot) {
-        handler(_state);
+        handler(TOCCancelTokenState_Cancelled);
     }
     return true;
 }
@@ -109,6 +109,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
 
 -(Remover)_removable_whenSettledDo:(SettledHandler)settledHandler {
     require(settledHandler != nil);
+    enum TOCCancelTokenState finalState;
     @synchronized(self) {
         if (_state == TOCCancelTokenState_StillCancellable) {
             // to ensure we don't end up with two distinct copies of the block, move it to a local
@@ -124,9 +125,10 @@ static TOCCancelToken* SharedImmortalToken = nil;
                 }
             };
         }
+        finalState = _state;
     }
     
-    settledHandler(_state);
+    settledHandler(finalState);
     return nil;
 }
 
@@ -137,16 +139,12 @@ static TOCCancelToken* SharedImmortalToken = nil;
     // fair warning: the following code is very difficult to get right.
     
     // optimistically do less work
-    if (unlessCancelledToken == nil) {
-        [self whenCancelledDo:cancelHandler];
-        return;
-    }
     enum TOCCancelTokenState peekOtherState = unlessCancelledToken.state;
-    if (unlessCancelledToken == self || peekOtherState == TOCCancelTokenState_Cancelled) {
-        return;
-    }
     if (peekOtherState == TOCCancelTokenState_Immortal) {
         [self whenCancelledDo:cancelHandler];
+        return;
+    }
+    if (unlessCancelledToken == self || peekOtherState == TOCCancelTokenState_Cancelled) {
         return;
     }
     
