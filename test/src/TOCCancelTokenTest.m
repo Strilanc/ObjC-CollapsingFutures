@@ -261,8 +261,8 @@
 -(void) testCancelTokenSourceUntil_CleansUpEagerly {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
     vm_size_t memoryBefore = peekAllocatedMemoryInBytes();
-    int repeats     = 5000;
-    vm_size_t slack = 100000;
+    int repeats     = 10000;
+    vm_size_t slack = 50000;
     for (int i = 0; i < repeats; i++) {
         @autoreleasepool {
             TOCCancelTokenSource* d = [TOCCancelTokenSource cancelTokenSourceUntil:s.token];
@@ -297,8 +297,8 @@
 -(void) testFutureSourceUntil_CleansUpEagerly {
     TOCCancelTokenSource* s = [TOCCancelTokenSource new];
     vm_size_t memoryBefore = peekAllocatedMemoryInBytes();
-    int repeats     = 5000;
-    vm_size_t slack = 100000;
+    int repeats     = 10000;
+    vm_size_t slack = 50000;
     for (int i = 0; i < repeats; i++) {
         @autoreleasepool {
             TOCFutureSource* d = [TOCFutureSource futureSourceUntil:s.token];
