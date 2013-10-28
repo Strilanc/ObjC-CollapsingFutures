@@ -193,4 +193,31 @@
     test([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { return @3; } unless:c.token].hasFailedWithCancel);
 }
 
+-(void) testFinallyDo_StaysOnMainThread {
+    TOCCancelTokenSource* c2 = [TOCCancelTokenSource new];
+    dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        TOCFutureSource* c1 = [TOCFutureSource new];
+        TOCFuture* f = [TOCFuture futureWithResultFromOperation:^id{
+            test([NSThread isMainThread]);
+            [c1.future finallyDo:^(TOCFuture* completed){
+                test([NSThread isMainThread]);
+                [c2 cancel];
+            } unless:c2.token];
+            return nil;
+        } invokedOnThread:[NSThread mainThread]];
+        
+        test(![NSThread isMainThread]);
+        testCompletesConcurrently(f);
+        testFutureHasResult(f, nil);
+        test(c2.token.state == TOCCancelTokenState_StillCancellable);
+        
+        [c1 trySetResult:nil];
+    });
+    
+    for (int i = 0; i < 5 && !c2.token.isAlreadyCancelled; i++) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+    }
+    test(c2.token.state == TOCCancelTokenState_Cancelled);
+}
+
 @end

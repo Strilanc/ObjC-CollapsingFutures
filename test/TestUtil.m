@@ -13,7 +13,7 @@ vm_size_t peekAllocatedMemoryInBytes(void) {
     return info.resident_size;
 }
 bool futureHasResult(TOCFuture* future, id result) {
-    return future.hasResult && [future.forceGetResult isEqual:result];
+    return future.hasResult && (result == future.forceGetResult || [future.forceGetResult isEqual:result]);
 }
 bool futureHasFailure(TOCFuture* future, id failure) {
     return future.hasFailed && [future.forceGetFailure isEqual:failure];

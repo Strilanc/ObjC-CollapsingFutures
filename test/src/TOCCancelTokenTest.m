@@ -1,6 +1,7 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import "TestUtil.h"
 #import "TwistedOakCollapsingFutures.h"
+#import "TOCInternal_BlockObject.h"
 
 @interface TOCCancelTokenTest : SenTestCase
 @end
@@ -308,6 +309,59 @@
     vm_size_t memoryAfter = peekAllocatedMemoryInBytes();
     bool likelyIsNotCleaningUp = memoryAfter > memoryBefore + slack;
     test(!likelyIsNotCleaningUp);
+}
+
+-(void) testWhenCancelledDo_StaysOnMainThread {
+    TOCCancelTokenSource* c2 = [TOCCancelTokenSource new];
+    dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        TOCCancelTokenSource* c1 = [TOCCancelTokenSource new];
+        TOCFuture* f = [TOCFuture futureWithResultFromOperation:^id{
+            test([NSThread isMainThread]);
+            [c1.token whenCancelledDo:^{
+                test([NSThread isMainThread]);
+                [c2 cancel];
+            }];
+            return nil;
+        } invokedOnThread:[NSThread mainThread]];
+        
+        test(![NSThread isMainThread]);
+        testCompletesConcurrently(f);
+        testFutureHasResult(f, nil);
+        test(c2.token.state == TOCCancelTokenState_StillCancellable);
+        
+        [c1 cancel];
+    });
+    
+    for (int i = 0; i < 5 && !c2.token.isAlreadyCancelled; i++) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+    }
+    test(c2.token.state == TOCCancelTokenState_Cancelled);
+}
+-(void) testWhenCancelledDoUnless_StaysOnMainThread {
+    TOCCancelTokenSource* c2 = [TOCCancelTokenSource new];
+    dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        TOCCancelTokenSource* c1 = [TOCCancelTokenSource new];
+        TOCFuture* f = [TOCFuture futureWithResultFromOperation:^id{
+            test([NSThread isMainThread]);
+            [c1.token whenCancelledDo:^{
+                test([NSThread isMainThread]);
+                [c2 cancel];
+            } unless:c2.token];
+            return nil;
+        } invokedOnThread:[NSThread mainThread]];
+        
+        test(![NSThread isMainThread]);
+        testCompletesConcurrently(f);
+        testFutureHasResult(f, nil);
+        test(c2.token.state == TOCCancelTokenState_StillCancellable);
+        
+        [c1 cancel];
+    });
+    
+    for (int i = 0; i < 5 && !c2.token.isAlreadyCancelled; i++) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+    }
+    test(c2.token.state == TOCCancelTokenState_Cancelled);
 }
 
 @end

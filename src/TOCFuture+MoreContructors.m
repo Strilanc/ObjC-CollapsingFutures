@@ -54,8 +54,7 @@
     TOCFutureSource* resultSource = [TOCFutureSource new];
     if (delayInSeconds == INFINITY) return [resultSource.future unless:unlessCancelledToken];
     
-    const int64_t nanosecondsPerSecond = 1000*1000*1000;
-    double delayInNanoseconds = delayInSeconds * nanosecondsPerSecond;
+    double delayInNanoseconds = delayInSeconds * NSEC_PER_SEC;
     require(delayInNanoseconds < INT64_MAX/2);
     
     dispatch_time_t then = dispatch_time(DISPATCH_TIME_NOW, (int64_t)delayInNanoseconds);

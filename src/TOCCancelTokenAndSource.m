@@ -94,12 +94,21 @@ static TOCCancelToken* SharedImmortalToken = nil;
     return self.state == TOCCancelTokenState_StillCancellable;
 }
 
+-(TOCCancelHandler) preserveMainThreadness:(TOCCancelHandler)cancelHandler {
+    if (![NSThread isMainThread]) return cancelHandler;
+    
+    return ^{ [TOCInternal_BlockObject performBlock:cancelHandler
+                                           onThread:[NSThread mainThread]]; };
+}
+
 -(void)whenCancelledDo:(TOCCancelHandler)cancelHandler {
     require(cancelHandler != nil);
+    
     @synchronized(self) {
         if (_state == TOCCancelTokenState_Immortal) return;
         if (_state == TOCCancelTokenState_StillCancellable) {
-            [_cancelHandlers addObject:cancelHandler];
+            TOCCancelHandler safeHandler = [self preserveMainThreadness:cancelHandler];
+            [_cancelHandlers addObject:safeHandler];
             return;
         }
     }
@@ -160,9 +169,10 @@ static TOCCancelToken* SharedImmortalToken = nil;
     };
     
     // make the cancel-each-other cycle, running the cancel handler if self is cancelled first
+    TOCCancelHandler safeHandler = [self preserveMainThreadness:cancelHandler];
     __block Remover removeHandlerFromSelfToOther = [self _removable_whenSettledDo:^(enum TOCCancelTokenState finalState){
         if (finalState == TOCCancelTokenState_Cancelled) {
-            cancelHandler();
+            safeHandler();
         }
         onSecondCallRemoveHandlerFromOtherToSelf();
     }];

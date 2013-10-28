@@ -197,7 +197,7 @@
                                                                             withOperationTimeout:100.0
                                                                                            until:nil];
     
-    testUntil(f1.hasFailedWithTimeout);
+    testChurnUntil(f1.hasFailedWithTimeout);
     test(f0.hasFailedWithTimeout);
     test(f2.isIncomplete);
     [s trySetResult:@1];
@@ -296,7 +296,7 @@
     TOCFuture* f2 = [TOCFuture futureWithResultFromAsyncCancellableOperation:t
                                                                  withTimeout:100.0];
     
-    testUntil(f1.hasFailedWithTimeout);
+    testChurnUntil(f1.hasFailedWithTimeout);
     test(f0.hasFailedWithTimeout);
     test(f2.isIncomplete);
     [s trySetResult:@1];
@@ -391,7 +391,7 @@
                                                                  withTimeout:100.0
                                                                       unless:nil];
     
-    testUntil(f1.hasFailedWithTimeout);
+    testChurnUntil(f1.hasFailedWithTimeout);
     test(f0.hasFailedWithTimeout);
     test(f2.isIncomplete);
     [s trySetResult:@1];

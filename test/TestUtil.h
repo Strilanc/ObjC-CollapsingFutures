@@ -15,6 +15,12 @@ int testTargetHits;
 #define testCompletesConcurrently(future) test(testCompletesConcurrently_helper(future, 2.0))
 #define testDoesNotCompleteConcurrently(future) test(!testCompletesConcurrently_helper(future, 0.01))
 #define testUntil(condition) test(testPassesConcurrently_helper(^bool{ return (condition);}, 2.0))
+#define testChurnUntil(condition) \
+    for (int _churnCounter_xxx = 0; _churnCounter_xxx < 5 && !(condition); _churnCounter_xxx++) { \
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]]; \
+    } \
+    test(condition)
+
 #define testHitsTarget(expression) testTargetHits = 0; \
                                    expression; \
                                    test(testTargetHits == 1)
