@@ -65,11 +65,25 @@ enum StartUnwrapResult {
     // look for flattening cycles
     @synchronized(sharedUnwrapCycleDetectionLock) {
         bool cycleDetected = false;
-        for (TOCFuture* f = targetFuture; f != nil && !cycleDetected; f = f->_unwrapTargetInterLink) {
+        for (TOCFuture* f = targetFuture; ; ) {
+            // advance
             cycleDetected = f == self;
+            if (f == nil || cycleDetected) break;
+            
+            // advance
+            TOCFuture* n = f->_unwrapTargetInterLink;
+            cycleDetected = n == self;
+            if (n == nil || cycleDetected) break;
+            
+            // leap frog links, cutting long chains in half (ensuring n log n worst case amortized cost)
+            TOCFuture* nn = n->_unwrapTargetInterLink;
+            f->_unwrapTargetInterLink = nn;
+            
+            f = nn;
         }
+        
         if (cycleDetected) {
-            // Futures unwrapping in a cycle are immortal. No need to keep links around.
+            // clear out the cycle
             TOCFuture* f = targetFuture;
             while (true) {
                 TOCFuture* n = f->_unwrapTargetInterLink;
@@ -80,6 +94,7 @@ enum StartUnwrapResult {
             
             return StartUnwrapResult_CycleDetected;
         }
+        
         self->_unwrapTargetInterLink = targetFuture;
     }
     
