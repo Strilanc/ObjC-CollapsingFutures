@@ -236,6 +236,8 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * Cancelling a callback causes it to be immediately discarded.
  * The future will no longer reference it, and it may be deallocated.
+ *
+ * When this method is called from the main thread, the completion handler is guaranteed to also run on the main thread.
  */
 -(void) finallyDo:(TOCFutureFinallyHandler)completionHandler
            unless:(TOCCancelToken*)unlessCancelledToken;
@@ -253,6 +255,8 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * Cancelling a callback causes it to be immediately discarded.
  * The future will no longer reference it, and it may be deallocated.
+ *
+ * When this method is called from the main thread, the result handler is guaranteed to also run on the main thread.
  */
 -(void) thenDo:(TOCFutureThenHandler)resultHandler
         unless:(TOCCancelToken*)unlessCancelledToken;
@@ -273,6 +277,8 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * Cancelling a callback causes it to be immediately discarded.
  * The future will no longer reference it, and it may be deallocated.
+ *
+ * When this method is called from the main thread, the failure handler is guaranteed to also run on the main thread.
  */
 -(void) catchDo:(TOCFutureCatchHandler)failureHandler
          unless:(TOCCancelToken*)unlessCancelledToken;
@@ -297,6 +303,8 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * Cancelling a callback causes it to be immediately discarded.
  * The future will no longer reference it, and it may be deallocated.
+ *
+ * When this method is called from the main thread, the completion continuation is guaranteed to also run on the main thread.
  */
 -(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation
                unless:(TOCCancelToken*)unlessCancelledToken;
@@ -323,6 +331,8 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * Cancelling a callback causes it to be immediately discarded.
  * The future will no longer reference it, and it may be deallocated.
+ *
+ * When this method is called from the main thread, the result continuation is guaranteed to also run on the main thread.
  */
 -(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation
             unless:(TOCCancelToken*)unlessCancelledToken;
@@ -347,6 +357,8 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * Cancelling a callback causes it to be immediately discarded.
  * The future will no longer reference it, and it may be deallocated.
+ *
+ * When this method is called from the main thread, the failure continuation is guaranteed to also run on the main thread.
  */
 -(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation
              unless:(TOCCancelToken*)unlessCancelledToken;
