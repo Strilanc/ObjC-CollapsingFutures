@@ -66,11 +66,6 @@
     TOCFuture* f = [TOCFuture futureWithResult:@1
                               afterDelay:0.1];
     
-    // churn run loop so timer can complete
-    for (int i = 0; i < 5 && f.isIncomplete; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
-    }
-    
     testCompletesConcurrently(f);
     testFutureHasResult(f, @1);
 }
@@ -83,13 +78,74 @@
     
     TOCFuture* f = [TOCFuture futureWithResult:@1
                                     afterDelay:100.0];
+    testDoesNotCompleteConcurrently(f);
+}
+
+-(void)testFutureWithResultAfterDelayUnless_Preconditions {
+    testThrows([TOCFuture futureWithResult:@"X" afterDelay:-1 unless:TOCCancelToken.immortalToken]);
+    testThrows([TOCFuture futureWithResult:@"X" afterDelay:-1 unless:TOCCancelToken.cancelledToken]);
+
+    testThrows([TOCFuture futureWithResult:@"X" afterDelay:-INFINITY unless:TOCCancelToken.immortalToken]);
+    testThrows([TOCFuture futureWithResult:@"X" afterDelay:-INFINITY unless:TOCCancelToken.cancelledToken]);
+
+    testThrows([TOCFuture futureWithResult:@"X" afterDelay:NAN unless:TOCCancelToken.immortalToken]);
+    testThrows([TOCFuture futureWithResult:@"X" afterDelay:NAN unless:TOCCancelToken.cancelledToken]);
+}
+-(void)testFutureWithResultAfterDelayUnless_Succeed {
+    TOCCancelTokenSource* s = [TOCCancelTokenSource new];
+    testFutureHasResult([TOCFuture futureWithResult:@"X" afterDelay:0 unless:s.token], @"X");
+    test([TOCFuture futureWithResult:@"X" afterDelay:INFINITY unless:TOCCancelToken.immortalToken].state == TOCFutureState_Immortal);
+    test([TOCFuture futureWithResult:@"X" afterDelay:INFINITY unless:s.token].state != TOCCancelTokenState_Immortal);
     
-    // churn run loop so timer can complete
-    for (int i = 0; i < 5 && f.isIncomplete; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+    TOCFuture* f = [TOCFuture futureWithResult:@1
+                                    afterDelay:0.05
+                                        unless:s.token];
+    
+    testCompletesConcurrently(f);
+    testFutureHasResult(f, @1);
+}
+-(void)testFutureWithResultAfterDelayUnless_Cancel {
+    TOCCancelTokenSource* s = [TOCCancelTokenSource new];
+    TOCFuture* f = [TOCFuture futureWithResult:@1
+                                    afterDelay:10.0
+                                        unless:s.token];
+    
+    testDoesNotCompleteConcurrently(f);
+    [s cancel];
+    test(f.hasFailedWithCancel);
+}
+-(void)testFutureWithResultAfterDelayUnless_AllowsDeallocCallback {
+    TOCFuture* f;
+    DeallocCounter* d = [DeallocCounter new];
+    @autoreleasepool {
+        TOCCancelTokenSource* s = [TOCCancelTokenSource new];
+        DeallocToken* t = [d makeToken];
+        f = [TOCFuture futureWithResult:@1
+                             afterDelay:10.0
+                                 unless:s.token];
+        [f finallyDo:^(TOCFuture *completed) {
+            [t poke];
+        }];
+        test(d.lostTokenCount == 0);
+        [s cancel];
     }
-    
-    test(f.isIncomplete);
+    test(d.lostTokenCount == 1);
+    test(f.hasFailedWithCancel);
+}
+-(void)testFutureWithResultAfterDelayUnless_AllowsDeallocArgument {
+    TOCFuture* f;
+    DeallocCounter* d = [DeallocCounter new];
+    @autoreleasepool {
+        TOCCancelTokenSource* s = [TOCCancelTokenSource new];
+        DeallocToken* t = [d makeToken];
+        f = [TOCFuture futureWithResult:t
+                             afterDelay:10.0
+                                 unless:s.token];
+        test(d.lostTokenCount == 0);
+        [s cancel];
+    }
+    test(d.lostTokenCount == 1);
+    test(f.hasFailedWithCancel);
 }
 
 -(void)testHasFailedWithCancel {
@@ -141,13 +197,8 @@
                                                                             withOperationTimeout:100.0
                                                                                            until:nil];
     
-    // churn run loop so timer can complete
-    for (int i = 0; i < 5 && f2.isIncomplete; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
-    }
-
+    testUntil(f1.hasFailedWithTimeout);
     test(f0.hasFailedWithTimeout);
-    test(f1.hasFailedWithTimeout);
     test(f2.isIncomplete);
     [s trySetResult:@1];
     testFutureHasResult(f2, @1);
@@ -206,13 +257,8 @@
     TOCFuture* f = [TOCFuture futureWithResultFromAsyncCancellableOperation:t
                                                                 withTimeout:0.0001];
     
-    // churn run loop so timer can complete
-    for (int i = 0; i < 5; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
-    }
-
     [c cancel];
-    test(f.isIncomplete);
+    testDoesNotCompleteConcurrently(f);
     [s trySetFailedWithCancel];
     test(f.hasFailedWithTimeout);
 }
@@ -223,13 +269,8 @@
     TOCFuture* f = [TOCFuture futureWithResultFromAsyncCancellableOperation:t
                                                                 withTimeout:0.0001];
     
-    // churn run loop so timer can complete
-    for (int i = 0; i < 5; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
-    }
-
     [c cancel];
-    test(f.isIncomplete);
+    testDoesNotCompleteConcurrently(f);
     [s trySetResult:@1];
     testFutureHasResult(f, @1);
 }
@@ -239,13 +280,8 @@
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     TOCFuture* f = [TOCFuture futureWithResultFromAsyncCancellableOperation:t
                                                                 withTimeout:0.0001];
-    // churn run loop so timer can complete
-    for (int i = 0; i < 5; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
-    }
-    
     [c cancel];
-    test(f.isIncomplete);
+    testDoesNotCompleteConcurrently(f);
     [s trySetFailure:@2];
     testFutureHasFailure(f, @2);
 }
@@ -260,13 +296,8 @@
     TOCFuture* f2 = [TOCFuture futureWithResultFromAsyncCancellableOperation:t
                                                                  withTimeout:100.0];
     
-    // churn run loop so timer can complete
-    for (int i = 0; i < 5 && f2.isIncomplete; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
-    }
-    
+    testUntil(f1.hasFailedWithTimeout);
     test(f0.hasFailedWithTimeout);
-    test(f1.hasFailedWithTimeout);
     test(f2.isIncomplete);
     [s trySetResult:@1];
     testFutureHasResult(f2, @1);
@@ -306,12 +337,7 @@
                                                                 withTimeout:0.0001
                                                                      unless:c.token];
 
-    // churn run loop so timer can complete
-    for (int i = 0; i < 5; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
-    }
-
-    test(f.isIncomplete);
+    testDoesNotCompleteConcurrently(f);
     [s trySetFailedWithCancel];
     test(f.hasFailedWithTimeout);
 }
@@ -323,7 +349,7 @@
                                                                 withTimeout:10000.0
                                                                      unless:c.token];
     [c cancel];
-    test(f.isIncomplete);
+    testDoesNotCompleteConcurrently(f);
     [s trySetFailedWithCancel];
     test(f.hasFailedWithCancel);
 }
@@ -335,7 +361,7 @@
                                                                 withTimeout:10000.0
                                                                      unless:c.token];
     [c cancel];
-    test(f.isIncomplete);
+    testDoesNotCompleteConcurrently(f);
     [s trySetResult:@1];
     testFutureHasResult(f, @1);
 }
@@ -365,13 +391,8 @@
                                                                  withTimeout:100.0
                                                                       unless:nil];
     
-    // churn run loop so timer can complete
-    for (int i = 0; i < 5 && f2.isIncomplete; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
-    }
-    
+    testUntil(f1.hasFailedWithTimeout);
     test(f0.hasFailedWithTimeout);
-    test(f1.hasFailedWithTimeout);
     test(f2.isIncomplete);
     [s trySetResult:@1];
     testFutureHasResult(f2, @1);

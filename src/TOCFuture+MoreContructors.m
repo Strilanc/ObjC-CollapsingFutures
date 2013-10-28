@@ -49,24 +49,25 @@
     require(!isnan(delayInSeconds));
     
     if (delayInSeconds == 0) return [TOCFuture futureWithResult:resultValue];
+    __block id resultValueBlock = resultValue;
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
-    if (delayInSeconds == INFINITY) return resultSource.future;
+    if (delayInSeconds == INFINITY) return [resultSource.future unless:unlessCancelledToken];
     
-    TOCInternal_BlockObject* target = [TOCInternal_BlockObject voidBlock:^{
-        [resultSource trySetResult:resultValue];
-    }];
-    NSTimer* timer = [NSTimer timerWithTimeInterval:delayInSeconds
-                                             target:target
-                                           selector:[target runSelector]
-                                           userInfo:nil
-                                            repeats:NO];
-    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+    const int64_t nanosecondsPerSecond = 1000*1000*1000;
+    double delayInNanoseconds = delayInSeconds * nanosecondsPerSecond;
+    require(delayInNanoseconds < INT64_MAX/2);
     
+    dispatch_time_t then = dispatch_time(DISPATCH_TIME_NOW, (int64_t)delayInNanoseconds);
+    dispatch_after(then, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [resultSource trySetResult:resultValueBlock];
+    });
     [unlessCancelledToken whenCancelledDo:^{
-        [timer invalidate];
-        [resultSource trySetFailedWithCancel];
-    } unless:resultSource.future.cancelledOnCompletionToken];
+        if ([resultSource trySetFailedWithCancel]) {
+            resultValueBlock = nil;
+        }
+    }];
+    
     
     return resultSource.future;
 }
