@@ -35,6 +35,12 @@ Installation
 Usage
 =====
 
+Blog posts:
+
+- [Usage and benefits of collapsing futures](http://twistedoakstudios.com/blog/Post7149_collapsing-futures-in-objective-c)
+- [Usage and benefits of cancellation tokens](http://twistedoakstudios.com/blog/Post7391_cancellation-tokens-and-collapsing-futures-for-objective-c)
+- [How immortality detection works](http://twistedoakstudios.com/blog/Post7525_using-immortality-to-kill-accidental-callback-cycles)
+
 A consumer using an asynchronous utility method that returns a future:
 
 ```objective-c
@@ -79,9 +85,3 @@ Producing that asynchronous address book, by using existing methods to control a
     return futureAddressBookSource;
 }
 ```
-
-Blog posts:
-
-- [Usage and benefits of collapsing futures](http://twistedoakstudios.com/blog/Post7149_collapsing-futures-in-objective-c)
-- [Usage and benefits of cancellation tokens](http://twistedoakstudios.com/blog/Post7391_cancellation-tokens-and-collapsing-futures-for-objective-c)
-- [How immortality detection works](http://twistedoakstudios.com/blog/Post7525_using-immortality-to-kill-accidental-callback-cycles)
