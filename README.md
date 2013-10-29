@@ -4,7 +4,7 @@ Collapsing Futures for Objective-C
 This is a library implementing [futures](https://en.wikipedia.org/wiki/Future_%28programming%29) in Objective-C, featuring:
 
 - **Types**: `TOCFuture` to represent eventual results, `TOCCancelToken` to propagate cancellation notifications, `TOCFutureSource` to produce and control an eventual result, and `TOCCancelTokenSource` to produce and control a cancel token.
-- **Collapsing Futures**: Automatic flattening. You never have to worry about how unwrapping or flattening a future. A `[TOCFuture futureWithResult:[TOCFuture futureWithResult:@1]]` is automatically a `[TOCFuture futureWithResult:@1]`.
+- **Automatic Collapsing**: You never have to worry about forgetting to unwrap or flatten a doubly-eventual future. A `[TOCFuture futureWithResult:[TOCFuture futureWithResult:@1]]` is automatically a `[TOCFuture futureWithResult:@1]`.
 - **Sticky Main Thread**: Callbacks registered from the main thread will get back on the main thread before executing.  Makes UI work much easier.
 - **Cancellable Operations**: All asynchronous operations have variants that can be cancelled by cancelling the `TOCCancelToken` passed to the operation's `until:` or `unless:` parameter.
 - **Immortality Detection**: It is impossible to create new space leaks by consuming futures and tokens (but producers still have to be careful). If a reference cycle doesn't involve a token or future's source, it will be broken when the source is deallocated.
