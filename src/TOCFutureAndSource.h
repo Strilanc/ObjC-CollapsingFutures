@@ -340,7 +340,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 /*!
  * Eventually matches the receiving future's result, or else evaluates a 'catch' continuation on the receiving future's failure, unless cancelled.
  *
- * @param resultContinuation The continuation to evaluate when the future fails.
+ * @param failureContinuation The continuation to evaluate when the future fails.
  *
  * @param unlessCancelledToken If this token is cancelled before the receiving future fails, the continuation is cancelled.
  * The resulting future will immediately transition to the failed state, with the given token as its failure value.
@@ -389,7 +389,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * @result True when the future source was successfully set, and false when it was already set.
  *
- * @param finalResult The result the receiving future source should complete with.
+ * @param result The result the receiving future source should complete with.
  * Allowed to be nil.
  * Allowed to be a future.
  *
@@ -408,7 +408,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
  *
  * @result True when the future source was successfully set, and false when it was already set.
  *
- * @param finalFailure The failure the receiving future source should fail with.
+ * @param failure The failure the receiving future source should fail with.
  * Allowed to be nil.
  * Allowed to be a future.
  *
@@ -421,7 +421,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 /*!
  * Sets the receiving future source to complete with the given result, or else raises an exception if it was already set.
  *
- * @param finalResult The result the receiving future source should complete with.
+ * @param result The result the receiving future source should complete with.
  * Allowed to be nil.
  * Allowed to be a future.
  *
@@ -436,7 +436,7 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 /*!
  * Sets the receiving future source to fail with the given failure, or else raises an exception.
  *
- * @param finalFailure The failure the receiving future source should fail with.
+ * @param failure The failure the receiving future source should fail with.
  * Allowed to be nil.
  * Allowed to be a future.
  *

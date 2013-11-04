@@ -37,7 +37,7 @@
 /*!
  * Eventually evaluates a 'finally' continuation on the receiving future, once it has completed with a result or failed.
  *
- * @param failureContinuation The block to evaluate when the future fails or completes with a result.
+ * @param completionContinuation The block to evaluate when the future fails or completes with a result.
  *
  * @result A future for the eventual result of evaluating the given 'finally' block on the receiving future once it has completed.
  *

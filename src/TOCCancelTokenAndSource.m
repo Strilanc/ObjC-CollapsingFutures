@@ -4,7 +4,7 @@
 #include <libkern/OSAtomic.h>
 
 typedef void (^Remover)(void);
-typedef void (^SettledHandler)(enum TOCCancelTokenState state);
+typedef void (^SettledHandler)(void);
 
 static TOCCancelToken* SharedCancelledToken = nil;
 static TOCCancelToken* SharedImmortalToken = nil;
@@ -53,7 +53,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
     }
     
     for (SettledHandler handler in settledHandlersSnapshot) {
-        handler(TOCCancelTokenState_Immortal);
+        handler();
     }
     return true;
 }
@@ -77,7 +77,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
         handler();
     }
     for (SettledHandler handler in settledHandlersSnapshot) {
-        handler(TOCCancelTokenState_Cancelled);
+        handler();
     }
     return true;
 }
@@ -118,7 +118,6 @@ static TOCCancelToken* SharedImmortalToken = nil;
 
 -(Remover)_removable_whenSettledDo:(SettledHandler)settledHandler {
     require(settledHandler != nil);
-    enum TOCCancelTokenState finalState;
     @synchronized(self) {
         if (_state == TOCCancelTokenState_StillCancellable) {
             // to ensure we don't end up with two distinct copies of the block, move it to a local
@@ -130,14 +129,13 @@ static TOCCancelToken* SharedImmortalToken = nil;
             
             return ^{
                 @synchronized(self) {
-                    [_removableSettledHandlers removeObject:singleCopyOfHandler];
+                    [self->_removableSettledHandlers removeObject:singleCopyOfHandler];
                 }
             };
         }
-        finalState = _state;
     }
     
-    settledHandler(finalState);
+    settledHandler();
     return nil;
 }
 
@@ -170,13 +168,14 @@ static TOCCancelToken* SharedImmortalToken = nil;
     
     // make the cancel-each-other cycle, running the cancel handler if self is cancelled first
     TOCCancelHandler safeHandler = [self preserveMainThreadness:cancelHandler];
-    __block Remover removeHandlerFromSelfToOther = [self _removable_whenSettledDo:^(enum TOCCancelTokenState finalState){
-        if (finalState == TOCCancelTokenState_Cancelled) {
+    __block Remover removeHandlerFromSelfToOther = [self _removable_whenSettledDo:^(){
+        // note: this self-reference is fine because it doesn't involve self's source, and gets cleared if the source is deallocated
+        if (self->_state == TOCCancelTokenState_Cancelled) {
             safeHandler();
         }
         onSecondCallRemoveHandlerFromOtherToSelf();
     }];
-    removeHandlerFromOtherToSelf = [unlessCancelledToken _removable_whenSettledDo:^(enum TOCCancelTokenState finalState) {
+    removeHandlerFromOtherToSelf = [unlessCancelledToken _removable_whenSettledDo:^() {
         if (removeHandlerFromSelfToOther == nil) return; // only occurs when the handler was already run and discarded anyways
         removeHandlerFromSelfToOther();
         removeHandlerFromSelfToOther = nil;

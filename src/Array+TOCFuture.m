@@ -17,17 +17,17 @@
     
     require(futures.count < INT_MAX);
     __block int remaining = (int)futures.count + 1;
-    TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
+    TOCCancelHandler doneHandler = ^() {
         if (OSAtomicDecrement32(&remaining) > 0) return;
         [resultSource trySetResult:futures];
     };
     
     for (TOCFuture* item in futures) {
-        [item finallyDo:doneHandler
-                 unless:unlessCancelledToken];
+        [item.cancelledOnCompletionToken whenCancelledDo:doneHandler
+                                                  unless:unlessCancelledToken];
     }
     
-    doneHandler(nil);
+    doneHandler();
     
     [unlessCancelledToken whenCancelledDo:^{ [resultSource trySetFailedWithCancel]; }
                                    unless:resultSource.future.cancelledOnCompletionToken];
