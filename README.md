@@ -16,7 +16,7 @@ Installation
 **Method #1: [CocoaPods](http://cocoapods.org/)**
 
 1. In your [Podfile](http://docs.cocoapods.org/podfile.html), add `pod 'TwistedOakCollapsingFutures'`
-2. Consider [versioning](http://docs.cocoapods.org/guides/dependency_versioning.html), like: `pod 'TwistedOakCollapsingFutures', '~> 0.7`
+2. Consider [versioning](http://docs.cocoapods.org/guides/dependency_versioning.html), like: `pod 'TwistedOakCollapsingFutures', '~> 0.7'`
 3. Run `pod install`
 4. `#import "TwistedOakCollapsingFutures.h"` wherever you want to access the library's types or methods
 
