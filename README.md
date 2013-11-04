@@ -1,5 +1,5 @@
-Collapsing Futures for Objective-C
-==================================
+Twisted Oak Collapsing Futures (for Objective-C)
+================================================
 
 This is a library implementing [futures](https://en.wikipedia.org/wiki/Future_%28programming%29) in Objective-C, featuring:
 
