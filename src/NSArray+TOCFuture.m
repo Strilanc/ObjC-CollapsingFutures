@@ -1,4 +1,4 @@
-#import "Array+TOCFuture.h"
+#import "NSArray+TOCFuture.h"
 #import "TOCFuture+MoreContinuations.h"
 #import "TOCInternal.h"
 #include <libkern/OSAtomic.h>

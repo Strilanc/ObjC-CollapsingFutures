@@ -1,5 +1,5 @@
 #import <SenTestingKit/SenTestingKit.h>
-#import "Array+TOCFuture.h"
+#import "NSArray+TOCFuture.h"
 #import "TestUtil.h"
 
 @interface TOCFutureArrayUtilTest : SenTestCase

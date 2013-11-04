@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1209B201808696100D6831C /* Array+TOCFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* Array+TOCFuture.m */; };
-		A1209B211808696100D6831C /* Array+TOCFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* Array+TOCFuture.m */; };
+		A1209B201808696100D6831C /* NSArray+TOCFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* NSArray+TOCFuture.m */; };
+		A1209B211808696100D6831C /* NSArray+TOCFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* NSArray+TOCFuture.m */; };
 		A1209B2418086A8F00D6831C /* TOCFutureArrayUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */; };
 		A1209B27180888E800D6831C /* TOCCancelTokenAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */; };
 		A1209B28180888E800D6831C /* TOCCancelTokenAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */; };
@@ -61,8 +61,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A1209B1E1808696100D6831C /* Array+TOCFuture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Array+TOCFuture.h"; sourceTree = "<group>"; };
-		A1209B1F1808696100D6831C /* Array+TOCFuture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Array+TOCFuture.m"; sourceTree = "<group>"; };
+		A1209B1E1808696100D6831C /* NSArray+TOCFuture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+TOCFuture.h"; sourceTree = "<group>"; };
+		A1209B1F1808696100D6831C /* NSArray+TOCFuture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+TOCFuture.m"; sourceTree = "<group>"; };
 		A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureArrayUtilTest.m; sourceTree = "<group>"; };
 		A1209B25180888E800D6831C /* TOCCancelTokenAndSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCCancelTokenAndSource.h; sourceTree = "<group>"; };
 		A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCCancelTokenAndSource.m; sourceTree = "<group>"; };
@@ -74,7 +74,7 @@
 		A1209B3D180F4A7800D6831C /* TOCInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCInternal.h; sourceTree = "<group>"; };
 		A1209B41180F4A9300D6831C /* TOCInternal_Racer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCInternal_Racer.h; sourceTree = "<group>"; };
 		A1209B42180F4A9300D6831C /* TOCInternal_Racer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCInternal_Racer.m; sourceTree = "<group>"; };
-		A1209B45180F4B1F00D6831C /* TOCFutureTypeDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCFutureTypeDefs.h; sourceTree = "<group>"; };
+		A1209B45180F4B1F00D6831C /* TOCTypeDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCTypeDefs.h; sourceTree = "<group>"; };
 		A1209B4D180F4F4600D6831C /* TOCInternal_Array+Functional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TOCInternal_Array+Functional.h"; sourceTree = "<group>"; };
 		A1209B4E180F4F4600D6831C /* TOCInternal_Array+Functional.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TOCInternal_Array+Functional.m"; sourceTree = "<group>"; };
 		A1209B51181084FD00D6831C /* TOCTimeout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCTimeout.h; sourceTree = "<group>"; };
@@ -190,9 +190,9 @@
 		A1A019C5180774B600A052A6 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				A1209B1E1808696100D6831C /* Array+TOCFuture.h */,
-				A1209B1F1808696100D6831C /* Array+TOCFuture.m */,
 				A1209B3C180F4A7800D6831C /* internal */,
+				A1209B1E1808696100D6831C /* NSArray+TOCFuture.h */,
+				A1209B1F1808696100D6831C /* NSArray+TOCFuture.m */,
 				A1209B25180888E800D6831C /* TOCCancelTokenAndSource.h */,
 				A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */,
 				A1209B2B180DD34F00D6831C /* TOCFuture+MoreContinuations.h */,
@@ -201,9 +201,9 @@
 				A1A019C9180774B600A052A6 /* TOCFuture+MoreContructors.m */,
 				A1A019C6180774B600A052A6 /* TOCFutureAndSource.h */,
 				A1A019C7180774B600A052A6 /* TOCFutureAndSource.m */,
-				A1209B45180F4B1F00D6831C /* TOCFutureTypeDefs.h */,
 				A1209B51181084FD00D6831C /* TOCTimeout.h */,
 				A1209B52181084FD00D6831C /* TOCTimeout.m */,
+				A1209B45180F4B1F00D6831C /* TOCTypeDefs.h */,
 				A1A019CA180774B600A052A6 /* TwistedOakCollapsingFutures.h */,
 			);
 			path = src;
@@ -311,7 +311,7 @@
 				A1B6BF261810F04900226FE5 /* TOCInternal_BlockObject.m in Sources */,
 				A1209B53181084FD00D6831C /* TOCTimeout.m in Sources */,
 				A1A019CB180774B600A052A6 /* TOCFutureAndSource.m in Sources */,
-				A1209B201808696100D6831C /* Array+TOCFuture.m in Sources */,
+				A1209B201808696100D6831C /* NSArray+TOCFuture.m in Sources */,
 				A1209B43180F4A9300D6831C /* TOCInternal_Racer.m in Sources */,
 				A1209B4F180F4F4600D6831C /* TOCInternal_Array+Functional.m in Sources */,
 				A1209B2D180DD34F00D6831C /* TOCFuture+MoreContinuations.m in Sources */,
@@ -337,7 +337,7 @@
 				A1209B30180DD50200D6831C /* TOCFuture+MoreContinuationsTest.m in Sources */,
 				A1A019CE180774B600A052A6 /* TOCFuture+MoreContructors.m in Sources */,
 				A1209B44180F4A9300D6831C /* TOCInternal_Racer.m in Sources */,
-				A1209B211808696100D6831C /* Array+TOCFuture.m in Sources */,
+				A1209B211808696100D6831C /* NSArray+TOCFuture.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

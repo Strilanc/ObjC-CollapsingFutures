@@ -1,7 +1,7 @@
 #import "TOCFuture+MoreContructors.h"
 #import "TOCFuture+MoreContinuations.h"
 #import "TOCInternal.h"
-#import "Array+TOCFuture.h"
+#import "NSArray+TOCFuture.h"
 
 @implementation TOCFuture (MoreConstructors)
 

@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "TOCFutureAndSource.h"
-#import "TOCFutureTypeDefs.h"
+#import "TOCTypeDefs.h"
 #import "TOCTimeout.h"
 
 @interface TOCFuture (MoreConstructors)

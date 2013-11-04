@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "TOCCancelTokenAndSource.h"
 #import "TOCFutureAndSource.h"
-#import "TOCFutureTypeDefs.h"
+#import "TOCTypeDefs.h"
 
 @interface TOCInternal_Racer : NSObject
 
