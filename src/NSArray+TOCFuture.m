@@ -11,11 +11,11 @@
 
 -(TOCFuture*) asyncFinallyAllUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
-    require([futures allItemsAreKindOfClass:[TOCFuture class]]);
+    TOC_require([futures allItemsAreKindOfClass:[TOCFuture class]]);
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
-    require(futures.count < INT_MAX);
+    TOC_require(futures.count < INT_MAX);
     __block int remaining = (int)futures.count + 1;
     TOCCancelHandler doneHandler = ^() {
         if (OSAtomicDecrement32(&remaining) > 0) return;
@@ -56,11 +56,11 @@
 
 -(NSArray*) asyncOrderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
-    require([futures allItemsAreKindOfClass:[TOCFuture class]]);
+    TOC_require([futures allItemsAreKindOfClass:[TOCFuture class]]);
     
     NSMutableArray* resultSources = [NSMutableArray array];
     
-    require(futures.count <= INT_MAX);
+    TOC_require(futures.count <= INT_MAX);
     __block int nextIndexMinusOne = -1;
     TOCFutureFinallyHandler doneHandler = ^(TOCFuture *completed) {
         NSUInteger i = (NSUInteger)OSAtomicIncrement32Barrier(&nextIndexMinusOne);
@@ -77,8 +77,8 @@
 
 -(TOCFuture*) asyncRaceOperationsWithWinningResultLastingUntil:(TOCCancelToken*)untilCancelledToken {
     NSArray* starters = [self copy]; // remove volatility (i.e. ensure not externally mutable)
-    require(starters.count > 0);
-    require([starters allItemsAreKindOfClass:NSClassFromString(@"NSBlock")]);
+    TOC_require(starters.count > 0);
+    TOC_require([starters allItemsAreKindOfClass:NSClassFromString(@"NSBlock")]);
     
     return [TOCInternal_Racer asyncRace:starters until:untilCancelledToken];
 }

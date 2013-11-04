@@ -15,7 +15,7 @@
 
 +(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
                           dispatchedOnQueue:(dispatch_queue_t)queue {
-    require(operation != nil);
+    TOC_require(operation != nil);
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
@@ -25,8 +25,8 @@
 }
 +(TOCFuture*) futureWithResultFromOperation:(id(^)(void))operation
                             invokedOnThread:(NSThread*)thread {
-    require(operation != nil);
-    require(thread != nil);
+    TOC_require(operation != nil);
+    TOC_require(thread != nil);
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
@@ -45,8 +45,8 @@
 +(TOCFuture*) futureWithResult:(id)resultValue
                     afterDelay:(NSTimeInterval)delayInSeconds
                         unless:(TOCCancelToken*)unlessCancelledToken {
-    require(delayInSeconds >= 0);
-    require(!isnan(delayInSeconds));
+    TOC_require(delayInSeconds >= 0);
+    TOC_require(!isnan(delayInSeconds));
     
     if (delayInSeconds == 0) return [TOCFuture futureWithResult:resultValue];
     __block id resultValueBlock = resultValue;
@@ -55,7 +55,7 @@
     if (delayInSeconds == INFINITY) return [resultSource.future unless:unlessCancelledToken];
     
     double delayInNanoseconds = delayInSeconds * NSEC_PER_SEC;
-    require(delayInNanoseconds < INT64_MAX/2);
+    TOC_require(delayInNanoseconds < INT64_MAX/2);
     
     dispatch_time_t then = dispatch_time(DISPATCH_TIME_NOW, (int64_t)delayInNanoseconds);
     dispatch_after(then, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -74,9 +74,9 @@
 +(TOCFuture*) futureWithResultFromAsyncOperationWithResultLastingUntilCancelled:(TOCAsyncOperationWithResultLastingUntilCancelled)asyncOperationWithResultLastingUntilCancelled
                                                            withOperationTimeout:(NSTimeInterval)timeoutPeriodInSeconds
                                                                           until:(TOCCancelToken*)untilCancelledToken {
-    require(asyncOperationWithResultLastingUntilCancelled != nil);
-    require(timeoutPeriodInSeconds >= 0);
-    require(!isnan(timeoutPeriodInSeconds));
+    TOC_require(asyncOperationWithResultLastingUntilCancelled != nil);
+    TOC_require(timeoutPeriodInSeconds >= 0);
+    TOC_require(!isnan(timeoutPeriodInSeconds));
     
     if (timeoutPeriodInSeconds == 0) {
         return [TOCFuture futureWithTimeoutFailure];
@@ -106,9 +106,9 @@
 +(TOCFuture*) futureWithResultFromAsyncCancellableOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
                                                 withTimeout:(NSTimeInterval)timeoutPeriodInSeconds
                                                      unless:(TOCCancelToken*)unlessCancelledToken {
-    require(asyncCancellableOperation != nil);
-    require(timeoutPeriodInSeconds >= 0);
-    require(!isnan(timeoutPeriodInSeconds));
+    TOC_require(asyncCancellableOperation != nil);
+    TOC_require(timeoutPeriodInSeconds >= 0);
+    TOC_require(!isnan(timeoutPeriodInSeconds));
     
     if (timeoutPeriodInSeconds == 0) {
         return [TOCFuture futureWithTimeoutFailure];
@@ -141,9 +141,9 @@
 
 +(TOCFuture*) futureWithResultFromAsyncCancellableOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
                                                 withTimeout:(NSTimeInterval)timeoutPeriodInSeconds {
-    require(asyncCancellableOperation != nil);
-    require(timeoutPeriodInSeconds >= 0);
-    require(!isnan(timeoutPeriodInSeconds));
+    TOC_require(asyncCancellableOperation != nil);
+    TOC_require(timeoutPeriodInSeconds >= 0);
+    TOC_require(!isnan(timeoutPeriodInSeconds));
     
     return [self futureWithResultFromAsyncCancellableOperation:asyncCancellableOperation
                                                    withTimeout:timeoutPeriodInSeconds

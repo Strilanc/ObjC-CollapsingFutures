@@ -3,12 +3,12 @@
 @implementation NSArray (TOCInternal_Functional)
 
 -(NSArray*) map:(TOCInternal_Projection)projection {
-    require(projection != nil);
+    TOC_require(projection != nil);
     
     NSMutableArray* results = [NSMutableArray arrayWithCapacity:self.count];
     for (id item in self) {
         id projectedItem = projection(item);
-        require(projectedItem != nil);
+        TOC_require(projectedItem != nil);
         [results addObject:projectedItem];
     }
     
@@ -16,7 +16,7 @@
 }
 
 -(NSArray*) where:(TOCInternal_Predicate)predicate {
-    require(predicate != nil);
+    TOC_require(predicate != nil);
     
     NSMutableArray* results = [NSMutableArray arrayWithCapacity:self.count];
     for (id item in self) {
@@ -29,7 +29,7 @@
 }
 
 -(bool) allItemsSatisfy:(TOCInternal_Predicate)predicate {
-    require(predicate != nil);
+    TOC_require(predicate != nil);
     
     for (id item in self) {
         if (!predicate(item)) {
@@ -40,7 +40,7 @@
 }
 
 -(bool) allItemsAreKindOfClass:(Class)classInstance {
-    require(classInstance != nil);
+    TOC_require(classInstance != nil);
     return [self allItemsSatisfy:^bool(id value) { return [value isKindOfClass:classInstance]; }];
 }
 
