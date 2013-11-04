@@ -11,7 +11,7 @@
 
 -(TOCFuture*) asyncFinallyAllUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
-    require([self allItemsAreKindOfClass:[TOCFuture class]]);
+    require([futures allItemsAreKindOfClass:[TOCFuture class]]);
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
     
@@ -56,7 +56,7 @@
 
 -(NSArray*) asyncOrderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
-    require([self allItemsAreKindOfClass:[TOCFuture class]]);
+    require([futures allItemsAreKindOfClass:[TOCFuture class]]);
     
     NSMutableArray* resultSources = [NSMutableArray array];
     
