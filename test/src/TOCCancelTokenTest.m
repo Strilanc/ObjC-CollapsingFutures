@@ -364,4 +364,43 @@
     test(c2.token.state == TOCCancelTokenState_Cancelled);
 }
 
+-(void) testWhenCancelledDoUnless_AfterTheFactCancellationStillStopsCallbacksOnMainThread {
+    TOCCancelTokenSource* s1 = [TOCCancelTokenSource new];
+    TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
+
+    test([NSThread isMainThread]);
+    __block int hits = 0;
+    for (int i = 0; i < 5; i++) {
+        [s1.token whenCancelledDo:^{
+            [s2 cancel];
+            hits += 1;
+        } unless:s2.token];
+    }
+    
+    test(hits == 0);
+    [s1 cancel];
+    test(hits == 1);
+}
+-(void) testWhenCancelledDoUnless_AfterTheFactCancellationStillStopsCallbacksOnMainThread_SecondThread {
+    TOCCancelTokenSource* s1 = [TOCCancelTokenSource new];
+    TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
+    
+    test([NSThread isMainThread]);
+    __block int hits = 0;
+    for (int i = 0; i < 5; i++) {
+        [s1.token whenCancelledDo:^{
+            test([NSThread isMainThread]);
+            [s2 cancel];
+            hits += 1;
+        } unless:s2.token];
+    }
+    
+    test(hits == 0);
+    [TOCInternal_BlockObject performBlockOnNewThread:^{[s1 cancel];}];
+    for (int i = 0; i < 10; i++) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+    }
+    test(hits == 1);
+}
+
 @end

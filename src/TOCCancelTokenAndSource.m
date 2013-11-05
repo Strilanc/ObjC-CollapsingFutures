@@ -94,11 +94,27 @@ static TOCCancelToken* SharedImmortalToken = nil;
     return self.state == TOCCancelTokenState_StillCancellable;
 }
 
--(TOCCancelHandler) preserveMainThreadness:(TOCCancelHandler)cancelHandler {
+-(TOCCancelHandler) _preserveMainThreadness:(TOCCancelHandler)cancelHandler {
     if (![NSThread isMainThread]) return cancelHandler;
     
     return ^{ [TOCInternal_BlockObject performBlock:cancelHandler
                                            onThread:[NSThread mainThread]]; };
+}
+
+-(TOCCancelHandler) _preserveMainThreadness:(TOCCancelHandler)cancelHandler
+                                   andCheck:(TOCCancelToken*)unlessCancelledToken {
+    if (![NSThread isMainThread]) return cancelHandler;
+    
+    return [self _preserveMainThreadness:^{
+        // do a final check, to help the caller out
+        // consider: if the unless token was cancelled after this token, but before the callback reached the main thread
+        // in that situation, the caller may have already done UI things based on observing that the token was cancelled
+        // they may be *extremely* surprised by the callback running their cleanup stuff again
+        // we don't want to surprise them, so we do this polite check before calling
+        if (unlessCancelledToken.isAlreadyCancelled) return;
+        
+        cancelHandler();
+    }];
 }
 
 -(void)whenCancelledDo:(TOCCancelHandler)cancelHandler {
@@ -107,7 +123,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
     @synchronized(self) {
         if (_state == TOCCancelTokenState_Immortal) return;
         if (_state == TOCCancelTokenState_StillCancellable) {
-            TOCCancelHandler safeHandler = [self preserveMainThreadness:cancelHandler];
+            TOCCancelHandler safeHandler = [self _preserveMainThreadness:cancelHandler];
             [_cancelHandlers addObject:safeHandler];
             return;
         }
@@ -167,7 +183,8 @@ static TOCCancelToken* SharedImmortalToken = nil;
     };
     
     // make the cancel-each-other cycle, running the cancel handler if self is cancelled first
-    TOCCancelHandler safeHandler = [self preserveMainThreadness:cancelHandler];
+    TOCCancelHandler safeHandler = [self _preserveMainThreadness:cancelHandler
+                                                        andCheck:unlessCancelledToken];
     __block Remover removeHandlerFromSelfToOther = [self _removable_whenSettledDo:^(){
         // note: this self-reference is fine because it doesn't involve self's source, and gets cleared if the source is deallocated
         if (self->_state == TOCCancelTokenState_Cancelled) {

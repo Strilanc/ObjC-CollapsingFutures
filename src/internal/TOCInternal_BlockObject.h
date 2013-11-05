@@ -5,4 +5,5 @@
 -(void)run;
 -(SEL)runSelector;
 +(void) performBlock:(void(^)(void))block onThread:(NSThread*)thread;
++(void) performBlockOnNewThread:(void(^)(void))block;
 @end
