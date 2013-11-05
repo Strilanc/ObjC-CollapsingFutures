@@ -13,14 +13,12 @@ This is a library implementing [futures](https://en.wikipedia.org/wiki/Future_%2
 Installation
 ============
 
-**Method #1: CocoaPods**
+**Method #1: [CocoaPods](http://cocoapods.org/)**
 
-
-
-1. Depend on the podspec from this repo. For the 'bleeding edge' release, here is the podfile line:
-    
-    `pod 'TwistedOakCollapsingFutures', :podspec => 'https://raw.github.com/Strilanc/ObjC-CollapsingFutures/master/TwistedOakCollapsingFutures.podspec'`
-2. Import `TwistedOakCollapsingFutures.h` wherever you want to access the library's types or methods
+1. In your [Podfile](http://docs.cocoapods.org/podfile.html), add `pod 'TwistedOakCollapsingFutures'`
+2. Consider [versioning](http://docs.cocoapods.org/guides/dependency_versioning.html), like: `pod 'TwistedOakCollapsingFutures', '~> 0.7'`
+3. Run `pod install`
+4. `#import "TwistedOakCollapsingFutures.h"` wherever you want to access the library's types or methods
 
 
 
@@ -29,7 +27,7 @@ Installation
 1. Download one of the [releases](https://github.com/Strilanc/ObjC-CollapsingFutures/releases), or clone the repo
 2. Copy the source files from the src/ folder into your project
 3. Have ARC enabled
-4. Import `TwistedOakCollapsingFutures.h` wherever you want to access the library's types or methods.
+4. `#import "TwistedOakCollapsingFutures.h"` wherever you want to access the library's types or methods
 
 
 Usage
