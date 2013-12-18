@@ -5,3 +5,4 @@
 #import "TOCFuture+MoreContructors.h"
 #import "TOCTimeout.h"
 #import "TOCTypeDefs.h"
+#import "TOCCancelToken+MoreConstructors.h"

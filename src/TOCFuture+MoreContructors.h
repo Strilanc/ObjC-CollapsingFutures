@@ -5,14 +5,14 @@
 
 @interface TOCFuture (MoreConstructors)
 
-/**
+/*!
  * Returns a future that has already failed with a timeout failure.
  *
  * A timeout failure is just an instance of TOCTimeout.
  */
 +(TOCFuture*) futureWithTimeoutFailure;
 
-/**
+/*!
  * Returns a future that has already failed with a cancellation failure.
  *
  * A cancellation failure is just an instance of TOCCancelToken.

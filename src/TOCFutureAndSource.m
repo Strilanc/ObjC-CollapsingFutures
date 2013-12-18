@@ -48,7 +48,7 @@ enum StartUnwrapResult {
 }
 
 -(enum StartUnwrapResult) _ForSource_tryStartUnwrapping:(TOCFuture*)targetFuture {
-    TOC_require(targetFuture != nil);
+    TOCInternal_need(targetFuture != nil);
     
     // try set (without completing)
     @synchronized(self) {
@@ -101,12 +101,12 @@ enum StartUnwrapResult {
     return StartUnwrapResult_Started;
 }
 -(void) _forceUnwrap:(TOCFuture*)future {
-    TOC_force(future != nil);
-    TOC_force(!future.isIncomplete);
+    TOCInternal_force(future != nil);
+    TOCInternal_force(!future.isIncomplete);
     bool flatteningFutureSucceeded = [self _trySetOrComplete:future->_value
                                                    succeeded:future->_ifDoneHasSucceeded
                                                   isUnwiring:true];
-    TOC_force(flatteningFutureSucceeded);
+    TOCInternal_force(flatteningFutureSucceeded);
 }
 -(void) _ForSource_forceFinishUnwrap {
     TOCFuture* target;
@@ -127,7 +127,7 @@ enum StartUnwrapResult {
                 succeeded:(bool)succeeded
                isUnwiring:(bool)unwiring {
     
-    TOC_require(![finalValue isKindOfClass:[TOCFuture class]]);
+    TOCInternal_need(![finalValue isKindOfClass:[TOCFuture class]]);
     
     @synchronized(self) {
         if (_hasBeenSet && !unwiring) return false;
@@ -158,7 +158,7 @@ enum StartUnwrapResult {
             }
             
         default:
-            TOC_unexpectedEnum(completionCancelTokenState);
+            TOCInternal_unexpectedEnum(completionCancelTokenState);
     }
 }
 -(bool)isIncomplete {
@@ -177,17 +177,17 @@ enum StartUnwrapResult {
     return self.hasFailed && [self.forceGetFailure isKindOfClass:[TOCTimeout class]];
 }
 -(id)forceGetResult {
-    TOC_force(self.hasResult);
+    TOCInternal_force(self.hasResult);
     return _value;
 }
 -(id)forceGetFailure {
-    TOC_force(self.hasFailed);
+    TOCInternal_force(self.hasFailed);
     return _value;
 }
 
 -(void)finallyDo:(TOCFutureFinallyHandler)completionHandler
           unless:(TOCCancelToken *)unlessCancelledToken {
-    TOC_require(completionHandler != nil);
+    TOCInternal_need(completionHandler != nil);
     
     // It is safe to reference 'self' here, despite it creating a reference cycle. The cycle is not self-sustaining.
     // The reason comes down to future sources and tokens sources causing their future/token to discard callbacks when the source is deallocated.
@@ -200,7 +200,7 @@ enum StartUnwrapResult {
 
 -(void)thenDo:(TOCFutureThenHandler)resultHandler
        unless:(TOCCancelToken *)unlessCancelledToken {
-    TOC_require(resultHandler != nil);
+    TOCInternal_need(resultHandler != nil);
     
     [self finallyDo:^(TOCFuture *completed) {
         if (completed->_ifDoneHasSucceeded) {
@@ -211,7 +211,7 @@ enum StartUnwrapResult {
 
 -(void)catchDo:(TOCFutureCatchHandler)failureHandler
         unless:(TOCCancelToken *)unlessCancelledToken {
-    TOC_require(failureHandler != nil);
+    TOCInternal_need(failureHandler != nil);
     
     [self finallyDo:^(TOCFuture *completed) {
         if (!completed->_ifDoneHasSucceeded) {
@@ -222,7 +222,7 @@ enum StartUnwrapResult {
 
 -(TOCFuture *)finally:(TOCFutureFinallyContinuation)completionContinuation
                unless:(TOCCancelToken *)unlessCancelledToken {
-    TOC_require(completionContinuation != nil);
+    TOCInternal_need(completionContinuation != nil);
     
     TOCFutureSource* resultSource = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
     
@@ -234,7 +234,7 @@ enum StartUnwrapResult {
 
 -(TOCFuture *)then:(TOCFutureThenContinuation)resultContinuation
             unless:(TOCCancelToken *)unlessCancelledToken {
-    TOC_require(resultContinuation != nil);
+    TOCInternal_need(resultContinuation != nil);
     
     return [self finally:^id(TOCFuture *completed) {
         if (completed->_ifDoneHasSucceeded) {
@@ -247,7 +247,7 @@ enum StartUnwrapResult {
 
 -(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation
              unless:(TOCCancelToken *)unlessCancelledToken {
-    TOC_require(failureContinuation != nil);
+    TOCInternal_need(failureContinuation != nil);
     
     return [self finally:^(TOCFuture *completed) {
         if (completed->_ifDoneHasSucceeded) {
@@ -335,7 +335,7 @@ enum StartUnwrapResult {
             
         } default:
             // already checked StartUnwrapResult_AlreadySet above
-            TOC_unexpectedEnum(startUnwrapResult);
+            TOCInternal_unexpectedEnum(startUnwrapResult);
     }
     
     // this source is set (i.e. it can't be set anymore), even if its future is not completed yet or ever
@@ -369,16 +369,16 @@ enum StartUnwrapResult {
 }
 
 -(void) forceSetResult:(id)result {
-    TOC_force([self trySetResult:result]);
+    TOCInternal_force([self trySetResult:result]);
 }
 -(void) forceSetFailure:(id)failure {
-    TOC_force([self trySetFailure:failure]);
+    TOCInternal_force([self trySetFailure:failure]);
 }
 -(void) forceSetFailedWithCancel {
-    TOC_force([self trySetFailedWithCancel]);
+    TOCInternal_force([self trySetFailedWithCancel]);
 }
 -(void) forceSetFailedWithTimeout {
-    TOC_force([self trySetFailedWithTimeout]);
+    TOCInternal_force([self trySetFailedWithTimeout]);
 }
 
 -(NSString*) description {

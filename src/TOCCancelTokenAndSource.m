@@ -118,7 +118,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
 }
 
 -(void)whenCancelledDo:(TOCCancelHandler)cancelHandler {
-    TOC_require(cancelHandler != nil);
+    TOCInternal_need(cancelHandler != nil);
     
     @synchronized(self) {
         if (_state == TOCCancelTokenState_Immortal) return;
@@ -133,7 +133,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
 }
 
 -(Remover)_removable_whenSettledDo:(SettledHandler)settledHandler {
-    TOC_require(settledHandler != nil);
+    TOCInternal_need(settledHandler != nil);
     @synchronized(self) {
         if (_state == TOCCancelTokenState_StillCancellable) {
             // to ensure we don't end up with two distinct copies of the block, move it to a local
@@ -157,7 +157,7 @@ static TOCCancelToken* SharedImmortalToken = nil;
 
 -(void) whenCancelledDo:(TOCCancelHandler)cancelHandler
                  unless:(TOCCancelToken*)unlessCancelledToken {
-    TOC_require(cancelHandler != nil);
+    TOCInternal_need(cancelHandler != nil);
     
     // fair warning: the following code is very difficult to get right.
     

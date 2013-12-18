@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@interface TOCInternal_BlockObject : NSObject { @public void (^block)(void); }
+@interface TOCInternal_BlockObject : NSObject
 +(TOCInternal_BlockObject*) voidBlock:(void(^)(void))block;
 -(void)run;
 -(SEL)runSelector;

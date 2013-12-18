@@ -8,7 +8,7 @@
 
 +(TOCInternal_Racer*) racerStartedFrom:(TOCAsyncOperationWithResultLastingUntilCancelled)starter
                      until:(TOCCancelToken*)untilCancelledToken {
-    TOC_require(starter != nil);
+    TOCInternal_need(starter != nil);
     
     TOCInternal_Racer* racer = [TOCInternal_Racer new];
     
@@ -30,7 +30,7 @@
     
     // tell each racer how to get on the podium (or how to be a failure)
     __block int failedRacerCount = 0;
-    TOC_require(racers.count <= INT_MAX);
+    TOCInternal_need(racers.count <= INT_MAX);
     for (TOCInternal_Racer* racer in racers) {
         [racer.futureResult finallyDo:^(TOCFuture *completed) {
             if (completed.hasResult) {

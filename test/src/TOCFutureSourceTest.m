@@ -1,7 +1,5 @@
-#import <SenTestingKit/SenTestingKit.h>
-
+#import "Testing.h"
 #import "TwistedOakCollapsingFutures.h"
-#import "TestUtil.h"
 
 @interface TOCFutureSourceTest : SenTestCase
 @end

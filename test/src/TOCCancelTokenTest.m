@@ -1,5 +1,4 @@
-#import <SenTestingKit/SenTestingKit.h>
-#import "TestUtil.h"
+#import "Testing.h"
 #import "TwistedOakCollapsingFutures.h"
 #import "TOCInternal_BlockObject.h"
 

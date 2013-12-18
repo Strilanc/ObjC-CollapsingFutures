@@ -1,10 +1,12 @@
 #import "TOCInternal_BlockObject.h"
 #import "TOCInternal.h"
 
-@implementation TOCInternal_BlockObject
+@implementation TOCInternal_BlockObject {
+@private void (^block)(void);
+}
 
 +(TOCInternal_BlockObject*) voidBlock:(void(^)(void))block {
-    TOC_require(block != nil);
+    TOCInternal_need(block != nil);
 
     TOCInternal_BlockObject* b = [TOCInternal_BlockObject new];
     b->block = block;
@@ -18,7 +20,7 @@
 }
 
 +(void) performBlock:(void(^)(void))block onThread:(NSThread*)thread {
-    TOC_require(block != nil);
+    TOCInternal_need(block != nil);
 
     if (thread == [NSThread currentThread]) {
         block();
@@ -32,7 +34,7 @@
                    waitUntilDone:NO];
 }
 +(void) performBlockOnNewThread:(void(^)(void))block {
-    TOC_require(block != nil);
+    TOCInternal_need(block != nil);
     
     TOCInternal_BlockObject* blockObject = [TOCInternal_BlockObject voidBlock:block];
     [NSThread detachNewThreadSelector:blockObject.runSelector toTarget:blockObject withObject:nil];

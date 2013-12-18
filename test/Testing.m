@@ -1,4 +1,4 @@
-#import "TestUtil.h"
+#import "Testing.h"
 
 int testTargetHits = 0;
 
