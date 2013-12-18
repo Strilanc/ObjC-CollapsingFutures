@@ -28,8 +28,8 @@
  *
  * @result A future that completes once the operation has been completed, and contains the operation's result.
  */
-+(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
-                          dispatchedOnQueue:(dispatch_queue_t)queue;
++(TOCFuture*) futureFromOperation:(id (^)(void))operation
+                dispatchedOnQueue:(dispatch_queue_t)queue;
 
 /*!
  * Returns a future that completes with the value returned by a function run on a specified thread.
@@ -40,8 +40,8 @@
  *
  * @result A future that completes once the operation has been completed, and contains the operation's result.
  */
-+(TOCFuture*) futureWithResultFromOperation:(id(^)(void))operation
-                            invokedOnThread:(NSThread*)thread;
++(TOCFuture*) futureFromOperation:(id(^)(void))operation
+                  invokedOnThread:(NSThread*)thread;
 
 /*!
  * Returns a future that will contain the given result after the given delay, unless cancelled.
@@ -95,9 +95,9 @@
  *
  * If the operation has already completed when the untilCancelledToken is cancelled, its result is terminated / cleaned-up / dead.
  */
-+(TOCFuture*) futureWithResultFromAsyncOperationWithResultLastingUntilCancelled:(TOCAsyncOperationWithResultLastingUntilCancelled)asyncOperationWithResultLastingUntilCancelled
-                                                           withOperationTimeout:(NSTimeInterval)timeoutPeriodInSeconds
-                                                                          until:(TOCCancelToken*)untilCancelledToken;
++(TOCFuture*) futureFromUntilOperation:(TOCUntilOperation)asyncOperationWithResultLastingUntilCancelled
+                  withOperationTimeout:(NSTimeInterval)timeoutPeriodInSeconds
+                                 until:(TOCCancelToken*)untilCancelledToken;
 
 /*!
  * Returns a future for the eventual result of an asynchronous operation, unless the operation times out or is cancelled.
@@ -122,9 +122,9 @@
  * This method is unable to forward its result before the given asynchronous operation confirms it was cancelled (by cancelling the future it returned).
  * Otherwise it would be possible to leak a result that needed to be cleaned up, due to the operation's completion racing with timing out.
  */
-+(TOCFuture*) futureWithResultFromAsyncCancellableOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
-                                                withTimeout:(NSTimeInterval)timeoutPeriodInSeconds
-                                                     unless:(TOCCancelToken*)unlessCancelledToken;
++(TOCFuture*) futureFromUnlessOperation:(TOCUnlessOperation)asyncCancellableOperation
+                            withTimeout:(NSTimeInterval)timeoutPeriodInSeconds
+                                 unless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Returns a future for the eventual result of an asynchronous operation, unless the operation times out.
@@ -145,7 +145,7 @@
  * This method is unable to forward its result before the given asynchronous operation confirms it was cancelled due to the timeout (by cancelling the future it returned).
  * Otherwise it would be possible to leak a result that needed to be cleaned up, due to the operation's completion racing with timing out.
  */
-+(TOCFuture*) futureWithResultFromAsyncCancellableOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
-                                                withTimeout:(NSTimeInterval)timeoutPeriodInSeconds;
++(TOCFuture*) futureFromUnlessOperation:(TOCUnlessOperation)asyncCancellableOperation
+                            withTimeout:(NSTimeInterval)timeoutPeriodInSeconds;
 
 @end

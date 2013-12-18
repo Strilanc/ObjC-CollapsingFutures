@@ -13,8 +13,8 @@
     return [TOCFuture futureWithFailure:TOCCancelToken.cancelledToken];
 }
 
-+(TOCFuture*) futureWithResultFromOperation:(id (^)(void))operation
-                          dispatchedOnQueue:(dispatch_queue_t)queue {
++(TOCFuture*) futureFromOperation:(id (^)(void))operation
+                dispatchedOnQueue:(dispatch_queue_t)queue {
     TOCInternal_need(operation != nil);
     
     TOCFutureSource* resultSource = [TOCFutureSource new];
@@ -23,8 +23,8 @@
     
     return resultSource.future;
 }
-+(TOCFuture*) futureWithResultFromOperation:(id(^)(void))operation
-                            invokedOnThread:(NSThread*)thread {
++(TOCFuture*) futureFromOperation:(id(^)(void))operation
+                  invokedOnThread:(NSThread*)thread {
     TOCInternal_need(operation != nil);
     TOCInternal_need(thread != nil);
     
@@ -71,9 +71,9 @@
     return resultSource.future;
 }
 
-+(TOCFuture*) futureWithResultFromAsyncOperationWithResultLastingUntilCancelled:(TOCAsyncOperationWithResultLastingUntilCancelled)asyncOperationWithResultLastingUntilCancelled
-                                                           withOperationTimeout:(NSTimeInterval)timeoutPeriodInSeconds
-                                                                          until:(TOCCancelToken*)untilCancelledToken {
++(TOCFuture*) futureFromUntilOperation:(TOCUntilOperation)asyncOperationWithResultLastingUntilCancelled
+                  withOperationTimeout:(NSTimeInterval)timeoutPeriodInSeconds
+                                 until:(TOCCancelToken*)untilCancelledToken {
     TOCInternal_need(asyncOperationWithResultLastingUntilCancelled != nil);
     TOCInternal_need(timeoutPeriodInSeconds >= 0);
     TOCInternal_need(!isnan(timeoutPeriodInSeconds));
@@ -85,27 +85,27 @@
         return asyncOperationWithResultLastingUntilCancelled(untilCancelledToken);
     }
     
-    TOCAsyncOperationWithResultLastingUntilCancelled timeoutOperation = ^(TOCCancelToken* internalUntilCancelledToken) {
+    TOCUntilOperation timeoutOperation = ^(TOCCancelToken* internalUntilCancelledToken) {
         return [TOCFuture futureWithResult:@[[TOCFuture futureWithTimeoutFailure]]
                                 afterDelay:timeoutPeriodInSeconds
                                     unless:internalUntilCancelledToken];
     };
-    TOCAsyncOperationWithResultLastingUntilCancelled wrappedOperation = ^(TOCCancelToken* internalUntilCancelledToken) {
+    TOCUntilOperation wrappedOperation = ^(TOCCancelToken* internalUntilCancelledToken) {
         return [asyncOperationWithResultLastingUntilCancelled(internalUntilCancelledToken) finally:^(TOCFuture *completed) {
             return @[completed];
         }];
     };
     
     NSArray* racingOperations = @[wrappedOperation, timeoutOperation];
-    TOCFuture* winner = [racingOperations asyncRaceOperationsWithWinningResultLastingUntil:untilCancelledToken];
+    TOCFuture* winner = [racingOperations toc_raceForWinnerLastingUntil:untilCancelledToken];
     return [winner then:^(NSArray* wrappedResult) {
         return wrappedResult[0];
     }];
 }
 
-+(TOCFuture*) futureWithResultFromAsyncCancellableOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
-                                                withTimeout:(NSTimeInterval)timeoutPeriodInSeconds
-                                                     unless:(TOCCancelToken*)unlessCancelledToken {
++(TOCFuture*) futureFromUnlessOperation:(TOCUnlessOperation)asyncCancellableOperation
+                            withTimeout:(NSTimeInterval)timeoutPeriodInSeconds
+                                 unless:(TOCCancelToken*)unlessCancelledToken {
     TOCInternal_need(asyncCancellableOperation != nil);
     TOCInternal_need(timeoutPeriodInSeconds >= 0);
     TOCInternal_need(!isnan(timeoutPeriodInSeconds));
@@ -139,15 +139,15 @@
     }];
 }
 
-+(TOCFuture*) futureWithResultFromAsyncCancellableOperation:(TOCAsyncCancellableOperation)asyncCancellableOperation
-                                                withTimeout:(NSTimeInterval)timeoutPeriodInSeconds {
++(TOCFuture*) futureFromUnlessOperation:(TOCUnlessOperation)asyncCancellableOperation
+                            withTimeout:(NSTimeInterval)timeoutPeriodInSeconds {
     TOCInternal_need(asyncCancellableOperation != nil);
     TOCInternal_need(timeoutPeriodInSeconds >= 0);
     TOCInternal_need(!isnan(timeoutPeriodInSeconds));
     
-    return [self futureWithResultFromAsyncCancellableOperation:asyncCancellableOperation
-                                                   withTimeout:timeoutPeriodInSeconds
-                                                        unless:nil];
+    return [self futureFromUnlessOperation:asyncCancellableOperation
+                               withTimeout:timeoutPeriodInSeconds
+                                    unless:nil];
 }
 
 @end

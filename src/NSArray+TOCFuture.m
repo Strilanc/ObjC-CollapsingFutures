@@ -5,11 +5,11 @@
 
 @implementation NSArray (TOCFuture)
 
--(TOCFuture*) asyncFinallyAll {
-    return [self asyncFinallyAllUnless:nil];
+-(TOCFuture*) toc_finallyAll {
+    return [self toc_finallyAllUnless:nil];
 }
 
--(TOCFuture*) asyncFinallyAllUnless:(TOCCancelToken*)unlessCancelledToken {
+-(TOCFuture*) toc_finallyAllUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
     TOCInternal_need([futures allItemsAreKindOfClass:[TOCFuture class]]);
     
@@ -35,12 +35,12 @@
     return resultSource.future;
 }
 
--(TOCFuture*) asyncThenAll {
-    return [self asyncThenAllUnless:nil];
+-(TOCFuture*) toc_thenAll {
+    return [self toc_thenAllUnless:nil];
 }
 
--(TOCFuture*) asyncThenAllUnless:(TOCCancelToken*)unlessCancelledToken {
-    return [[self asyncFinallyAllUnless:unlessCancelledToken] then:^id(NSArray* completedFutures) {
+-(TOCFuture*) toc_thenAllUnless:(TOCCancelToken*)unlessCancelledToken {
+    return [[self toc_finallyAllUnless:unlessCancelledToken] then:^id(NSArray* completedFutures) {
         NSMutableArray* results = [NSMutableArray array];
         for (TOCFuture* item in completedFutures) {
             if (item.hasFailed) return [TOCFuture futureWithFailure:completedFutures];
@@ -50,11 +50,11 @@
     }];
 }
 
--(NSArray*) asyncOrderedByCompletion {
-    return [self asyncOrderedByCompletionUnless:nil];
+-(NSArray*) toc_orderedByCompletion {
+    return [self toc_orderedByCompletionUnless:nil];
 }
 
--(NSArray*) asyncOrderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken {
+-(NSArray*) toc_orderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken {
     NSArray* futures = [self copy]; // remove volatility (i.e. ensure not externally mutable)
     TOCInternal_need([futures allItemsAreKindOfClass:[TOCFuture class]]);
     
@@ -75,7 +75,7 @@
     return [resultSources map:^(TOCFutureSource* source) { return source.future; }];
 }
 
--(TOCFuture*) asyncRaceOperationsWithWinningResultLastingUntil:(TOCCancelToken*)untilCancelledToken {
+-(TOCFuture*) toc_raceForWinnerLastingUntil:(TOCCancelToken*)untilCancelledToken {
     NSArray* starters = [self copy]; // remove volatility (i.e. ensure not externally mutable)
     TOCInternal_need(starters.count > 0);
     TOCInternal_need([starters allItemsAreKindOfClass:NSClassFromString(@"NSBlock")]);

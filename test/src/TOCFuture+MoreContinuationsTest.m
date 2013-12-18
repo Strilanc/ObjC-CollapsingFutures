@@ -64,7 +64,7 @@
     testFutureHasResult([[TOCFuture futureWithResult:@1] then:^(id result) { return @2; }], @2);
     testFutureHasFailure([[TOCFuture futureWithFailure:@3] then:^(id result) { return @4; }], @3);
     testFutureHasFailure([[TOCFuture futureWithResult:@5] then:^(id result) { return [TOCFuture futureWithFailure:@6]; }], @6);
-
+    
     testDoesNotHitTarget([[TOCFutureSource new].future then:^id(id result) { hitTarget; return nil; }]);
     testHitsTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { test([result isEqual:@7]); hitTarget; return nil; }]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] then:^id(id result) { hitTarget; return nil; }]);
@@ -90,7 +90,7 @@
     testFutureHasResult([[TOCFuture futureWithResult:@1] catch:^(id failure) { return @2; }], @1);
     testFutureHasResult([[TOCFuture futureWithFailure:@3] catch:^(id failure) { return @4; }], @4);
     testFutureHasFailure([[TOCFuture futureWithFailure:@5] catch:^(id failure) { return [TOCFuture futureWithFailure:@6]; }], @6);
-
+    
     testDoesNotHitTarget([[TOCFutureSource new].future catch:^id(id failure) { hitTarget; return nil; }]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@1] catch:^id(id failure) { hitTarget; return nil; }]);
     testHitsTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { test([failure isEqual:@8]); hitTarget; return nil; }]);
@@ -116,7 +116,7 @@
     testFutureHasResult([[TOCFuture futureWithResult:@1] finally:^(TOCFuture *completed) { return @2; }], @2);
     testFutureHasResult([[TOCFuture futureWithFailure:@3] finally:^(TOCFuture *completed) { return @4; }], @4);
     testFutureHasFailure([[TOCFuture futureWithFailure:@5] finally:^(TOCFuture *completed) { return [TOCFuture futureWithFailure:@6]; }], @6);
-
+    
     testDoesNotHitTarget([[TOCFutureSource new].future finally:^id(TOCFuture *completed) { hitTarget; return nil; }]);
     testHitsTarget([[TOCFuture futureWithResult:@7] finally:^id(TOCFuture *completed) { testFutureHasResult(completed, @7); hitTarget; return nil; }]);
     testHitsTarget([[TOCFuture futureWithFailure:@8] finally:^id(TOCFuture *completed) { testFutureHasFailure(completed, @8); hitTarget; return nil; }]);

@@ -203,7 +203,7 @@
         
         [s1 cancel];
     }
-
+    
     test(d.lostTokenCount == 2);
     test(c1.isAlreadyCancelled);
     test(!c2.isAlreadyCancelled);
@@ -314,7 +314,7 @@
     TOCCancelTokenSource* c2 = [TOCCancelTokenSource new];
     dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         TOCCancelTokenSource* c1 = [TOCCancelTokenSource new];
-        TOCFuture* f = [TOCFuture futureWithResultFromOperation:^id{
+        TOCFuture* f = [TOCFuture futureFromOperation:^id{
             test([NSThread isMainThread]);
             [c1.token whenCancelledDo:^{
                 test([NSThread isMainThread]);
@@ -340,7 +340,7 @@
     TOCCancelTokenSource* c2 = [TOCCancelTokenSource new];
     dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         TOCCancelTokenSource* c1 = [TOCCancelTokenSource new];
-        TOCFuture* f = [TOCFuture futureWithResultFromOperation:^id{
+        TOCFuture* f = [TOCFuture futureFromOperation:^id{
             test([NSThread isMainThread]);
             [c1.token whenCancelledDo:^{
                 test([NSThread isMainThread]);
@@ -366,7 +366,7 @@
 -(void) testWhenCancelledDoUnless_AfterTheFactCancellationStillStopsCallbacksOnMainThread {
     TOCCancelTokenSource* s1 = [TOCCancelTokenSource new];
     TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
-
+    
     test([NSThread isMainThread]);
     __block int hits = 0;
     for (int i = 0; i < 5; i++) {

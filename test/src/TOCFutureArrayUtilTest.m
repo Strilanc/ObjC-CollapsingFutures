@@ -7,12 +7,12 @@
 @implementation TOCFutureArrayUtilTest
 
 -(void)testOrderedByCompletion {
-    test([[@[] asyncOrderedByCompletion] isEqual:@[]]);
-    testThrows([(@[@1]) asyncOrderedByCompletion]);
+    test([[@[] toc_orderedByCompletion] isEqual:@[]]);
+    testThrows([(@[@1]) toc_orderedByCompletion]);
     
     NSArray* s = (@[[TOCFutureSource new], [TOCFutureSource new], [TOCFutureSource new]]);
     NSArray* f = (@[[s[0] future], [s[1] future], [s[2] future]]);
-    NSArray* g = [f asyncOrderedByCompletion];
+    NSArray* g = [f toc_orderedByCompletion];
     test(g.count == f.count);
     
     test(((TOCFuture*)g[0]).isIncomplete);
@@ -29,16 +29,16 @@
     testFutureHasResult(g[2], @"C");
     
     // ordered by continuations, so after completion should preserve ordering of original array
-    NSArray* g2 = [f asyncOrderedByCompletion];
+    NSArray* g2 = [f toc_orderedByCompletion];
     testFutureHasResult(g2[0], @"C");
     testFutureHasResult(g2[1], @"A");
     testFutureHasFailure(g2[2], @"B");
 }
 -(void) testFinallyAll {
-    testThrows([@[@1] asyncFinallyAll]);
-    test([[@[] asyncFinallyAll].forceGetResult isEqual:@[]]);
+    testThrows([@[@1] toc_finallyAll]);
+    test([[@[] toc_finallyAll].forceGetResult isEqual:@[]]);
     
-    TOCFuture* f = [(@[fut(@1), futfail(@2)]) asyncFinallyAll];
+    TOCFuture* f = [(@[fut(@1), futfail(@2)]) toc_finallyAll];
     test(f.hasResult);
     NSArray* x = f.forceGetResult;
     test(x.count == 2);
@@ -47,7 +47,7 @@
 }
 -(void) testFinallyAll_Incomplete {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) asyncFinallyAll];
+    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) toc_finallyAll];
     test(f.isIncomplete);
     
     [s trySetFailure:@""];
@@ -59,12 +59,12 @@
     testFutureHasResult(x[2], @3);
 }
 -(void) testThenAll {
-    testThrows([@[@1] asyncThenAll]);
-    test([[@[] asyncThenAll].forceGetResult isEqual:@[]]);
-    test([[(@[fut(@3)]) asyncThenAll].forceGetResult isEqual:(@[@3])]);
-    test([[(@[fut(@1), fut(@2)]) asyncThenAll].forceGetResult isEqual:(@[@1, @2])]);
+    testThrows([@[@1] toc_thenAll]);
+    test([[@[] toc_thenAll].forceGetResult isEqual:@[]]);
+    test([[(@[fut(@3)]) toc_thenAll].forceGetResult isEqual:(@[@3])]);
+    test([[(@[fut(@1), fut(@2)]) toc_thenAll].forceGetResult isEqual:(@[@1, @2])]);
     
-    TOCFuture* f = [(@[fut(@1), futfail(@2)]) asyncThenAll];
+    TOCFuture* f = [(@[fut(@1), futfail(@2)]) toc_thenAll];
     test(f.hasFailed);
     NSArray* x = f.forceGetFailure;
     test(x.count == 2);
@@ -73,38 +73,38 @@
 }
 -(void) testThenAll_Incomplete {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) asyncThenAll];
+    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) toc_thenAll];
     test(f.isIncomplete);
     [s trySetResult:@""];
     testFutureHasResult(f, (@[@1, @"", @3]));
 }
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_Failures {
-    testThrows([@[] asyncRaceOperationsWithWinningResultLastingUntil:nil]);
-    testThrows([@[@1] asyncRaceOperationsWithWinningResultLastingUntil:nil]);
-    testThrows([(@[[TOCFuture futureWithResult:@1]]) asyncRaceOperationsWithWinningResultLastingUntil:nil]);
+    testThrows([@[] toc_raceForWinnerLastingUntil:nil]);
+    testThrows([@[@1] toc_raceForWinnerLastingUntil:nil]);
+    testThrows([(@[[TOCFuture futureWithResult:@1]]) toc_raceForWinnerLastingUntil:nil]);
 }
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_Immediate {
-    TOCAsyncOperationWithResultLastingUntilCancelled immediate1 = ^(TOCCancelToken* until) {
+    TOCUntilOperation immediate1 = ^(TOCCancelToken* until) {
         hitTarget;
         test(until != nil);
         return [TOCFuture futureWithResult:@1];
     };
-    TOCAsyncOperationWithResultLastingUntilCancelled immediateFail = ^(TOCCancelToken* until) {
+    TOCUntilOperation immediateFail = ^(TOCCancelToken* until) {
         test(until != nil);
         return [TOCFuture futureWithFailure:@"bleh"];
     };
     
-    testHitsTarget([@[immediate1] asyncRaceOperationsWithWinningResultLastingUntil:nil]);
-    testFutureHasResult([@[immediate1] asyncRaceOperationsWithWinningResultLastingUntil:nil], @1);
-    testFutureHasResult([(@[immediate1, immediateFail]) asyncRaceOperationsWithWinningResultLastingUntil:nil], @1);
-    testFutureHasResult([(@[immediateFail, immediate1]) asyncRaceOperationsWithWinningResultLastingUntil:nil], @1);
-    testFutureHasFailure([(@[immediateFail, immediateFail]) asyncRaceOperationsWithWinningResultLastingUntil:nil], (@[@"bleh", @"bleh"]));
+    testHitsTarget([@[immediate1] toc_raceForWinnerLastingUntil:nil]);
+    testFutureHasResult([@[immediate1] toc_raceForWinnerLastingUntil:nil], @1);
+    testFutureHasResult([(@[immediate1, immediateFail]) toc_raceForWinnerLastingUntil:nil], @1);
+    testFutureHasResult([(@[immediateFail, immediate1]) toc_raceForWinnerLastingUntil:nil], @1);
+    testFutureHasFailure([(@[immediateFail, immediateFail]) toc_raceForWinnerLastingUntil:nil], (@[@"bleh", @"bleh"]));
 }
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_Deferred_Win {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t = ^(TOCCancelToken* until) { return s.future; };
+    TOCUntilOperation t = ^(TOCCancelToken* until) { return s.future; };
     
-    TOCFuture* f = [@[t] asyncRaceOperationsWithWinningResultLastingUntil:nil];
+    TOCFuture* f = [@[t] toc_raceForWinnerLastingUntil:nil];
     test(f.isIncomplete);
     
     [s trySetResult:@2];
@@ -112,9 +112,9 @@
 }
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_Deferred_Fail {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t = ^(TOCCancelToken* until) { return s.future; };
+    TOCUntilOperation t = ^(TOCCancelToken* until) { return s.future; };
     
-    TOCFuture* f = [@[t] asyncRaceOperationsWithWinningResultLastingUntil:nil];
+    TOCFuture* f = [@[t] toc_raceForWinnerLastingUntil:nil];
     test(f.isIncomplete);
     
     [s trySetFailure:@3];
@@ -123,11 +123,11 @@
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_Deferred_WinWin {
     TOCFutureSource* s1 = [TOCFutureSource new];
     TOCFutureSource* s2 = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { return s1.future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { return s2.future; };
+    TOCUntilOperation t1 = ^(TOCCancelToken* until) { return s1.future; };
+    TOCUntilOperation t2 = ^(TOCCancelToken* until) { return s2.future; };
     
-    TOCFuture* f1 = [@[t1, t2] asyncRaceOperationsWithWinningResultLastingUntil:nil];
-    TOCFuture* f2 = [@[t2, t1] asyncRaceOperationsWithWinningResultLastingUntil:nil];
+    TOCFuture* f1 = [@[t1, t2] toc_raceForWinnerLastingUntil:nil];
+    TOCFuture* f2 = [@[t2, t1] toc_raceForWinnerLastingUntil:nil];
     
     test(f1.isIncomplete);
     test(f2.isIncomplete);
@@ -139,11 +139,11 @@
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_Deferred_FailFail {
     TOCFutureSource* s1 = [TOCFutureSource new];
     TOCFutureSource* s2 = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { return s1.future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { return s2.future; };
+    TOCUntilOperation t1 = ^(TOCCancelToken* until) { return s1.future; };
+    TOCUntilOperation t2 = ^(TOCCancelToken* until) { return s2.future; };
     
-    TOCFuture* f1 = [@[t1, t2] asyncRaceOperationsWithWinningResultLastingUntil:nil];
-    TOCFuture* f2 = [@[t2, t1] asyncRaceOperationsWithWinningResultLastingUntil:nil];
+    TOCFuture* f1 = [@[t1, t2] toc_raceForWinnerLastingUntil:nil];
+    TOCFuture* f2 = [@[t2, t1] toc_raceForWinnerLastingUntil:nil];
     test(f1.isIncomplete);
     test(f2.isIncomplete);
     
@@ -159,11 +159,11 @@
     TOCFutureSource* s1 = [TOCFutureSource new];
     TOCFutureSource* s2 = [TOCFutureSource new];
     TOCFutureSource* s3 = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s1 trySetFailedWithCancel]; }]; return s1.future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s2 trySetFailedWithCancel]; }]; return s2.future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t3 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s3 trySetFailedWithCancel]; }]; return s3.future; };
+    TOCUntilOperation t1 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s1 trySetFailedWithCancel]; }]; return s1.future; };
+    TOCUntilOperation t2 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s2 trySetFailedWithCancel]; }]; return s2.future; };
+    TOCUntilOperation t3 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s3 trySetFailedWithCancel]; }]; return s3.future; };
     
-    TOCFuture* f = [@[t1, t2, t3] asyncRaceOperationsWithWinningResultLastingUntil:nil];
+    TOCFuture* f = [@[t1, t2, t3] toc_raceForWinnerLastingUntil:nil];
     test(s1.future.isIncomplete);
     test(s2.future.isIncomplete);
     test(s3.future.isIncomplete);
@@ -178,11 +178,11 @@
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_CancelDuring_OperationsFailToCancel {
     TOCFutureSource* s1 = [TOCFutureSource new];
     TOCFutureSource* s2 = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s1 trySetFailedWithCancel]; }]; return [TOCFutureSource new].future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s2 trySetFailedWithCancel]; }]; return [TOCFutureSource new].future; };
+    TOCUntilOperation t1 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s1 trySetFailedWithCancel]; }]; return [TOCFutureSource new].future; };
+    TOCUntilOperation t2 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s2 trySetFailedWithCancel]; }]; return [TOCFutureSource new].future; };
     
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
-    TOCFuture* f = [@[t1, t2] asyncRaceOperationsWithWinningResultLastingUntil:c.token];
+    TOCFuture* f = [@[t1, t2] toc_raceForWinnerLastingUntil:c.token];
     test(s1.future.isIncomplete);
     test(s1.future.isIncomplete);
     test(f.isIncomplete);
@@ -195,11 +195,11 @@
 -(void) testAsyncRaceAsynchronousResultUntilCancelledOperationsUntil_CancelDuringRaceRacersBeingCancelled {
     TOCFutureSource* s1 = [TOCFutureSource new];
     TOCFutureSource* s2 = [TOCFutureSource new];
-    TOCAsyncOperationWithResultLastingUntilCancelled t1 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s1 trySetFailedWithCancel]; }]; return s1.future; };
-    TOCAsyncOperationWithResultLastingUntilCancelled t2 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s2 trySetFailedWithCancel]; }]; return s2.future; };
+    TOCUntilOperation t1 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s1 trySetFailedWithCancel]; }]; return s1.future; };
+    TOCUntilOperation t2 = ^(TOCCancelToken* until) { [until whenCancelledDo:^{ [s2 trySetFailedWithCancel]; }]; return s2.future; };
     
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
-    TOCFuture* f = [@[t1, t2] asyncRaceOperationsWithWinningResultLastingUntil:c.token];
+    TOCFuture* f = [@[t1, t2] toc_raceForWinnerLastingUntil:c.token];
     test(s1.future.isIncomplete);
     test(s1.future.isIncomplete);
     test(f.isIncomplete);

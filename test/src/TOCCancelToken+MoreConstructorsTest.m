@@ -21,12 +21,12 @@
     TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
     TOCCancelToken* c1 = [TOCCancelToken matchFirstToCancelBetween:s1.token and:s2.token];
     TOCCancelToken* c2 = [TOCCancelToken matchFirstToCancelBetween:s1.token and:s2.token];
-
+    
     test(c1.state == TOCCancelTokenState_StillCancellable);
     test(c2.state == TOCCancelTokenState_StillCancellable);
     
     [s1 cancel];
-
+    
     test(c1.state == TOCCancelTokenState_Cancelled);
     test(c2.state == TOCCancelTokenState_Cancelled);
 }
@@ -39,11 +39,11 @@
             TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
             c1 = [TOCCancelToken matchFirstToCancelBetween:s1.token and:s2.token];
             c2 = [TOCCancelToken matchFirstToCancelBetween:s1.token and:s2.token];
-
+            
             test(c1.state == TOCCancelTokenState_StillCancellable);
             test(c2.state == TOCCancelTokenState_StillCancellable);
         }
-
+        
         test(c1.state == TOCCancelTokenState_StillCancellable);
         test(c2.state == TOCCancelTokenState_StillCancellable);
     }
@@ -75,7 +75,7 @@
     
     test(c1.state == TOCCancelTokenState_StillCancellable);
     test(c2.state == TOCCancelTokenState_StillCancellable);
-
+    
     [s2 cancel];
     
     test(c1.state == TOCCancelTokenState_Cancelled);

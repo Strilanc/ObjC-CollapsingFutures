@@ -8,7 +8,7 @@
 
 -(void)testFailedFuture {
     TOCFuture* f = [TOCFuture futureWithFailure:@"X"];
-
+    
     test(!f.isIncomplete);
     test(f.hasFailed);
     test(!f.hasResult);
@@ -16,7 +16,7 @@
     testThrows(f.forceGetResult);
     test(f.description != nil);
     test(f.state == TOCFutureState_Failed);
-
+    
     // redundant check of continuations all in one place
     testDoesNotHitTarget([f thenDo:^(id result) { hitTarget; }]);
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
@@ -49,7 +49,7 @@
     testDoesNotHitTarget([[TOCFutureSource new].future finallyDo:^(TOCFuture* completed) { hitTarget; } unless:nil]);
     testHitsTarget([[TOCFuture futureWithResult:@7] finallyDo:^(TOCFuture* completed) { testFutureHasResult(completed, @7); hitTarget; } unless:nil]);
     testHitsTarget([[TOCFuture futureWithFailure:@8] finallyDo:^(TOCFuture* completed) { testFutureHasFailure(completed, @8); hitTarget; } unless:nil]);
-
+    
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     testDoesNotHitTarget([[TOCFutureSource new].future finallyDo:^(TOCFuture* completed) { hitTarget; } unless:c.token]);
     testHitsTarget([[TOCFuture futureWithResult:@7] finallyDo:^(TOCFuture* completed) { testFutureHasResult(completed, @7); hitTarget; } unless:c.token]);
@@ -194,7 +194,7 @@
     TOCCancelTokenSource* c2 = [TOCCancelTokenSource new];
     dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         TOCFutureSource* c1 = [TOCFutureSource new];
-        TOCFuture* f = [TOCFuture futureWithResultFromOperation:^id{
+        TOCFuture* f = [TOCFuture futureFromOperation:^id{
             test([NSThread isMainThread]);
             [c1.future finallyDo:^(TOCFuture* completed){
                 test([NSThread isMainThread]);

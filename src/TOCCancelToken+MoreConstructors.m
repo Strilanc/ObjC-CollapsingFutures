@@ -45,11 +45,11 @@
     [cancelledWhenEitherSettle.token whenCancelledDo:^{
         enum TOCCancelTokenState settledState1 = token1.state;
         enum TOCCancelTokenState settledState2 = token2.state;
-
+        
         // if either token is immortal, we can just return (resulting in the last ref to maxSource being lost and it going immortal)
         if (settledState1 == TOCCancelTokenState_Immortal) return;
         if (settledState2 == TOCCancelTokenState_Immortal) return;
-
+        
         // avoid the token that's been cancelled, so we condition on the only one that can be alive
         TOCCancelToken* remainingToken = settledState1 == TOCCancelTokenState_Cancelled ? token2 : token1;
         [remainingToken whenCancelledDo:^{

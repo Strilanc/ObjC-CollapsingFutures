@@ -6,8 +6,8 @@
 
 @synthesize canceller, futureResult;
 
-+(TOCInternal_Racer*) racerStartedFrom:(TOCAsyncOperationWithResultLastingUntilCancelled)starter
-                     until:(TOCCancelToken*)untilCancelledToken {
++(TOCInternal_Racer*) racerStartedFrom:(TOCUntilOperation)starter
+                                 until:(TOCCancelToken*)untilCancelledToken {
     TOCInternal_need(starter != nil);
     
     TOCInternal_Racer* racer = [TOCInternal_Racer new];
@@ -23,7 +23,7 @@
     
     // start all operations (as racers that can be individually cancelled after-the-fact)
     NSArray* racers = [starters map:^(id starter) { return [TOCInternal_Racer racerStartedFrom:starter
-                                                                             until:untilCancelledToken]; }];
+                                                                                         until:untilCancelledToken]; }];
     
     // make a podium for the winner, assuming the race isn't called off
     TOCFutureSource* futureWinningRacerSource = [TOCFutureSource futureSourceUntil:untilCancelledToken];
@@ -46,7 +46,7 @@
             }
         } unless:untilCancelledToken];
     }
-
+    
     // once there's a winner, cancel the other racers
     [futureWinningRacerSource.future thenDo:^(TOCInternal_Racer* winningRacer) {
         for (TOCInternal_Racer* racer in racers) {
@@ -55,7 +55,7 @@
             }
         }
     }];
-
+    
     // get the winning racer's result
     TOCFuture* futureWinnerResult = [futureWinningRacerSource.future then:^id(TOCInternal_Racer* winningRacer) { return winningRacer.futureResult; }];
     

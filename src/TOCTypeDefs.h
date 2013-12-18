@@ -17,7 +17,7 @@
  *
  * If the operation has not finished yet, cancelling the untilCancelledToken should immediately cancel it and its result.
  */
-typedef TOCFuture* (^TOCAsyncOperationWithResultLastingUntilCancelled)(TOCCancelToken* untilCancelledToken);
+typedef TOCFuture* (^TOCUntilOperation)(TOCCancelToken* untilCancelledToken);
 
 /*!
  * A block that starts an asynchronous operation and returns a future that will contain its result unless the operation is cancelled.
@@ -30,4 +30,4 @@ typedef TOCFuture* (^TOCAsyncOperationWithResultLastingUntilCancelled)(TOCCancel
  *
  * The future returned by the operation should immediately transition to the cancelled state when the operation is cancelled.
  */
-typedef TOCFuture* (^TOCAsyncCancellableOperation)(TOCCancelToken* unlessCancelledToken);
+typedef TOCFuture* (^TOCUnlessOperation)(TOCCancelToken* unlessCancelledToken);

@@ -45,7 +45,7 @@
     testThrows(f.forceGetResult);
     test(f.description != nil);
     test(f.state == TOCFutureState_Failed);
-
+    
     testDoesNotHitTarget([f thenDo:^(id result) { hitTarget; }]);
     testHitsTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
@@ -65,7 +65,7 @@
     testThrows(f.forceGetFailure);
     test(f.description != nil);
     test(f.state == TOCFutureState_CompletedWithResult);
-
+    
     testHitsTarget([f thenDo:^(id result) { hitTarget; }]);
     testDoesNotHitTarget([f catchDo:^(id result) { hitTarget; }]);
     testHitsTarget([f finallyDo:^(id result) { hitTarget; }]);
@@ -84,7 +84,7 @@
     testThrows(f.forceGetFailure);
     test(f.description != nil);
     test(f.state == TOCFutureState_AbleToBeSet);
-
+    
     testDoesNotHitTarget([f thenDo:^(id result) { hitTarget; }]);
     testDoesNotHitTarget([f catchDo:^(id result) { hitTarget; }]);
     testDoesNotHitTarget([f finallyDo:^(id result) { hitTarget; }]);
@@ -265,7 +265,7 @@
 -(void) testTrySetFailedWithCancel {
     TOCFutureSource* f = [TOCFutureSource new];
     test(f.future.state == TOCFutureState_AbleToBeSet);
-
+    
     test([f trySetFailedWithCancel]);
     test(f.future.state == TOCFutureState_Failed);
     test(f.future.hasFailedWithCancel);

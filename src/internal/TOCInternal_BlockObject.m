@@ -7,7 +7,7 @@
 
 +(TOCInternal_BlockObject*) voidBlock:(void(^)(void))block {
     TOCInternal_need(block != nil);
-
+    
     TOCInternal_BlockObject* b = [TOCInternal_BlockObject new];
     b->block = block;
     return b;
@@ -21,7 +21,7 @@
 
 +(void) performBlock:(void(^)(void))block onThread:(NSThread*)thread {
     TOCInternal_need(block != nil);
-
+    
     if (thread == [NSThread currentThread]) {
         block();
         return;

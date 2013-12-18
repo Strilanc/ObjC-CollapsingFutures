@@ -16,7 +16,7 @@
  *
  * A nil cancel token is treated like a cancel token that can never be cancelled.
  */
--(TOCFuture*) asyncFinallyAllUnless:(TOCCancelToken*)unlessCancelledToken;
+-(TOCFuture*) toc_finallyAllUnless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Returns a future that succeeds with all of the futures in the receiving array, once they have all completed or failed.
@@ -29,7 +29,7 @@
  *
  * The future returned by this method always succeeds with a result. It is guaranteed to not contain a failure.
  */
--(TOCFuture*) asyncFinallyAll;
+-(TOCFuture*) toc_finallyAll;
 
 /*!
  * Eventually gets all of the results from the futures in the receiving array, unless cancelled.
@@ -42,11 +42,11 @@
  *
  * @discussion Can be thought of as flipping an Array-of-Futures into a Future-of-Array in the 'obvious' way.
  *
- * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] asyncThenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
+ * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] toc_thenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
  *
  * A nil cancel token is treated like a cancel token that can never be cancelled.
  */
--(TOCFuture*) asyncThenAllUnless:(TOCCancelToken*)unlessCancelledToken;
+-(TOCFuture*) toc_thenAllUnless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Eventually gets all of the results from the futures in the receiving array.
@@ -58,9 +58,9 @@
  *
  * @discussion Can be thought of as flipping an Array-of-Futures into a Future-of-Array in the 'obvious' way.
  *
- * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] asyncThenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
+ * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] toc_thenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
  */
--(TOCFuture*) asyncThenAll;
+-(TOCFuture*) toc_thenAll;
 
 /*!
  * Immediately returns an array containing futures matching those in the receiving array, but with futures that will complete later placed later in the array, unless cancelled.
@@ -77,7 +77,7 @@
  *
  * A nil cancel token is treated like a cancel token that can never be cancelled.
  */
--(NSArray*) asyncOrderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken;
+-(NSArray*) toc_orderedByCompletionUnless:(TOCCancelToken*)unlessCancelledToken;
 
 /*!
  * Immediately returns an array containing futures matching those in the receiving array, but with futures that will complete later placed later in the array.
@@ -91,10 +91,10 @@
  * The order that futures completed in in the past is not remembered.
  * Futures that had already completed will end up in the same order in the returned array as they were in the receiving array.
  */
--(NSArray*) asyncOrderedByCompletion;
+-(NSArray*) toc_orderedByCompletion;
 
 /*!
- * Runs all the TOCAsyncOperationWithResultLastingUntilCancelled blocks in the array, racing the asynchronous operations they start against each other, and returns the winner as a future.
+ * Runs all the TOCUntilOperation blocks in the array, racing the asynchronous operations they start against each other, and returns the winner as a future.
  * IMPORTANT: An operation's result MUST be cleaned up if the cancel token given to the starter is cancelled EVEN IF the operation has already completed.
  *
  * @param untilCancelledToken When this token is cancelled, both the race AND THE WINNING RESULT are cancelled, terminated, cleaned up, and generally DEAD.
@@ -102,9 +102,9 @@
  * @result A future that will contain the result of the first asynchronous operation to complete, or else fail with the failures of every operation.
  * If the untilCancelledToken is cancelled before the race is over, the resulting future fails with a cancellation.
  *
- * @pre All items in the array must be TOCAsyncOperationWithResultLastingUntilCancelled blocks.
+ * @pre All items in the array must be TOCUntilOperation blocks.
  *
- * @discussion An TOCAsyncOperationWithResultLastingUntilCancelled block takes an untilCancelledToken and returns a TOCFuture*.
+ * @discussion An TOCUntilOperation block takes an untilCancelledToken and returns a TOCFuture*.
  * The block is expected to start an asynchronous operation whose result is terminated when the token is cancelled, even if the operation has already completed.
  *
  * The untilCancelledTokens given to each racing operation are dependent, but distinct, from the untilCancelledToken given to this method.
@@ -117,8 +117,8 @@
  * CAUTION: When writing the racing operations within the scope of the token being passed to this method, it is easy to accidentally use the wrong untilCancelledToken.
  * Double-check that the racing operation is depending on the token given to it by this method, and not the token you're giving to this method.
  *
- * @see TOCAsyncOperationWithResultLastingUntilCancelled
+ * @see TOCUntilOperation
  */
--(TOCFuture*) asyncRaceOperationsWithWinningResultLastingUntil:(TOCCancelToken*)untilCancelledToken;
+-(TOCFuture*) toc_raceForWinnerLastingUntil:(TOCCancelToken*)untilCancelledToken;
 
 @end
