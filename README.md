@@ -12,6 +12,7 @@ This is a library implementing [futures](https://en.wikipedia.org/wiki/Future_%2
 
 **Recent Changes**
 
+- Bit the breaking change bullet and changed some names so they're not stuck once v1 hits.
 - Fixed lack of "toc" prefixes on array category methods like `asyncThenAll` (now `toc_thenAll`).
 - Shortened excessively long names, such as `futureWithResultFromAsyncOperationWithResultLastingUntilCancelled` becoming `futureFromUntilOperation`.
 - Added `matchLastToCancelBetween:and:` and `matchFirstToCancelBetween:and:` constructors to `TOCCancelToken`, to allow combining lifetimes a bit more flexibly.
