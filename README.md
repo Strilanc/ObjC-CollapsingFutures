@@ -10,6 +10,13 @@ This is a library implementing [futures](https://en.wikipedia.org/wiki/Future_%2
 - **Immortality Detection**: It is impossible to create new space leaks by consuming futures and tokens (but producers still have to be careful). If a reference cycle doesn't involve a token or future's source, it will be broken when the source is deallocated.
 - **Documentation**: Useful doc comments on every method and type, that don't just repeat the name, covering corner cases and in some cases basic usage hints. No 'getting started' guides yet, though.
 
+**Recent Changes**
+
+- Fixed lack of "toc" prefixes on array category methods like `asyncThenAll` (now `toc_thenAll`).
+- Shortened excessively long names, such as `futureWithResultFromAsyncOperationWithResultLastingUntilCancelled` becoming `futureFromUntilOperation`.
+- Added `matchLastToCancelBetween:and:` and `matchFirstToCancelBetween:and:` constructors to `TOCCancelToken`, to allow combining lifetimes a bit more flexibly.
+- Added check of cancel token *after* returning to main thread, to allow UI code to assume that observing a token as cancelled implies no more returning-to-main-thread on-cancel callbacks will occur.
+
 Installation
 ============
 
