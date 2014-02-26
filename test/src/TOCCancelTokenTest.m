@@ -432,7 +432,7 @@
         });
         
         
-        for (int rep = 0; rep < 10 && OSAtomicAdd32(0, &ran) < n; rep++) {
+        for (int rep = 0; rep < 1000 && OSAtomicAdd32(0, &ran) < n; rep++) {
             usleep(1000*10);
         }
         test(OSAtomicAdd32(0, &ran) == n);

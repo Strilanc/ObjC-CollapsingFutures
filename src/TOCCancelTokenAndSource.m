@@ -97,15 +97,15 @@ typedef void (^SettledHandler)(void);
 }
 
 -(TOCCancelHandler) _preserveMainThreadness:(TOCCancelHandler)cancelHandler {
-    if (![NSThread isMainThread]) return cancelHandler;
+    if (!NSThread.isMainThread) return cancelHandler;
     
     return ^{ [TOCInternal_BlockObject performBlock:cancelHandler
-                                           onThread:[NSThread mainThread]]; };
+                                           onThread:NSThread.mainThread]; };
 }
 
 -(TOCCancelHandler) _preserveMainThreadness:(TOCCancelHandler)cancelHandler
                                    andCheck:(TOCCancelToken*)unlessCancelledToken {
-    if (![NSThread isMainThread]) return cancelHandler;
+    if (!NSThread.isMainThread) return cancelHandler;
     
     return [self _preserveMainThreadness:^{
         // do a final check, to help the caller out
