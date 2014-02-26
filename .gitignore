@@ -14,4 +14,3 @@ xcuserdata
 
 #Exclude pods
 Pods/*
-Podfile.lock
