@@ -84,7 +84,15 @@ enum StartUnwrapResult {
     // look for flattening cycles
     @synchronized(getSharedCycleDetectionLock()) {
         bool didMerge = [self._getInitCycleNode unionWith:targetFuture._getInitCycleNode];
-        if (!didMerge) return StartUnwrapResult_CycleDetected;
+        if (!didMerge) {
+            // it's not necessary to clear the cycle nodes, but it frees up some memory
+            // other futures in the cycle won't get their cycle nodes cleared
+            // but node chains should be in EXTREMELY shallow trees
+            // and the nodes can't keep futures alive, so there's no reference cycle
+            _cycleNode = nil;
+            targetFuture->_cycleNode = nil;
+            return StartUnwrapResult_CycleDetected;
+        }
     }
     
     return StartUnwrapResult_Started;
