@@ -258,6 +258,53 @@ enum StartUnwrapResult {
             return @"Future in an unrecognized state";
     }
 }
+-(BOOL)isEqual:(id)object {
+    if (self == object) return YES;
+    if (![object isKindOfClass:TOCFuture.class]) return NO;
+    return [self isEqualToFuture:(TOCFuture*)object];
+}
+-(BOOL)isEqualToFuture:(TOCFuture *)other {
+    if (self == other) return YES;
+    if (other == nil) return NO;
+
+    enum TOCFutureState state1 = self.state;
+    enum TOCFutureState state2 = other.state;
+    if (state1 != state2) return NO;
+    
+    switch (state1) {
+        case TOCFutureState_Immortal:
+            return YES;
+            
+        case TOCFutureState_CompletedWithResult:
+        case TOCFutureState_Failed:
+            if (_value == other->_value) return YES;
+            if (_value == nil) return NO;
+            return [self->_value isEqual:other->_value];
+
+        case TOCFutureState_Flattening:
+        case TOCFutureState_AbleToBeSet:
+        default:
+            return NO;
+    }
+}
+-(NSUInteger)hash {
+    enum TOCFutureState state = self.state;
+    switch (state) {
+        case TOCFutureState_Immortal:
+            return NSUIntegerMax;
+            
+        case TOCFutureState_CompletedWithResult:
+            return [_value hash];
+
+        case TOCFutureState_Failed:
+            return ~[_value hash];
+            
+        case TOCFutureState_Flattening:
+        case TOCFutureState_AbleToBeSet:
+        default:
+            return super.hash;
+    }
+}
 
 @end
 

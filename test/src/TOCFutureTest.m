@@ -217,4 +217,206 @@
     test(c2.token.state == TOCCancelTokenState_Cancelled);
 }
 
+-(void)testFutureEquality_viaObject {
+    TOCFuture* fres = [TOCFuture futureWithResult:@1];
+    TOCFuture* ferr = [TOCFuture futureWithFailure:@1];
+    TOCFuture* fimm = [TOCFutureSource new].future;
+    test(fimm.state == TOCFutureState_Immortal);
+    TOCFutureSource* sinc = [TOCFutureSource new];
+    TOCFuture* finc = sinc.future;
+    TOCFutureSource* slat = [TOCFutureSource new];
+    [slat forceSetResult:finc];
+    TOCFuture* flat = slat.future;
+    
+    // result
+    test([fres isEqual:fres]);
+    test([fres isEqual:[TOCFuture futureWithResult:@1]]);
+    test(fres.hash == [TOCFuture futureWithResult:@1].hash);
+    test([fres isEqual:[TOCFuture futureWithResult:fres]]);
+    test(fres.hash == [TOCFuture futureWithResult:fres].hash);
+    test(![fres isEqual:[TOCFuture futureWithFailure:fres]]);
+    test(![fres isEqual:[TOCFuture futureWithResult:@2]]);
+    test(![fres isEqual:ferr]);
+    test(![fres isEqual:fimm]);
+    test(![fres isEqual:finc]);
+    test(![fres isEqual:sinc]);
+    test(![fres isEqual:flat]);
+    test(![fres isEqual:nil]);
+    test(![fres isEqual:@1]);
+    test(![fres isEqual:@[]]);
+    
+    // error
+    test([ferr isEqual:ferr]);
+    test([ferr isEqual:[TOCFuture futureWithFailure:@1]]);
+    test(ferr.hash == [TOCFuture futureWithFailure:@1].hash);
+    test([ferr isEqual:[TOCFuture futureWithResult:ferr]]);
+    test(ferr.hash == [TOCFuture futureWithResult:ferr].hash);
+    test(![ferr isEqual:[TOCFuture futureWithFailure:ferr]]);
+    test(![ferr isEqual:[TOCFuture futureWithFailure:@2]]);
+    test(![ferr isEqual:fres]);
+    test(![ferr isEqual:fimm]);
+    test(![ferr isEqual:finc]);
+    test(![ferr isEqual:sinc]);
+    test(![ferr isEqual:flat]);
+    test(![ferr isEqual:nil]);
+    test(![ferr isEqual:@1]);
+    test(![ferr isEqual:@[]]);
+
+    // immortal
+    TOCFuture* imm2 = [TOCFutureSource new].future;
+    test(imm2.state == TOCFutureState_Immortal);
+    test([fimm isEqual:fimm]);
+    test([fimm isEqual:imm2]);
+    test(fimm.hash == imm2.hash);
+    test([fimm isEqual:[TOCFuture futureWithResult:fimm]]);
+    test(fimm.hash == [TOCFuture futureWithResult:fimm].hash);
+    test(![fimm isEqual:[TOCFuture futureWithFailure:fimm]]);
+    test(![fimm isEqual:ferr]);
+    test(![fimm isEqual:fres]);
+    test(![fimm isEqual:finc]);
+    test(![fimm isEqual:sinc]);
+    test(![fimm isEqual:flat]);
+    test(![fimm isEqual:nil]);
+    test(![fimm isEqual:@1]);
+    test(![fimm isEqual:@[]]);
+
+    // incomplete
+    TOCFutureSource* sinc2 = [TOCFutureSource new];
+    TOCFuture* finc2 = sinc2.future;
+    test([finc isEqual:finc]);
+    test([finc isEqual:[TOCFuture futureWithResult:finc]]); // due to returning argument
+    test(![finc isEqual:finc2]);
+    test(![finc isEqual:[TOCFuture futureWithFailure:finc]]);
+    test(![finc isEqual:ferr]);
+    test(![finc isEqual:fres]);
+    test(![finc isEqual:fimm]);
+    test(![finc isEqual:sinc]);
+    test(![finc isEqual:flat]);
+    test(![finc isEqual:nil]);
+    test(![finc isEqual:@1]);
+    test(![finc isEqual:@[]]);
+
+    // flattening
+    test([flat isEqual:flat]);
+    test([flat isEqual:[TOCFuture futureWithResult:flat]]); // due to returning argument
+    test(![flat isEqual:finc2]);
+    test(![flat isEqual:[TOCFuture futureWithFailure:fimm]]);
+    test(![flat isEqual:ferr]);
+    test(![flat isEqual:fres]);
+    // (flat vs finc not specified due to efficiency issues keeping dependencies flattened)
+    test(![flat isEqual:sinc]);
+    test(![flat isEqual:fimm]);
+    test(![flat isEqual:nil]);
+    test(![flat isEqual:@1]);
+    test(![flat isEqual:@[]]);
+
+    // after completion
+    [sinc forceSetResult:@2];
+    test([finc isEqual:[TOCFuture futureWithResult:@2]]);
+    test(finc.hash == [TOCFuture futureWithResult:@2].hash);
+    [sinc2 forceSetFailure:@3];
+    test([finc2 isEqual:[TOCFuture futureWithFailure:@3]]);
+    test(finc2.hash == [TOCFuture futureWithFailure:@3].hash);
+
+    // nil value
+    test([[TOCFuture futureWithResult:nil] isEqual:[TOCFuture futureWithResult:nil]]);
+    test(![[TOCFuture futureWithResult:nil] isEqual:[TOCFuture futureWithResult:@1]]);
+    test(![[TOCFuture futureWithResult:@1] isEqual:[TOCFuture futureWithResult:nil]]);
+    test([[TOCFuture futureWithFailure:nil] isEqual:[TOCFuture futureWithFailure:nil]]);
+    test(![[TOCFuture futureWithFailure:nil] isEqual:[TOCFuture futureWithFailure:@1]]);
+    test(![[TOCFuture futureWithFailure:@1] isEqual:[TOCFuture futureWithFailure:nil]]);
+}
+
+-(void)testFutureEquality_direct {
+    TOCFuture* fres = [TOCFuture futureWithResult:@1];
+    TOCFuture* ferr = [TOCFuture futureWithFailure:@1];
+    TOCFuture* fimm = [TOCFutureSource new].future;
+    test(fimm.state == TOCFutureState_Immortal);
+    TOCFutureSource* sinc = [TOCFutureSource new];
+    TOCFuture* finc = sinc.future;
+    TOCFutureSource* slat = [TOCFutureSource new];
+    [slat forceSetResult:finc];
+    TOCFuture* flat = slat.future;
+    
+    // result
+    test([fres isEqualToFuture:fres]);
+    test([fres isEqualToFuture:[TOCFuture futureWithResult:@1]]);
+    test([fres isEqualToFuture:[TOCFuture futureWithResult:fres]]);
+    test(![fres isEqualToFuture:[TOCFuture futureWithFailure:fres]]);
+    test(![fres isEqualToFuture:[TOCFuture futureWithResult:@2]]);
+    test(![fres isEqualToFuture:ferr]);
+    test(![fres isEqualToFuture:fimm]);
+    test(![fres isEqualToFuture:finc]);
+    test(![fres isEqualToFuture:flat]);
+    test(![fres isEqualToFuture:nil]);
+    
+    // error
+    test([ferr isEqualToFuture:ferr]);
+    test([ferr isEqualToFuture:[TOCFuture futureWithFailure:@1]]);
+    test([ferr isEqualToFuture:[TOCFuture futureWithResult:ferr]]);
+    test(![ferr isEqualToFuture:[TOCFuture futureWithFailure:ferr]]);
+    test(![ferr isEqualToFuture:[TOCFuture futureWithFailure:@2]]);
+    test(![ferr isEqualToFuture:fres]);
+    test(![ferr isEqualToFuture:fimm]);
+    test(![ferr isEqualToFuture:finc]);
+    test(![ferr isEqualToFuture:flat]);
+    test(![ferr isEqualToFuture:nil]);
+    
+    // immortal
+    TOCFuture* imm2 = [TOCFutureSource new].future;
+    test(imm2.state == TOCFutureState_Immortal);
+    test([fimm isEqualToFuture:fimm]);
+    test([fimm isEqualToFuture:imm2]);
+    test(fimm.hash == imm2.hash);
+    test([fimm isEqualToFuture:[TOCFuture futureWithResult:fimm]]);
+    test(fimm.hash == [TOCFuture futureWithResult:fimm].hash);
+    test(![fimm isEqualToFuture:[TOCFuture futureWithFailure:fimm]]);
+    test(![fimm isEqualToFuture:ferr]);
+    test(![fimm isEqualToFuture:fres]);
+    test(![fimm isEqualToFuture:finc]);
+    test(![fimm isEqualToFuture:flat]);
+    test(![fimm isEqualToFuture:nil]);
+    
+    // incomplete
+    TOCFutureSource* sinc2 = [TOCFutureSource new];
+    TOCFuture* finc2 = sinc2.future;
+    test([finc isEqualToFuture:finc]);
+    test([finc isEqualToFuture:[TOCFuture futureWithResult:finc]]); // due to returning argument
+    test(![finc isEqualToFuture:finc2]);
+    test(![finc isEqualToFuture:[TOCFuture futureWithFailure:finc]]);
+    test(![finc isEqualToFuture:ferr]);
+    test(![finc isEqualToFuture:fres]);
+    test(![finc isEqualToFuture:fimm]);
+    test(![finc isEqualToFuture:flat]);
+    test(![finc isEqualToFuture:nil]);
+    
+    // flattening
+    test([flat isEqualToFuture:flat]);
+    test([flat isEqualToFuture:[TOCFuture futureWithResult:flat]]); // due to returning argument
+    test(![flat isEqualToFuture:finc2]);
+    test(![flat isEqualToFuture:[TOCFuture futureWithFailure:fimm]]);
+    test(![flat isEqualToFuture:ferr]);
+    test(![flat isEqualToFuture:fres]);
+    // (flat vs finc not specified due to efficiency issues keeping dependencies flattened)
+    test(![flat isEqualToFuture:fimm]);
+    test(![flat isEqualToFuture:nil]);
+    
+    // after completion
+    // note: complete differently lest the above comparison be technically implementation defined
+    [sinc forceSetResult:@2];
+    [sinc2 forceSetFailure:@3];
+    test([finc isEqualToFuture:[TOCFuture futureWithResult:@2]]);
+    test(finc.hash == [TOCFuture futureWithResult:@2].hash);
+    test([finc2 isEqualToFuture:[TOCFuture futureWithFailure:@3]]);
+    test(finc2.hash == [TOCFuture futureWithFailure:@3].hash);
+    
+    // nil value
+    test([[TOCFuture futureWithResult:nil] isEqualToFuture:[TOCFuture futureWithResult:nil]]);
+    test(![[TOCFuture futureWithResult:nil] isEqualToFuture:[TOCFuture futureWithResult:@1]]);
+    test(![[TOCFuture futureWithResult:@1] isEqualToFuture:[TOCFuture futureWithResult:nil]]);
+    test([[TOCFuture futureWithFailure:nil] isEqualToFuture:[TOCFuture futureWithFailure:nil]]);
+    test(![[TOCFuture futureWithFailure:nil] isEqualToFuture:[TOCFuture futureWithFailure:@1]]);
+    test(![[TOCFuture futureWithFailure:@1] isEqualToFuture:[TOCFuture futureWithFailure:nil]]);
+}
+
 @end

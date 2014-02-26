@@ -363,6 +363,23 @@ typedef id (^TOCFutureCatchContinuation)(id failure);
 -(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation
              unless:(TOCCancelToken*)unlessCancelledToken;
 
+/*!
+ * Determines if two futures are guaranteed to end up with the same result, failure, or immortality.
+ *
+ * @discussion A future is equal to itself.
+ *
+ * A future with a result is equal to futures with the same result.
+ *
+ * A future with a failure is equal to futures with the same failure.
+ *
+ * All immortal futures are equal.
+ *
+ * Incomplete and flattening futures that will end up not equal are guaranteed to
+ * be not equal already. However, if they will end up equal then this method
+ * may or may not be able to figure that out and so its result is implementation defined.
+ */
+-(BOOL)isEqualToFuture:(TOCFuture*)other;
+
 @end
 
 /*!
