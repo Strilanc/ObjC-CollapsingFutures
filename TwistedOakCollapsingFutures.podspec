@@ -19,4 +19,5 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/Strilanc/ObjC-CollapsingFutures.git", :tag => "v0.9.1" }
   s.source_files  = 'src', 'src/**/*.{h,m}'
   s.requires_arc = true
+  s.dependency = 'UnionFind', '~> 1.0'
 end
