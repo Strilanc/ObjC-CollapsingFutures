@@ -7,40 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7DE84D3FE62647EC9C5D71FE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AEC4DB01C146D48E850BE7 /* libPods.a */; };
 		A109021D18613CE4004B7A56 /* TOCCancelToken+MoreConstructors.m in Sources */ = {isa = PBXBuildFile; fileRef = A109021C18613CE4004B7A56 /* TOCCancelToken+MoreConstructors.m */; };
-		A109021E18613CE4004B7A56 /* TOCCancelToken+MoreConstructors.m in Sources */ = {isa = PBXBuildFile; fileRef = A109021C18613CE4004B7A56 /* TOCCancelToken+MoreConstructors.m */; };
 		A109022118613E8F004B7A56 /* TOCInternal_OnDeallocObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A109022018613E8F004B7A56 /* TOCInternal_OnDeallocObject.m */; };
-		A109022218613E8F004B7A56 /* TOCInternal_OnDeallocObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A109022018613E8F004B7A56 /* TOCInternal_OnDeallocObject.m */; };
 		A1090224186145ED004B7A56 /* TOCCancelToken+MoreConstructorsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1090223186145ED004B7A56 /* TOCCancelToken+MoreConstructorsTest.m */; };
 		A1209B201808696100D6831C /* NSArray+TOCFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* NSArray+TOCFuture.m */; };
-		A1209B211808696100D6831C /* NSArray+TOCFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* NSArray+TOCFuture.m */; };
 		A1209B2418086A8F00D6831C /* TOCFutureArrayUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2318086A8F00D6831C /* TOCFutureArrayUtilTest.m */; };
 		A1209B27180888E800D6831C /* TOCCancelTokenAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */; };
-		A1209B28180888E800D6831C /* TOCCancelTokenAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */; };
 		A1209B2A1808E51B00D6831C /* TOCCancelTokenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B291808E51B00D6831C /* TOCCancelTokenTest.m */; };
 		A1209B2D180DD34F00D6831C /* TOCFuture+MoreContinuations.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2C180DD34F00D6831C /* TOCFuture+MoreContinuations.m */; };
-		A1209B2E180DD34F00D6831C /* TOCFuture+MoreContinuations.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2C180DD34F00D6831C /* TOCFuture+MoreContinuations.m */; };
 		A1209B30180DD50200D6831C /* TOCFuture+MoreContinuationsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2F180DD50200D6831C /* TOCFuture+MoreContinuationsTest.m */; };
 		A1209B32180DD52A00D6831C /* TOCFutureSourceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B31180DD52A00D6831C /* TOCFutureSourceTest.m */; };
 		A1209B43180F4A9300D6831C /* TOCInternal_Racer.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B42180F4A9300D6831C /* TOCInternal_Racer.m */; };
-		A1209B44180F4A9300D6831C /* TOCInternal_Racer.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B42180F4A9300D6831C /* TOCInternal_Racer.m */; };
 		A1209B4F180F4F4600D6831C /* TOCInternal_Array+Functional.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B4E180F4F4600D6831C /* TOCInternal_Array+Functional.m */; };
-		A1209B50180F4F4600D6831C /* TOCInternal_Array+Functional.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B4E180F4F4600D6831C /* TOCInternal_Array+Functional.m */; };
 		A1209B53181084FD00D6831C /* TOCTimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B52181084FD00D6831C /* TOCTimeout.m */; };
-		A1209B54181084FD00D6831C /* TOCTimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B52181084FD00D6831C /* TOCTimeout.m */; };
 		A19E0C3C17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
 		A19E0C4B17DBB27B00A5FD69 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */; };
 		A19E0C4E17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
-		A19E0C5117DBB27B00A5FD69 /* libCollapsingFutures.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3817DBB27B00A5FD69 /* libCollapsingFutures.a */; };
 		A1A0196D1807641000A052A6 /* TOCFuture+MoreConstructorsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019671807641000A052A6 /* TOCFuture+MoreConstructorsTest.m */; };
 		A1A0196E1807641000A052A6 /* TOCFutureTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019681807641000A052A6 /* TOCFutureTest.m */; };
 		A1A0196F1807641000A052A6 /* Testing.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A0196A1807641000A052A6 /* Testing.m */; };
 		A1A019CB180774B600A052A6 /* TOCFutureAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019C7180774B600A052A6 /* TOCFutureAndSource.m */; };
-		A1A019CC180774B600A052A6 /* TOCFutureAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019C7180774B600A052A6 /* TOCFutureAndSource.m */; };
 		A1A019CD180774B600A052A6 /* TOCFuture+MoreContructors.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019C9180774B600A052A6 /* TOCFuture+MoreContructors.m */; };
-		A1A019CE180774B600A052A6 /* TOCFuture+MoreContructors.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019C9180774B600A052A6 /* TOCFuture+MoreContructors.m */; };
+		A1A134E718BD8C1A0067ECB0 /* TOCInternal_Array+Functional.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B4E180F4F4600D6831C /* TOCInternal_Array+Functional.m */; };
+		A1A134E818BD8C230067ECB0 /* TOCCancelToken+MoreConstructors.m in Sources */ = {isa = PBXBuildFile; fileRef = A109021C18613CE4004B7A56 /* TOCCancelToken+MoreConstructors.m */; };
+		A1A134E918BD8C2B0067ECB0 /* NSArray+TOCFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B1F1808696100D6831C /* NSArray+TOCFuture.m */; };
+		A1A134EA18BD8C2B0067ECB0 /* TOCCancelTokenAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B26180888E800D6831C /* TOCCancelTokenAndSource.m */; };
+		A1A134EB18BD8C2B0067ECB0 /* TOCFuture+MoreContinuations.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B2C180DD34F00D6831C /* TOCFuture+MoreContinuations.m */; };
+		A1A134EC18BD8C2B0067ECB0 /* TOCFuture+MoreContructors.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019C9180774B600A052A6 /* TOCFuture+MoreContructors.m */; };
+		A1A134ED18BD8C2B0067ECB0 /* TOCFutureAndSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019C7180774B600A052A6 /* TOCFutureAndSource.m */; };
+		A1A134EE18BD8C2B0067ECB0 /* TOCTimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B52181084FD00D6831C /* TOCTimeout.m */; };
+		A1A134EF18BD8C2F0067ECB0 /* TOCInternal_BlockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B6BF251810F04900226FE5 /* TOCInternal_BlockObject.m */; };
+		A1A134F018BD8C2F0067ECB0 /* TOCInternal_OnDeallocObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A109022018613E8F004B7A56 /* TOCInternal_OnDeallocObject.m */; };
+		A1A134F118BD8C2F0067ECB0 /* TOCInternal_Racer.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B42180F4A9300D6831C /* TOCInternal_Racer.m */; };
 		A1B6BF261810F04900226FE5 /* TOCInternal_BlockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B6BF251810F04900226FE5 /* TOCInternal_BlockObject.m */; };
-		A1B6BF271810F04900226FE5 /* TOCInternal_BlockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B6BF251810F04900226FE5 /* TOCInternal_BlockObject.m */; };
+		BA69685D31B3433D8AEDE4FA /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AEC4DB01C146D48E850BE7 /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4F43A5218EDA44E9AEE40B77 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		A109021B18613CE4004B7A56 /* TOCCancelToken+MoreConstructors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TOCCancelToken+MoreConstructors.h"; sourceTree = "<group>"; };
 		A109021C18613CE4004B7A56 /* TOCCancelToken+MoreConstructors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TOCCancelToken+MoreConstructors.m"; sourceTree = "<group>"; };
 		A109021F18613E8F004B7A56 /* TOCInternal_OnDeallocObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCInternal_OnDeallocObject.h; sourceTree = "<group>"; };
@@ -93,8 +95,6 @@
 		A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollapsingFuturesTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		A1A019631807641000A052A6 /* CollapsingFuturesTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CollapsingFuturesTests-Info.plist"; sourceTree = "<group>"; };
-		A1A019651807641000A052A6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A1A019671807641000A052A6 /* TOCFuture+MoreConstructorsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TOCFuture+MoreConstructorsTest.m"; sourceTree = "<group>"; };
 		A1A019681807641000A052A6 /* TOCFutureTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureTest.m; sourceTree = "<group>"; };
 		A1A019691807641000A052A6 /* Testing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Testing.h; sourceTree = "<group>"; };
@@ -106,6 +106,7 @@
 		A1A019CA180774B600A052A6 /* TwistedOakCollapsingFutures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwistedOakCollapsingFutures.h; sourceTree = "<group>"; };
 		A1B6BF241810F04900226FE5 /* TOCInternal_BlockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCInternal_BlockObject.h; sourceTree = "<group>"; };
 		A1B6BF251810F04900226FE5 /* TOCInternal_BlockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCInternal_BlockObject.m; sourceTree = "<group>"; };
+		B5AEC4DB01C146D48E850BE7 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +115,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A19E0C3C17DBB27B00A5FD69 /* Foundation.framework in Frameworks */,
+				7DE84D3FE62647EC9C5D71FE /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,7 +125,7 @@
 			files = (
 				A19E0C4B17DBB27B00A5FD69 /* SenTestingKit.framework in Frameworks */,
 				A19E0C4E17DBB27B00A5FD69 /* Foundation.framework in Frameworks */,
-				A19E0C5117DBB27B00A5FD69 /* libCollapsingFutures.a in Frameworks */,
+				BA69685D31B3433D8AEDE4FA /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,6 +155,7 @@
 				A19E0C3917DBB27B00A5FD69 /* Products */,
 				A1A019C5180774B600A052A6 /* src */,
 				A1A019621807641000A052A6 /* test */,
+				4F43A5218EDA44E9AEE40B77 /* Pods.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -170,6 +173,7 @@
 			children = (
 				A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */,
 				A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */,
+				B5AEC4DB01C146D48E850BE7 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -177,8 +181,6 @@
 		A1A019621807641000A052A6 /* test */ = {
 			isa = PBXGroup;
 			children = (
-				A1A019631807641000A052A6 /* CollapsingFuturesTests-Info.plist */,
-				A1A019641807641000A052A6 /* InfoPlist.strings */,
 				A1A019661807641000A052A6 /* src */,
 				A1A019691807641000A052A6 /* Testing.h */,
 				A1A0196A1807641000A052A6 /* Testing.m */,
@@ -231,9 +233,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A19E0C5D17DBB27B00A5FD69 /* Build configuration list for PBXNativeTarget "CollapsingFutures" */;
 			buildPhases = (
+				5F57C8AB77184E7A977B5B6B /* Check Pods Manifest.lock */,
 				A19E0C3417DBB27B00A5FD69 /* Sources */,
 				A19E0C3517DBB27B00A5FD69 /* Frameworks */,
 				A19E0C3617DBB27B00A5FD69 /* CopyFiles */,
+				F6B83BFE906F47D9AB813C58 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -248,10 +252,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A19E0C6017DBB27B00A5FD69 /* Build configuration list for PBXNativeTarget "CollapsingFuturesTests" */;
 			buildPhases = (
+				696D2CCB7C3E4654B02EE784 /* Check Pods Manifest.lock */,
 				A19E0C4417DBB27B00A5FD69 /* Sources */,
 				A19E0C4517DBB27B00A5FD69 /* Frameworks */,
 				A19E0C4617DBB27B00A5FD69 /* Resources */,
 				A19E0C4717DBB27B00A5FD69 /* ShellScript */,
+				CBC7E98184DF4C38BB417F42 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -301,6 +307,36 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		5F57C8AB77184E7A977B5B6B /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		696D2CCB7C3E4654B02EE784 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 		A19E0C4717DBB27B00A5FD69 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -313,6 +349,36 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+		CBC7E98184DF4C38BB417F42 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F6B83BFE906F47D9AB813C58 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -339,24 +405,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1209B28180888E800D6831C /* TOCCancelTokenAndSource.m in Sources */,
+				A1A134F118BD8C2F0067ECB0 /* TOCInternal_Racer.m in Sources */,
+				A1A134ED18BD8C2B0067ECB0 /* TOCFutureAndSource.m in Sources */,
 				A1209B2A1808E51B00D6831C /* TOCCancelTokenTest.m in Sources */,
 				A1A0196D1807641000A052A6 /* TOCFuture+MoreConstructorsTest.m in Sources */,
-				A1209B54181084FD00D6831C /* TOCTimeout.m in Sources */,
+				A1A134E818BD8C230067ECB0 /* TOCCancelToken+MoreConstructors.m in Sources */,
+				A1A134EE18BD8C2B0067ECB0 /* TOCTimeout.m in Sources */,
+				A1A134E918BD8C2B0067ECB0 /* NSArray+TOCFuture.m in Sources */,
 				A1A0196F1807641000A052A6 /* Testing.m in Sources */,
-				A1209B2E180DD34F00D6831C /* TOCFuture+MoreContinuations.m in Sources */,
+				A1A134EB18BD8C2B0067ECB0 /* TOCFuture+MoreContinuations.m in Sources */,
+				A1A134EA18BD8C2B0067ECB0 /* TOCCancelTokenAndSource.m in Sources */,
+				A1A134EC18BD8C2B0067ECB0 /* TOCFuture+MoreContructors.m in Sources */,
+				A1A134EF18BD8C2F0067ECB0 /* TOCInternal_BlockObject.m in Sources */,
 				A1A0196E1807641000A052A6 /* TOCFutureTest.m in Sources */,
+				A1A134F018BD8C2F0067ECB0 /* TOCInternal_OnDeallocObject.m in Sources */,
 				A1209B32180DD52A00D6831C /* TOCFutureSourceTest.m in Sources */,
-				A1A019CC180774B600A052A6 /* TOCFutureAndSource.m in Sources */,
-				A1B6BF271810F04900226FE5 /* TOCInternal_BlockObject.m in Sources */,
-				A1209B50180F4F4600D6831C /* TOCInternal_Array+Functional.m in Sources */,
-				A109021E18613CE4004B7A56 /* TOCCancelToken+MoreConstructors.m in Sources */,
-				A109022218613E8F004B7A56 /* TOCInternal_OnDeallocObject.m in Sources */,
 				A1209B2418086A8F00D6831C /* TOCFutureArrayUtilTest.m in Sources */,
+				A1A134E718BD8C1A0067ECB0 /* TOCInternal_Array+Functional.m in Sources */,
 				A1209B30180DD50200D6831C /* TOCFuture+MoreContinuationsTest.m in Sources */,
-				A1A019CE180774B600A052A6 /* TOCFuture+MoreContructors.m in Sources */,
-				A1209B44180F4A9300D6831C /* TOCInternal_Racer.m in Sources */,
-				A1209B211808696100D6831C /* NSArray+TOCFuture.m in Sources */,
 				A1090224186145ED004B7A56 /* TOCCancelToken+MoreConstructorsTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -370,17 +436,6 @@
 			targetProxy = A19E0C4F17DBB27B00A5FD69 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		A1A019641807641000A052A6 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A1A019651807641000A052A6 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		A19E0C5B17DBB27B00A5FD69 /* Debug */ = {
@@ -517,10 +572,10 @@
 		};
 		A19E0C5E17DBB27B00A5FD69 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4F43A5218EDA44E9AEE40B77 /* Pods.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/CollapsingFutures.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -528,10 +583,10 @@
 		};
 		A19E0C5F17DBB27B00A5FD69 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4F43A5218EDA44E9AEE40B77 /* Pods.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/CollapsingFutures.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -539,6 +594,7 @@
 		};
 		A19E0C6117DBB27B00A5FD69 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4F43A5218EDA44E9AEE40B77 /* Pods.xcconfig */;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
@@ -546,7 +602,6 @@
 				);
 				GCC_WARN_PEDANTIC = NO;
 				GCC_WARN_UNUSED_PARAMETER = NO;
-				INFOPLIST_FILE = "test/CollapsingFuturesTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};
@@ -554,6 +609,7 @@
 		};
 		A19E0C6217DBB27B00A5FD69 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4F43A5218EDA44E9AEE40B77 /* Pods.xcconfig */;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
@@ -561,7 +617,6 @@
 				);
 				GCC_WARN_PEDANTIC = NO;
 				GCC_WARN_UNUSED_PARAMETER = NO;
-				INFOPLIST_FILE = "test/CollapsingFuturesTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};

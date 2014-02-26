@@ -1,8 +1,17 @@
 #import "TOCFutureAndSource.h"
 #import "TOCInternal.h"
 #import "TOCTimeout.h"
+#import "UnionFind.h"
 
-static NSObject* sharedUnwrapCycleDetectionLock;
+static NSObject* getSharedCycleDetectionLock() {
+    static dispatch_once_t once;
+    static NSObject* lock = nil;
+    dispatch_once(&once, ^{
+        lock = [NSObject new];
+    });
+    return lock;
+}
+
 enum StartUnwrapResult {
     StartUnwrapResult_CycleDetected,
     StartUnwrapResult_Started,
@@ -11,15 +20,20 @@ enum StartUnwrapResult {
 };
 
 @implementation TOCFuture {
+/// The future's final result, final failure, or flattening target
 @private id _value;
-@private bool _ifDoneHasSucceeded;
+/// Whether or not the future has already been told to flatten or complete or fail
 @private bool _hasBeenSet;
-@private TOCCancelToken* _completionToken;
-@private TOCFuture* _unwrapTargetInterLink; // <-- must hold sharedUnwrapCycleDetectionLock to touch
-}
+/// Whether or not the future has succeeded vs failed
+@private bool _ifDoneHasSucceeded;
 
-+(void)initialize {
-    sharedUnwrapCycleDetectionLock = [NSObject new];
+/// Callback functionality is delegated to this token
+/// It is only cancelled *after* the above state fields have been set
+@private TOCCancelToken* _completionToken;
+
+/// Used for detection of immortal flattening cycles
+/// Must hold getSharedCycleDetectionLock() when touching this node
+@private UFDisjointSetNode* _cycleNode;
 }
 
 +(TOCFuture *)futureWithResult:(id)resultValue {
@@ -47,6 +61,11 @@ enum StartUnwrapResult {
     return future;
 }
 
+-(UFDisjointSetNode*) _getInitCycleNode {
+    if (_cycleNode == nil) _cycleNode = [UFDisjointSetNode new];
+    return _cycleNode;
+}
+
 -(enum StartUnwrapResult) _ForSource_tryStartUnwrapping:(TOCFuture*)targetFuture {
     TOCInternal_need(targetFuture != nil);
     
@@ -58,64 +77,26 @@ enum StartUnwrapResult {
     
     // optimistically finish without doing cycle stuff
     if (!targetFuture.isIncomplete) {
-        [self _forceUnwrap:targetFuture];
+        [self _ForSource_forceUnwrapToComplete:targetFuture];
         return StartUnwrapResult_StartedAndFinished;
     }
     
     // look for flattening cycles
-    @synchronized(sharedUnwrapCycleDetectionLock) {
-        bool cycleDetected = false;
-        for (TOCFuture* f = targetFuture; ; ) {
-            // advance
-            cycleDetected = f == self;
-            if (f == nil || cycleDetected) break;
-            
-            // advance
-            TOCFuture* n = f->_unwrapTargetInterLink;
-            cycleDetected = n == self;
-            if (n == nil || cycleDetected) break;
-            
-            // leap frog links, cutting long chains in half (ensuring n log n worst case amortized cost)
-            TOCFuture* nn = n->_unwrapTargetInterLink;
-            f->_unwrapTargetInterLink = nn;
-            
-            f = nn;
-        }
-        
-        if (cycleDetected) {
-            // clear out the cycle
-            TOCFuture* f = targetFuture;
-            while (true) {
-                TOCFuture* n = f->_unwrapTargetInterLink;
-                if (n == nil) break;
-                f->_unwrapTargetInterLink = nil;
-                f = n;
-            }
-            
-            return StartUnwrapResult_CycleDetected;
-        }
-        
-        self->_unwrapTargetInterLink = targetFuture;
+    @synchronized(getSharedCycleDetectionLock()) {
+        bool didMerge = [self._getInitCycleNode unionWith:targetFuture._getInitCycleNode];
+        if (!didMerge) return StartUnwrapResult_CycleDetected;
     }
     
     return StartUnwrapResult_Started;
 }
--(void) _forceUnwrap:(TOCFuture*)future {
+-(void) _ForSource_forceUnwrapToComplete:(TOCFuture*)future {
     TOCInternal_force(future != nil);
     TOCInternal_force(!future.isIncomplete);
+    
     bool flatteningFutureSucceeded = [self _trySetOrComplete:future->_value
                                                    succeeded:future->_ifDoneHasSucceeded
                                                   isUnwiring:true];
     TOCInternal_force(flatteningFutureSucceeded);
-}
--(void) _ForSource_forceFinishUnwrap {
-    TOCFuture* target;
-    @synchronized(sharedUnwrapCycleDetectionLock) {
-        target = _unwrapTargetInterLink;
-        _unwrapTargetInterLink = nil;
-    }
-    [self _forceUnwrap:target];
-    
 }
 -(bool) _ForSource_tryComplete:(id)finalValue
                      succeeded:(bool)succeeded {
@@ -134,6 +115,9 @@ enum StartUnwrapResult {
         _hasBeenSet = true;
         _value = finalValue;
         _ifDoneHasSucceeded = succeeded;
+    }
+    @synchronized(getSharedCycleDetectionLock()) {
+        _cycleNode = nil;
     }
     return true;
 }
@@ -328,7 +312,7 @@ enum StartUnwrapResult {
             // if result becomes immortal, the closure will be discarded and take the source with it (making our future immortal as well)
             [result.cancelledOnCompletionToken whenCancelledDo:^{
                 // future must be ready to be accessed before we propagate completion
-                [self->future _ForSource_forceFinishUnwrap];
+                [self->future _ForSource_forceUnwrapToComplete:result];
                 [cancelledOnCompletedSource cancel];
             }];
             break;
