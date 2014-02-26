@@ -10,7 +10,8 @@
  * @pre All items in the receiving array must be instances of TOCFuture.
  *
  * @result A future whose result will be an array containing all of the given futures.
- * If the given cancel token is cancelled before all futures in the array complete, the result fails with the cancel token as its failure.
+ * If the given cancel token is cancelled before all futures in the array complete, the result fails with a cancellation.
+ * @see hasFailedWithCancel
  *
  * @discussion Can be thought of as wrapping an Array-of-Futures into a Future-of-Array-of-Completed-Futures.
  *
@@ -38,7 +39,8 @@
  *
  * @result A future whose result will be an array containing all the results of the given futures,
  * unless any of the given futures fail in which case the returned future will fail with an array containing all of the given futures.
- * If the given cancel token is cancelled before all futures in the array complete, the result fails with the cancel token as its failure.
+ * If the given cancel token is cancelled before all futures in the array complete, the result fails with a cancellation.
+ * @see hasFailedWithCancel
  *
  * @discussion Can be thought of as flipping an Array-of-Futures into a Future-of-Array in the 'obvious' way.
  *
@@ -68,7 +70,8 @@
  * @pre All items in the receiving array must be instances of TOCFuture.
  *
  * @result An array of futures where earlier futures complete first and each future in the returned array is matched with one from the receiving array.
- * If the given cancel token is cancelled before all futures in the array complete, the result fails with the cancel token as its failure.
+ * If the given cancel token is cancelled before all futures in the array complete, the result fails with fails with a cancellation.
+ * @see hasFailedWithCancel
  *
  * @discussion When one of the given futures completes, its result or failure is immediately placed into the first incomplete future in the returned array.
  *
