@@ -409,5 +409,36 @@
     test(f2.state == TOCFutureState_Immortal);
     test(f3.state == TOCFutureState_Immortal);
 }
+-(void) testImmortalityCycleCollapses_LongCycles {
+    for (NSUInteger n = 90; n < 100; n++) {
+        NSMutableArray* futures = [NSMutableArray new];
+        @autoreleasepool {
+            NSMutableArray* futureSources = [NSMutableArray new];
+            for (NSUInteger i = 0; i < n; i++) {
+                TOCFutureSource* fs = [TOCFutureSource new];
+                [futureSources addObject:fs];
+                [futures addObject:fs.future];
+            }
+            for (NSUInteger i = 0; i < n-1; i++) {
+                TOCFutureSource* f1 = futureSources[i];
+                TOCFutureSource* f2 = futureSources[i+1];
+                [f1 trySetResult:f2.future];
+            }
+            TOCFutureSource* fn = futureSources.lastObject;
+            TOCFutureSource* f0 = futureSources.firstObject;
+            [fn forceSetResult:f0.future];
+            
+            bool someHaveImmortalized = false;
+            for (TOCFuture* f in futures) {
+                someHaveImmortalized |= (f.state == TOCFutureState_Immortal);
+            }
+            test(someHaveImmortalized);
+        }
+        test(futures.count > 0);
+        for (TOCFuture* f in futures) {
+            test(f.state == TOCFutureState_Immortal);
+        }
+    }
+}
 
 @end
