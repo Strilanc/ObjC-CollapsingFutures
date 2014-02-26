@@ -1,6 +1,7 @@
 #import "Testing.h"
 #import "TwistedOakCollapsingFutures.h"
 #import "TOCInternal_BlockObject.h"
+#import <libkern/OSAtomic.h>
 
 @interface TOCCancelTokenTest : SenTestCase
 @end
@@ -400,6 +401,42 @@
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
     }
     test(hits == 1);
+}
+
+-(void)testThreadSafety_cancellationsNotLost {
+    for (int runs = 0; runs < 50; runs++) {
+        TOCCancelTokenSource* c = [TOCCancelTokenSource new];
+        __block int sched = 0;
+        __block int ran = 0;
+        const int n = 10000;
+        
+        dispatch_queue_t q1 = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        dispatch_queue_t q2 = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        
+        TOCCancelToken* d = c.token;
+        dispatch_async(q1, ^{
+            while (OSAtomicIncrement32(&sched) <= n) {
+                [d whenCancelledDo:^{
+                    OSAtomicIncrement32(&ran);
+                }];
+            }
+        });
+        dispatch_async(q2, ^{
+            while (OSAtomicAdd32(0, &sched) == 0) {
+                // waiting...
+            }
+            // quickly quickly!
+            test(OSAtomicAdd32(0, &sched) < n);
+            
+            [c cancel];
+        });
+        
+        
+        for (int rep = 0; rep < 10 && OSAtomicAdd32(0, &ran) < n; rep++) {
+            usleep(1000*10);
+        }
+        test(OSAtomicAdd32(0, &ran) == n);
+    }
 }
 
 @end
