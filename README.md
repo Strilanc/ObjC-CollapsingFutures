@@ -140,3 +140,14 @@ Just creating and using futures is useful, but not what makes them powerful. The
 ```
 
 The ability to setup transformations to occur once futures are ready allows you to write truly asynchronous code, that doesn't block precious threads, with very little boilerplate and intuitive propagation of failures.
+
+Development
+===========
+
+**Building the Project:**
+
+1. **Get Source Code**: [Clone this git repository to your machine](http://rogerdudler.github.io/git-guide/).
+
+2. **Get Dependencies**: [Have cocoa pods installed](http://guides.cocoapods.org/using/getting-started.html). Run "pod install" from the project directory.
+	
+3. **Open Workspace**: Open 'CollapsingFutures.xworkspace' with XCode (note the project, the workspace). Run tests and confirm that they pass.
