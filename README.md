@@ -1,5 +1,5 @@
-Twisted Oak Collapsing Futures
-==============================
+Collapsing Futures
+==================
 
 This is a library implementing [futures](https://en.wikipedia.org/wiki/Future_%28programming%29) in Objective-C, featuring:
 
@@ -18,6 +18,10 @@ This is a library implementing [futures](https://en.wikipedia.org/wiki/Future_%2
 - Added `matchLastToCancelBetween:and:` and `matchFirstToCancelBetween:and:` constructors to `TOCCancelToken`, to allow combining lifetimes a bit more flexibly.
 - Added check of cancel token *after* returning to main thread, to allow UI code to assume that observing a token as cancelled implies no more returning-to-main-thread on-cancel callbacks will occur.
 
+**Incoming Changes**
+- Version 1
+- Shortening #import "TwistedOakCollapsingFutures.h" to #import "CollapsingFutures.h"
+
 Installation
 ============
 
@@ -27,8 +31,6 @@ Installation
 2. Consider [versioning](http://docs.cocoapods.org/guides/dependency_versioning.html), like: `pod 'TwistedOakCollapsingFutures', '~> 0.7'`
 3. Run `pod install`
 4. `#import "TwistedOakCollapsingFutures.h"` wherever you want to access the library's types or methods
-
-
 
 **Method #2: Manual**
 
@@ -41,48 +43,61 @@ Installation
 Usage
 =====
 
-Blog posts:
+**External Content**
 
 - [Usage and benefits of collapsing futures](http://twistedoakstudios.com/blog/Post7149_collapsing-futures-in-objective-c)
 - [Usage and benefits of cancellation tokens](http://twistedoakstudios.com/blog/Post7391_cancellation-tokens-and-collapsing-futures-for-objective-c)
 - [How immortality detection works](http://twistedoakstudios.com/blog/Post7525_using-immortality-to-kill-accidental-callback-cycles)
+- [An excellent explanation and motivation for the 'monadic' design of futures (C++)](http://bartoszmilewski.com/2014/02/26/c17-i-see-a-monad-in-your-future/)
 
-A consumer using an asynchronous utility method that returns a future:
+**Using a Future**
+
+The following code is an example of how to make a `TOCFuture` *do* something. Use `thenDo` to make things happen when the future succeeds, and `catchDo` to make things happen when it fails (there's also `finallyDo` for cleanup):
 
 ```objective-c
 #import "TwistedOakCollapsingFutures.h"
 
-TOCFuture* futureAddressBook = [AsyncUtil asyncRequestAndGetIOSAddressBook];
+// ask for the address book, which is asynchronous because IOS may ask the user to allow it
+TOCFuture *futureAddressBook = SomeUtilityClass.asyncGetAddressBook;
+
+// if the user refuses access to the address book (or something else goes wrong), log the problem
 [futureAddressBook catchDo:^(id error) {
-    NSLog("There was an error (I hope the user didn't deny access!): %@", error);
+    NSLog("There was an error (%@) getting the address book.", error);
 }];
-[futureAddressBook thenDo:^(id addressBook) {
-    // there's no NS type for address book, so have to cast it out
-    ABAddressBookRef cfAddressBook = (__bridge ABAddressBookRef)addressBook;
-        
-    ... do stuff with cfAddressBook ...
+
+// if the user allowed access, use the address book
+[futureAddressBook thenDo:^(id arcAddressBook) {
+    ABAddressBookRef addressBook = (__bridge ABAddressBookRef)arcAddressBook;
+    
+    ... do stuff with addressBook ...
 }];
 ```
 
-Producing that asynchronous address book, by using existing methods to control a future source:
+**Creating a Future**
+
+How does the `asyncGetAddressBook` method from the above example control the future it returns? In the simple case, where the result is already known, you use `TOCFuture futureWithResult:` or `TOCFuture futureWithFailure`'. When the result is not known right away, the class `TOCFutureSource` is used. It has a `future` property that completes after the source's `trySetResult` or `trySetFailure` methods are called:
 
 ```objective-c
 #import "TwistedOakCollapsingFutures.h"
 
-+(TOCFuture*) asyncRequestAndGetIOSAddressBook {
++(TOCFuture *) asyncGetAddressBook {
     CFErrorRef creationError = nil;
     ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, &creationError);
-    assert((addressBookRef == nil) == (creationError != nil));
+    
+    // did we fail right away? Then return an already-failed future
     if (creationError != nil) {
         return [TOCFuture futureWithFailure:(__bridge_transfer id)creationError];
     }
     
+    // we need to make an asynchronous call, so we'll use a future source
+    // that way we can return its future right away and fill it in later
     TOCFutureSource *futureAddressBookSource = [FutureSource new];
         
-    id addressBook = (__bridge_transfer id)addressBookRef;
+    id arcAddressBook = (__bridge_transfer id)addressBookRef; // retain the address book in ARC land
     ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef requestAccessError) {
+        // time to fill in the future we returned
         if (granted) {
-            [futureAddressBookSource trySetResult:addressBook];
+            [futureAddressBookSource trySetResult:arcAddressBook];
         } else {
             [futureAddressBookSource trySetFailure:(__bridge id)requestAccessError];
         }
@@ -91,3 +106,30 @@ Producing that asynchronous address book, by using existing methods to control a
     return futureAddressBookSource;
 }
 ```
+
+**Chaining Futures**
+
+Just creating and using futures is useful, but not what makes them powerful. The true power is in transformative methods like  `then:` and `toc_thenAll` that both consume and produce futures. They make wiring up complicated asynchronous sequences look easy:
+
+```objective-c
+#import "TwistedOakCollapsingFutures.h"
+
++(TOCFuture *) sumOfFutures:(NSArray*)arrayOfFuturesOfNumbers {
+    // we want all of the values to be ready before we bother summing
+    TOCFuture* futureOfArrayOfNumbers = arrayOfFuturesOfNumbers.toc_thenAll;
+    
+    // once the array of values is ready, add up its entries to get the sum
+    TOCFuture* futureSum = [futureOfArrayOfNumbers then:^(NSArray* numbers) {
+        double total = 0;
+        for (NSNumber* number in numbers) {
+            total += number.doubleValue;
+        }
+        return @(total);
+    }];
+    
+    // this future will eventually contain the sum of the eventual numbers in the input array
+    return futureSum;
+}
+```
+
+The ability to setup transformations to occur once futures are ready allows you to write truly asynchronous code, that doesn't block precious threads, with very little boilerplate.
