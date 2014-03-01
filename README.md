@@ -12,32 +12,25 @@ This is a library implementing [futures](https://en.wikipedia.org/wiki/Future_%2
 
 **Recent Changes**
 
-- Bit the breaking change bullet and changed some names so they're not stuck once v1 hits.
-- Fixed lack of "toc" prefixes on array category methods like `asyncThenAll` (now `toc_thenAll`).
-- Shortened excessively long names, such as `futureWithResultFromAsyncOperationWithResultLastingUntilCancelled` becoming `futureFromUntilOperation`.
-- Added `matchLastToCancelBetween:and:` and `matchFirstToCancelBetween:and:` constructors to `TOCCancelToken`, to allow combining lifetimes a bit more flexibly.
-- Added check of cancel token *after* returning to main thread, to allow UI code to assume that observing a token as cancelled implies no more returning-to-main-thread on-cancel callbacks will occur.
-
-**Incoming Changes**
-- Version 1
-- Shortening #import "TwistedOakCollapsingFutures.h" to #import "CollapsingFutures.h"
+- Version 1.
+- Deprecated "TwistedOakCollapsingFutures.h" for "CollapsingFutures.h".
+- Futures are now equatable (by current state then by will-end-up-in-same-state-with-same-value).
 
 Installation
 ============
 
 **Method #1: [CocoaPods](http://cocoapods.org/)**
 
-1. In your [Podfile](http://docs.cocoapods.org/podfile.html), add `pod 'TwistedOakCollapsingFutures'`
-2. Consider [versioning](http://docs.cocoapods.org/guides/dependency_versioning.html), like: `pod 'TwistedOakCollapsingFutures', '~> 0.7'`
-3. Run `pod install`
-4. `#import "TwistedOakCollapsingFutures.h"` wherever you want to access the library's types or methods
+1. In your [Podfile](http://guides.cocoapods.org/using/the-podfile.html), add `pod 'TwistedOakCollapsingFutures', '~> 1.0'`
+2. Run `pod install` from the project directory
+3. `#import "CollapsingFutures.h"` wherever you want to use futures, cancel tokens, or their category methods
 
 **Method #2: Manual**
 
 1. Download one of the [releases](https://github.com/Strilanc/ObjC-CollapsingFutures/releases), or clone the repo
 2. Copy the source files from the src/ folder into your project
 3. Have ARC enabled
-4. `#import "TwistedOakCollapsingFutures.h"` wherever you want to access the library's types or methods
+4. `#import "CollapsingFutures.h"` wherever you want to use futures, cancel tokens, or their category methods
 
 
 Usage
@@ -48,14 +41,14 @@ Usage
 - [Usage and benefits of collapsing futures](http://twistedoakstudios.com/blog/Post7149_collapsing-futures-in-objective-c)
 - [Usage and benefits of cancellation tokens](http://twistedoakstudios.com/blog/Post7391_cancellation-tokens-and-collapsing-futures-for-objective-c)
 - [How immortality detection works](http://twistedoakstudios.com/blog/Post7525_using-immortality-to-kill-accidental-callback-cycles)
-- [An excellent explanation and motivation for the 'monadic' design of futures (C++)](http://bartoszmilewski.com/2014/02/26/c17-i-see-a-monad-in-your-future/)
+- [Explanation and motivation for the 'monadic' design of futures (in C++)](http://bartoszmilewski.com/2014/02/26/c17-i-see-a-monad-in-your-future/)
 
 **Using a Future**
 
 The following code is an example of how to make a `TOCFuture` *do* something. Use `thenDo` to make things happen when the future succeeds, and `catchDo` to make things happen when it fails (there's also `finallyDo` for cleanup):
 
 ```objective-c
-#import "TwistedOakCollapsingFutures.h"
+#import "CollapsingFutures.h"
 
 // ask for the address book, which is asynchronous because IOS may ask the user to allow it
 TOCFuture *futureAddressBook = SomeUtilityClass.asyncGetAddressBook;
@@ -84,7 +77,7 @@ When the result is not known right away, the class `TOCFutureSource` is used. It
 Here's how `asyncGetAddressBook` is implemented:
 
 ```objective-c
-#import "TwistedOakCollapsingFutures.h"
+#import "CollapsingFutures.h"
 
 +(TOCFuture *) asyncGetAddressBook {
     CFErrorRef creationError = nil;
@@ -118,7 +111,7 @@ Here's how `asyncGetAddressBook` is implemented:
 Just creating and using futures is useful, but not what makes them powerful. The true power is in transformative methods like  `then:` and `toc_thenAll` that both consume and produce futures. They make wiring up complicated asynchronous sequences look easy:
 
 ```objective-c
-#import "TwistedOakCollapsingFutures.h"
+#import "CollapsingFutures.h"
 
 +(TOCFuture *) sumOfFutures:(NSArray*)arrayOfFuturesOfNumbers {
     // we want all of the values to be ready before we bother summing
