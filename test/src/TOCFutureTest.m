@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "TwistedOakCollapsingFutures.h"
+#import "CollapsingFutures.h"
 
 @interface TOCFutureTest : SenTestCase
 @end

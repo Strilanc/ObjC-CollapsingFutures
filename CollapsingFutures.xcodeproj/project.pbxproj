@@ -106,6 +106,7 @@
 		A1A019CA180774B600A052A6 /* TwistedOakCollapsingFutures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwistedOakCollapsingFutures.h; sourceTree = "<group>"; };
 		A1B6BF241810F04900226FE5 /* TOCInternal_BlockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCInternal_BlockObject.h; sourceTree = "<group>"; };
 		A1B6BF251810F04900226FE5 /* TOCInternal_BlockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCInternal_BlockObject.m; sourceTree = "<group>"; };
+		A1E4235818C2760D00A15F74 /* CollapsingFutures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollapsingFutures.h; sourceTree = "<group>"; };
 		B5AEC4DB01C146D48E850BE7 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -205,6 +206,7 @@
 		A1A019C5180774B600A052A6 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A1E4235818C2760D00A15F74 /* CollapsingFutures.h */,
 				A1209B3C180F4A7800D6831C /* internal */,
 				A1209B1E1808696100D6831C /* NSArray+TOCFuture.h */,
 				A1209B1F1808696100D6831C /* NSArray+TOCFuture.m */,
