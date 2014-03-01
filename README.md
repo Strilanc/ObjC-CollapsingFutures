@@ -75,7 +75,13 @@ TOCFuture *futureAddressBook = SomeUtilityClass.asyncGetAddressBook;
 
 **Creating a Future**
 
-How does the `asyncGetAddressBook` method from the above example control the future it returns? In the simple case, where the result is already known, you use `TOCFuture futureWithResult:` or `TOCFuture futureWithFailure`'. When the result is not known right away, the class `TOCFutureSource` is used. It has a `future` property that completes after the source's `trySetResult` or `trySetFailure` methods are called:
+How does the `asyncGetAddressBook` method from the above example control the future it returns?
+
+In the simple case, where the result is already known, you use `TOCFuture futureWithResult:` or `TOCFuture futureWithFailure`.
+
+When the result is not known right away, the class `TOCFutureSource` is used. It has a `future` property that completes after the source's `trySetResult` or `trySetFailure` methods are called.
+
+Here's how `asyncGetAddressBook` is implemented:
 
 ```objective-c
 #import "TwistedOakCollapsingFutures.h"
@@ -91,19 +97,19 @@ How does the `asyncGetAddressBook` method from the above example control the fut
     
     // we need to make an asynchronous call, so we'll use a future source
     // that way we can return its future right away and fill it in later
-    TOCFutureSource *futureAddressBookSource = [FutureSource new];
+    TOCFutureSource *resultSource = [FutureSource new];
         
     id arcAddressBook = (__bridge_transfer id)addressBookRef; // retain the address book in ARC land
     ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef requestAccessError) {
         // time to fill in the future we returned
         if (granted) {
-            [futureAddressBookSource trySetResult:arcAddressBook];
+            [resultSource trySetResult:arcAddressBook];
         } else {
-            [futureAddressBookSource trySetFailure:(__bridge id)requestAccessError];
+            [resultSource trySetFailure:(__bridge id)requestAccessError];
         }
     });
             
-    return futureAddressBookSource;
+    return resultSource.future;
 }
 ```
 
@@ -128,8 +134,9 @@ Just creating and using futures is useful, but not what makes them powerful. The
     }];
     
     // this future will eventually contain the sum of the eventual numbers in the input array
+    // if any of the evetnual numbers fails, this future will end up failing as well
     return futureSum;
 }
 ```
 
-The ability to setup transformations to occur once futures are ready allows you to write truly asynchronous code, that doesn't block precious threads, with very little boilerplate.
+The ability to setup transformations to occur once futures are ready allows you to write truly asynchronous code, that doesn't block precious threads, with very little boilerplate and intuitive propagation of failures.
