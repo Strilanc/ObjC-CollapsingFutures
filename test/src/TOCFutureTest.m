@@ -13,6 +13,7 @@
     test(f.hasFailed);
     test(!f.hasResult);
     test([f.forceGetFailure isEqual:@"X"]);
+    testFutureHasFailure(f, @"X");
     testThrows(f.forceGetResult);
     test(f.description != nil);
     test(f.state == TOCFutureState_Failed);
@@ -32,6 +33,7 @@
     test(!f.hasFailed);
     test(f.hasResult);
     test([f.forceGetResult isEqual:@"X"]);
+    testFutureHasResult(f, @"X");
     testThrows(f.forceGetFailure);
     test(f.description != nil);
     test(f.state == TOCFutureState_CompletedWithResult);
@@ -110,12 +112,12 @@
 
 -(void)testThenDoUnless_Immediate {
     testDoesNotHitTarget([[TOCFutureSource new].future thenDo:^(id result) { hitTarget; } unless:nil]);
-    testHitsTarget([[TOCFuture futureWithResult:@7] thenDo:^(id result) { test([result isEqual:@7]); hitTarget; } unless:nil]);
+    testHitsTarget([[TOCFuture futureWithResult:@7] thenDo:^(id result) { testEq(result, @7); hitTarget; } unless:nil]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] thenDo:^(id result) { hitTarget; } unless:nil]);
     
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     testDoesNotHitTarget([[TOCFutureSource new].future thenDo:^(id result) { hitTarget; } unless:c.token]);
-    testHitsTarget([[TOCFuture futureWithResult:@7] thenDo:^(id result) { test([result isEqual:@7]); hitTarget; } unless:c.token]);
+    testHitsTarget([[TOCFuture futureWithResult:@7] thenDo:^(id result) { testEq(result, @7); hitTarget; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] thenDo:^(id result) { hitTarget; } unless:c.token]);
     
     [c cancel];
@@ -126,7 +128,7 @@
 
 -(void)testThenUnless_Immediate {
     testDoesNotHitTarget([[TOCFutureSource new].future then:^id(id result) { hitTarget; return nil; } unless:nil]);
-    testHitsTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { test([result isEqual:@7]); hitTarget; return nil; } unless:nil]);
+    testHitsTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { testEq(result, @7); hitTarget; return nil; } unless:nil]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] then:^id(id result) { hitTarget; return nil; } unless:nil]);
     test([[TOCFutureSource new].future then:^id(id result) { return @1; } unless:nil].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] then:^id(id result) { return @2; } unless:nil], @2);
@@ -134,7 +136,7 @@
     
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     testDoesNotHitTarget([[TOCFutureSource new].future then:^id(id result) { hitTarget; return nil; } unless:c.token]);
-    testHitsTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { test([result isEqual:@7]); hitTarget; return nil; } unless:c.token]);
+    testHitsTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { testEq(result, @7); hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] then:^id(id result) { hitTarget; return nil; } unless:c.token]);
     test([[TOCFutureSource new].future then:^id(id result) { return @1; } unless:c.token].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] then:^id(id result) { return @2; } unless:c.token], @2);
@@ -152,12 +154,12 @@
 -(void)testCatchDoUnless_Immediate {
     testDoesNotHitTarget([[TOCFutureSource new].future catchDo:^(id result) { hitTarget; } unless:nil]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catchDo:^(id result) { hitTarget; } unless:nil]);
-    testHitsTarget([[TOCFuture futureWithFailure:@8] catchDo:^(id result) { test([result isEqual:@8]); hitTarget; } unless:nil]);
+    testHitsTarget([[TOCFuture futureWithFailure:@8] catchDo:^(id result) { testEq(result, @8); hitTarget; } unless:nil]);
     
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     testDoesNotHitTarget([[TOCFutureSource new].future catchDo:^(id result) { hitTarget; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catchDo:^(id result) { hitTarget; } unless:c.token]);
-    testHitsTarget([[TOCFuture futureWithFailure:@8] catchDo:^(id result) { test([result isEqual:@8]); hitTarget; } unless:c.token]);
+    testHitsTarget([[TOCFuture futureWithFailure:@8] catchDo:^(id result) { testEq(result, @8); hitTarget; } unless:c.token]);
     
     [c cancel];
     testDoesNotHitTarget([[TOCFutureSource new].future catchDo:^(id result) { hitTarget; } unless:c.token]);
@@ -168,7 +170,7 @@
 -(void)testCatchUnless_Immediate {
     testDoesNotHitTarget([[TOCFutureSource new].future catch:^id(id failure) { hitTarget; return nil; } unless:nil]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catch:^id(id failure) { hitTarget; return nil; } unless:nil]);
-    testHitsTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { test([failure isEqual:@8]); hitTarget; return nil; } unless:nil]);
+    testHitsTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { testEq(failure, @8); hitTarget; return nil; } unless:nil]);
     test([[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:nil].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] catch:^id(id failure) { return @2; } unless:nil], @7);
     testFutureHasResult([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { return @3; } unless:nil], @3);
@@ -176,7 +178,7 @@
     TOCCancelTokenSource* c = [TOCCancelTokenSource new];
     testDoesNotHitTarget([[TOCFutureSource new].future catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catch:^id(id failure) { hitTarget; return nil; } unless:c.token]);
-    testHitsTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { test([failure isEqual:@8]); hitTarget; return nil; } unless:c.token]);
+    testHitsTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { testEq(failure, @8); hitTarget; return nil; } unless:c.token]);
     test([[TOCFutureSource new].future catch:^id(id failure) { return @1; } unless:c.token].isIncomplete);
     testFutureHasResult([[TOCFuture futureWithResult:@7] catch:^id(id failure) { return @2; } unless:c.token], @7);
     testFutureHasResult([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { return @3; } unless:c.token], @3);
@@ -195,15 +197,15 @@
     dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         TOCFutureSource* c1 = [TOCFutureSource new];
         TOCFuture* f = [TOCFuture futureFromOperation:^id{
-            test([NSThread isMainThread]);
+            test(NSThread.isMainThread);
             [c1.future finallyDo:^(TOCFuture* completed){
-                test([NSThread isMainThread]);
+                test(NSThread.isMainThread);
                 [c2 cancel];
             } unless:c2.token];
             return nil;
-        } invokedOnThread:[NSThread mainThread]];
+        } invokedOnThread:NSThread.mainThread];
         
-        test(![NSThread isMainThread]);
+        test(!NSThread.isMainThread);
         testCompletesConcurrently(f);
         testFutureHasResult(f, nil);
         test(c2.token.state == TOCCancelTokenState_StillCancellable);
@@ -212,7 +214,7 @@
     });
     
     for (int i = 0; i < 5 && !c2.token.isAlreadyCancelled; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
     }
     test(c2.token.state == TOCCancelTokenState_Cancelled);
 }

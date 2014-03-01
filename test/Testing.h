@@ -9,15 +9,17 @@ bool testCompletesConcurrently_helper(TOCFuture* future, NSTimeInterval timeout)
 bool futureHasResult(TOCFuture* future, id result);
 bool futureHasFailure(TOCFuture* future, id failure);
 int testTargetHits;
+bool equals(id obj1, id obj2);
 
 #define test(expressionExpectedToBeTrue) STAssertTrue(expressionExpectedToBeTrue, @"")
+#define testEq(value1, value2) test(equals(value1, value2))
+
 #define testThrows(expressionExpectedToThrow) STAssertThrows(expressionExpectedToThrow, @"")
 #define testCompletesConcurrently(future) test(testCompletesConcurrently_helper(future, 2.0))
 #define testDoesNotCompleteConcurrently(future) test(!testCompletesConcurrently_helper(future, 0.01))
-#define testUntil(condition) test(testPassesConcurrently_helper(^bool{ return (condition);}, 2.0))
 #define testChurnUntil(condition) \
     for (int _churnCounter_xxx = 0; _churnCounter_xxx < 5 && !(condition); _churnCounter_xxx++) { \
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]]; \
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]]; \
     } \
     test(condition)
 
@@ -31,9 +33,6 @@ int testTargetHits;
 
 #define testFutureHasResult(future, result) test(futureHasResult(future, result))
 #define testFutureHasFailure(future, failure) test(futureHasFailure(future, failure))
-
-#define fut(X) [TOCFuture futureWithResult:X]
-#define futfail(X) [TOCFuture futureWithFailure:X]
 
 @class DeallocToken;
 @interface DeallocCounter : NSObject

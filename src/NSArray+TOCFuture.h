@@ -44,7 +44,7 @@
  *
  * @discussion Can be thought of as flipping an Array-of-Futures into a Future-of-Array in the 'obvious' way.
  *
- * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] toc_thenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
+ * For example, @[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]].toc_thenAll is equivalent to [TOCFuture futureWithResult@[@1, @2]].
  *
  * A nil cancel token is treated like a cancel token that can never be cancelled.
  */
@@ -60,7 +60,7 @@
  *
  * @discussion Can be thought of as flipping an Array-of-Futures into a Future-of-Array in the 'obvious' way.
  *
- * For example, [@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]] toc_thenAll] is equivalent to [TOCFuture futureWithResult@[@1, @2]].
+ * For example, @[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]].toc_thenAll is equivalent to [TOCFuture futureWithResult@[@1, @2]].
  */
 -(TOCFuture*) toc_thenAll;
 

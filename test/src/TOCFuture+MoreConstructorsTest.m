@@ -22,7 +22,7 @@
 }
 -(void) runLoopUntilCancelled {
     NSThread* curThread = [NSThread currentThread];
-    NSRunLoop* curRunLoop = [NSRunLoop currentRunLoop];
+    NSRunLoop* curRunLoop = NSRunLoop.currentRunLoop;
     @synchronized(self) {
         runLoop = curRunLoop;
     }

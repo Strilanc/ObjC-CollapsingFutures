@@ -316,15 +316,15 @@
     dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         TOCCancelTokenSource* c1 = [TOCCancelTokenSource new];
         TOCFuture* f = [TOCFuture futureFromOperation:^id{
-            test([NSThread isMainThread]);
+            test(NSThread.isMainThread);
             [c1.token whenCancelledDo:^{
-                test([NSThread isMainThread]);
+                test(NSThread.isMainThread);
                 [c2 cancel];
             }];
             return nil;
-        } invokedOnThread:[NSThread mainThread]];
+        } invokedOnThread:NSThread.mainThread];
         
-        test(![NSThread isMainThread]);
+        test(!NSThread.isMainThread);
         testCompletesConcurrently(f);
         testFutureHasResult(f, nil);
         test(c2.token.state == TOCCancelTokenState_StillCancellable);
@@ -333,7 +333,7 @@
     });
     
     for (int i = 0; i < 5 && !c2.token.isAlreadyCancelled; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
     }
     test(c2.token.state == TOCCancelTokenState_Cancelled);
 }
@@ -342,15 +342,15 @@
     dispatch_after(DISPATCH_TIME_NOW, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         TOCCancelTokenSource* c1 = [TOCCancelTokenSource new];
         TOCFuture* f = [TOCFuture futureFromOperation:^id{
-            test([NSThread isMainThread]);
+            test(NSThread.isMainThread);
             [c1.token whenCancelledDo:^{
-                test([NSThread isMainThread]);
+                test(NSThread.isMainThread);
                 [c2 cancel];
             } unless:c2.token];
             return nil;
-        } invokedOnThread:[NSThread mainThread]];
+        } invokedOnThread:NSThread.mainThread];
         
-        test(![NSThread isMainThread]);
+        test(!NSThread.isMainThread);
         testCompletesConcurrently(f);
         testFutureHasResult(f, nil);
         test(c2.token.state == TOCCancelTokenState_StillCancellable);
@@ -359,7 +359,7 @@
     });
     
     for (int i = 0; i < 5 && !c2.token.isAlreadyCancelled; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
     }
     test(c2.token.state == TOCCancelTokenState_Cancelled);
 }
@@ -368,7 +368,7 @@
     TOCCancelTokenSource* s1 = [TOCCancelTokenSource new];
     TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
     
-    test([NSThread isMainThread]);
+    test(NSThread.isMainThread);
     __block int hits = 0;
     for (int i = 0; i < 5; i++) {
         [s1.token whenCancelledDo:^{
@@ -385,11 +385,11 @@
     TOCCancelTokenSource* s1 = [TOCCancelTokenSource new];
     TOCCancelTokenSource* s2 = [TOCCancelTokenSource new];
     
-    test([NSThread isMainThread]);
+    test(NSThread.isMainThread);
     __block int hits = 0;
     for (int i = 0; i < 5; i++) {
         [s1.token whenCancelledDo:^{
-            test([NSThread isMainThread]);
+            test(NSThread.isMainThread);
             [s2 cancel];
             hits += 1;
         } unless:s2.token];
@@ -398,7 +398,7 @@
     test(hits == 0);
     [TOCInternal_BlockObject performBlockOnNewThread:^{[s1 cancel];}];
     for (int i = 0; i < 10; i++) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
     }
     test(hits == 1);
 }

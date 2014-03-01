@@ -21,7 +21,7 @@
 }
 -(void) runLoopUntilCancelled {
     NSThread* curThread = [NSThread currentThread];
-    NSRunLoop* curRunLoop = [NSRunLoop currentRunLoop];
+    NSRunLoop* curRunLoop = NSRunLoop.currentRunLoop;
     @synchronized(self) {
         runLoop = curRunLoop;
     }
@@ -41,7 +41,7 @@
     test(!f.isIncomplete);
     test(f.hasFailed);
     test(!f.hasResult);
-    test([f.forceGetFailure isEqual:@"X"]);
+    testFutureHasFailure(f, @"X");
     testThrows(f.forceGetResult);
     test(f.description != nil);
     test(f.state == TOCFutureState_Failed);
@@ -61,7 +61,7 @@
     test(!f.isIncomplete);
     test(!f.hasFailed);
     test(f.hasResult);
-    test([f.forceGetResult isEqual:@"X"]);
+    testFutureHasResult(f, @"X");
     testThrows(f.forceGetFailure);
     test(f.description != nil);
     test(f.state == TOCFutureState_CompletedWithResult);
@@ -101,7 +101,7 @@
     test(!f.isIncomplete);
     test(f.hasFailed);
     test(!f.hasResult);
-    test([f.forceGetFailure isEqual:@"X"]);
+    testFutureHasFailure(f, @"X");
     testThrows(f.forceGetResult);
     test(f.description != nil);
     test(f.state == TOCFutureState_Failed);
@@ -121,6 +121,7 @@
     test(!f.isIncomplete);
     test(!f.hasFailed);
     test(f.hasResult);
+    testFutureHasResult(f, @"X");
     test([f.forceGetResult isEqual:@"X"]);
     testThrows(f.forceGetFailure);
     test(f.description != nil);

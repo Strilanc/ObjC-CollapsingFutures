@@ -1,13 +1,16 @@
 #import "Testing.h"
 #import "NSArray+TOCFuture.h"
 
+#define fut(X) [TOCFuture futureWithResult:X]
+#define futfail(X) [TOCFuture futureWithFailure:X]
+
 @interface TOCFutureArrayUtilTest : SenTestCase
 @end
 
 @implementation TOCFutureArrayUtilTest
 
 -(void)testOrderedByCompletion {
-    test([[@[] toc_orderedByCompletion] isEqual:@[]]);
+    testEq(@[].toc_orderedByCompletion, @[]);
     testThrows([(@[@1]) toc_orderedByCompletion]);
     
     NSArray* s = (@[[TOCFutureSource new], [TOCFutureSource new], [TOCFutureSource new]]);
@@ -35,10 +38,10 @@
     testFutureHasFailure(g2[2], @"B");
 }
 -(void) testFinallyAll {
-    testThrows([@[@1] toc_finallyAll]);
-    test([[@[] toc_finallyAll].forceGetResult isEqual:@[]]);
+    testThrows(@[@1].toc_finallyAll);
+    testFutureHasResult(@[].toc_finallyAll, @[]);
     
-    TOCFuture* f = [(@[fut(@1), futfail(@2)]) toc_finallyAll];
+    TOCFuture* f = (@[fut(@1), futfail(@2)]).toc_finallyAll;
     test(f.hasResult);
     NSArray* x = f.forceGetResult;
     test(x.count == 2);
@@ -47,7 +50,7 @@
 }
 -(void) testFinallyAll_Incomplete {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) toc_finallyAll];
+    TOCFuture* f = (@[fut(@1), s.future, fut(@3)]).toc_finallyAll;
     test(f.isIncomplete);
     
     [s trySetFailure:@""];
@@ -59,12 +62,12 @@
     testFutureHasResult(x[2], @3);
 }
 -(void) testThenAll {
-    testThrows([@[@1] toc_thenAll]);
-    test([[@[] toc_thenAll].forceGetResult isEqual:@[]]);
-    test([[(@[fut(@3)]) toc_thenAll].forceGetResult isEqual:(@[@3])]);
-    test([[(@[fut(@1), fut(@2)]) toc_thenAll].forceGetResult isEqual:(@[@1, @2])]);
+    testThrows(@[@1].toc_thenAll);
+    testFutureHasResult(@[].toc_thenAll, @[]);
+    testFutureHasResult((@[fut(@3)]).toc_thenAll, (@[@3]));
+    testFutureHasResult((@[fut(@1), fut(@2)]).toc_thenAll, (@[@1, @2]));
     
-    TOCFuture* f = [(@[fut(@1), futfail(@2)]) toc_thenAll];
+    TOCFuture* f = @[fut(@1), futfail(@2)].toc_thenAll;
     test(f.hasFailed);
     NSArray* x = f.forceGetFailure;
     test(x.count == 2);
@@ -73,7 +76,7 @@
 }
 -(void) testThenAll_Incomplete {
     TOCFutureSource* s = [TOCFutureSource new];
-    TOCFuture* f = [(@[fut(@1), s.future, fut(@3)]) toc_thenAll];
+    TOCFuture* f = @[fut(@1), s.future, fut(@3)].toc_thenAll;
     test(f.isIncomplete);
     [s trySetResult:@""];
     testFutureHasResult(f, (@[@1, @"", @3]));

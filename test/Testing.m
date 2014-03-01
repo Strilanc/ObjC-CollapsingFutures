@@ -1,6 +1,9 @@
 #import "Testing.h"
 
 int testTargetHits = 0;
+bool equals(id obj1, id obj2) {
+    return obj1 == obj2 || [obj1 isEqual:obj2];
+}
 
 vm_size_t peekAllocatedMemoryInBytes(void) {
     struct task_basic_info info;
@@ -13,10 +16,10 @@ vm_size_t peekAllocatedMemoryInBytes(void) {
     return info.resident_size;
 }
 bool futureHasResult(TOCFuture* future, id result) {
-    return future.hasResult && (result == future.forceGetResult || [future.forceGetResult isEqual:result]);
+    return future.hasResult && equals(result, future.forceGetResult);
 }
 bool futureHasFailure(TOCFuture* future, id failure) {
-    return future.hasFailed && [future.forceGetFailure isEqual:failure];
+    return future.hasFailed && equals(failure, future.forceGetFailure);
 }
 bool testPassesConcurrently_helper(bool (^check)(void), NSTimeInterval delay) {
     NSTimeInterval t = [[NSProcessInfo processInfo] systemUptime] + delay;

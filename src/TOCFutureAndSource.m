@@ -285,9 +285,7 @@ enum StartUnwrapResult {
             
         case TOCFutureState_CompletedWithResult:
         case TOCFutureState_Failed:
-            if (_value == other->_value) return YES;
-            if (_value == nil) return NO;
-            return [self->_value isEqual:other->_value];
+            return _value == other->_value || [_value isEqual:other->_value];
 
         case TOCFutureState_Flattening:
         case TOCFutureState_AbleToBeSet:

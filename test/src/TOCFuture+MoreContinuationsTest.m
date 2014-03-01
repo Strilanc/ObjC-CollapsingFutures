@@ -26,13 +26,13 @@
 
 -(void)testThenDo_Immediate {
     testDoesNotHitTarget([[TOCFutureSource new].future thenDo:^(id result) { hitTarget; }]);
-    testHitsTarget([[TOCFuture futureWithResult:@7] thenDo:^(id result) { test([result isEqual:@7]); hitTarget; }]);
+    testHitsTarget([[TOCFuture futureWithResult:@7] thenDo:^(id result) { testEq(result, @7); hitTarget; }]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] thenDo:^(id result) { hitTarget; }]);
 }
 -(void)testThenDo_DeferredResult {
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
-    testDoesNotHitTarget([f thenDo:^(id value) { test([value isEqual:@"X"]); hitTarget; }]);
+    testDoesNotHitTarget([f thenDo:^(id value) { testEq(value, @"X"); hitTarget; }]);
     testHitsTarget([s trySetResult:@"X"]);
 }
 -(void)testThenDo_DeferredFail {
@@ -45,7 +45,7 @@
 -(void)testCatchDo_Immediate {
     testDoesNotHitTarget([[TOCFutureSource new].future catchDo:^(id failure) { hitTarget; }]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@7] catchDo:^(id failure) { hitTarget; }]);
-    testHitsTarget([[TOCFuture futureWithFailure:@8] catchDo:^(id failure) { test([failure isEqual:@8]); hitTarget; }]);
+    testHitsTarget([[TOCFuture futureWithFailure:@8] catchDo:^(id failure) { testEq(failure, @8); hitTarget; }]);
 }
 -(void)testCatchDo_DeferredResult {
     TOCFutureSource* s = [TOCFutureSource new];
@@ -56,7 +56,7 @@
 -(void)testCatchDo_DeferredFail {
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
-    testDoesNotHitTarget([f catchDo:^(id value) { test([value isEqual:@"X"]); hitTarget; }]);
+    testDoesNotHitTarget([f catchDo:^(id value) { testEq(value, @"X"); hitTarget; }]);
     testHitsTarget([s trySetFailure:@"X"]);
 }
 
@@ -66,13 +66,13 @@
     testFutureHasFailure([[TOCFuture futureWithResult:@5] then:^(id result) { return [TOCFuture futureWithFailure:@6]; }], @6);
     
     testDoesNotHitTarget([[TOCFutureSource new].future then:^id(id result) { hitTarget; return nil; }]);
-    testHitsTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { test([result isEqual:@7]); hitTarget; return nil; }]);
+    testHitsTarget([[TOCFuture futureWithResult:@7] then:^id(id result) { testEq(result, @7); hitTarget; return nil; }]);
     testDoesNotHitTarget([[TOCFuture futureWithFailure:@8] then:^id(id result) { hitTarget; return nil; }]);
 }
 -(void)testThen_DeferredResult {
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
-    TOCFuture* f2 = [f then:^(id value) { test([value isEqual:@"X"]); return @2; }];
+    TOCFuture* f2 = [f then:^(id value) { testEq(value, @"X"); return @2; }];
     test(f2.isIncomplete);
     [s trySetResult:@"X"];
     testFutureHasResult(f2, @2);
@@ -93,7 +93,7 @@
     
     testDoesNotHitTarget([[TOCFutureSource new].future catch:^id(id failure) { hitTarget; return nil; }]);
     testDoesNotHitTarget([[TOCFuture futureWithResult:@1] catch:^id(id failure) { hitTarget; return nil; }]);
-    testHitsTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { test([failure isEqual:@8]); hitTarget; return nil; }]);
+    testHitsTarget([[TOCFuture futureWithFailure:@8] catch:^id(id failure) { testEq(failure, @8); hitTarget; return nil; }]);
 }
 -(void)testCatch_DeferredResult {
     TOCFutureSource* s = [TOCFutureSource new];
@@ -106,7 +106,7 @@
 -(void)testCatch_DeferredFail {
     TOCFutureSource* s = [TOCFutureSource new];
     TOCFuture* f = s.future;
-    TOCFuture* f2 = [f catch:^(id value) { test([value isEqual:@"X"]); return @2; }];
+    TOCFuture* f2 = [f catch:^(id value) { testEq(value, @"X"); return @2; }];
     test(f2.isIncomplete);
     [s trySetFailure:@"X"];
     testFutureHasResult(f2, @2);
