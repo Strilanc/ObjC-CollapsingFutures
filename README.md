@@ -148,6 +148,6 @@ Development
 
 1. **Get Source Code**: [Clone this git repository to your machine](https://help.github.com/articles/fetching-a-remote).
 
-2. **Get Dependencies**: [Have cocoa pods installed](http://guides.cocoapods.org/using/getting-started.html). Run "pod install" from the project directory.
+2. **Get Dependencies**: [Have cocoa pods installed](http://guides.cocoapods.org/using/getting-started.html). Run `pod install` from the project directory.
 	
-3. **Open Workspace**: Open 'CollapsingFutures.xworkspace' with XCode (note the project, the workspace). Run tests and confirm that they pass.
+3. **Open Workspace**: Open `CollapsingFutures.xworkspace` with XCode (not the project, the *workspace*). Run tests and confirm that they pass.
