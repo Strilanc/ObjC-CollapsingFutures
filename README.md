@@ -144,9 +144,9 @@ The ability to setup transformations to occur once futures are ready allows you 
 Development
 ===========
 
-**Building the Project:**
+**How to Build:**
 
-1. **Get Source Code**: [Clone this git repository to your machine](http://rogerdudler.github.io/git-guide/).
+1. **Get Source Code**: [Clone this git repository to your machine](https://help.github.com/articles/fetching-a-remote).
 
 2. **Get Dependencies**: [Have cocoa pods installed](http://guides.cocoapods.org/using/getting-started.html). Run "pod install" from the project directory.
 	
