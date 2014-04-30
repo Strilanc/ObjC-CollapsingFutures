@@ -134,6 +134,109 @@ Just creating and using futures is useful, but not what makes them powerful. The
 
 The ability to setup transformations to occur once futures are ready allows you to write truly asynchronous code, that doesn't block precious threads, with very little boilerplate and intuitive propagation of failures.
 
+API Breakdown
+=============
+
+**TOCFuture**: *An eventual result.*
+
+- `+futureWithResult:(id)resultValue`: Returns a future that has already succeeded with the given value. If the value is a future, collapse occurs and its result/failure is used instead.
+
+- `+futureWithFailure:(id)failureValue`: Returns a future that has already failed with the given value. Variants for timeout and cancel failures work similarly.
+
+- `+new`: Returns an immortal future. (Not very useful.)
+
+- `+futureFromOperation:(id (^)(void))operation dispatchedOnQueue:(dispatch_queue_t)queue`: Dispatches an asynchronous operation, exposing the result as a future.
+
+- `+futureFromOperation:(id(^)(void))operation invokedOnThread:(NSThread*)thread`: Runs an asynchronous operation, exposing the result as a future.
+
+- `+futureWithResult:(id)resultValue afterDelay:(NSTimeInterval)delayInSeconds`: Returns a future the completes after a delay. An `unless:` variant allows the future to be cancelled and the timing stuff cleaned up.
+
+- `+futureFromUntilOperation:withOperationTimeout:until:`: Augments an until-style asynchronous operation with a timeout, returning the may-timeout future. The operation is cancelled if the timeout expires before completion. The operation is cancelled and/or its result cleaned up when the token is cancelled.
+
+- `+futureFromUnlessOperation:withOperationTimeout:`: Augments an unless-style asynchronous operation with a timeout, returning the may-timeout future. The operation is cancelled if the timeout expires before the operation completes. An `unless` variant allows the operation to also be cancelled if a token is cancelled before it completes.
+
+- `cancelledOnCompletionToken`: Returns a `TOCCancelToken` that becomes cancelled when the future has succeeded or failed.
+
+- `state`: Determines if the future is still able to be set (incomplete), failed, succeeded, flattening, or known to be immortal.
+
+- `isIncomplete`: Determines if the future is still able to be set, flattening, or known to be immortal.
+
+- `hasResult`: Determines if the future has succeeded with a result.
+
+- `hasFailed`: Determines if the future has failed.
+
+- `hasFailedWithCancel`: Determines if the future was cancelled, i.e. failed with a `TOCCancelToken` as its failure.
+
+- `hasFailedWithTimeout`: Determines if the future timed out, i.e. failed with a `TOCTimeout` as its failure.
+
+- `forceGetResult`: Returns the future's result, but raises an exception if the future didn't succeed with a result.
+
+- `forceGetFailure`: Returns the future's result, but raises an exception if the future didn't fail.
+
+- `finally[Do]:block [unless:token]`: Runs a callback when the future succeeds or fails. Passes the completed future into the block. The non-Do variants return a future that will eventually contain the result of evaluating the result-returning block.
+
+- `then[Do]:block [unless:token]`: Runs a callback when the future succeeds. Passes the future's result into the block. The non-Do variants return a future that will eventually contain the result of evaluating the result-returning block, or else the same failure as the receiving future.
+
+- `catch[Do]:block [unless:token]`: Runs a callback when the future fails. Passes the future's failure into the block. The non-Do variants return a future that will eventually contain the same result, or else the result of evaluating the result-returning block.
+
+- `isEqualToFuture:(TOCFuture*)other`: Determines if this future is in the same state and, if completed, has the same result/failure as the other future.
+
+- `unless:(TOCCancelToken*)unless`: Returns a future that will have the same result, unless the given token is cancelled first in which case it fails due to cancellation.
+
+- 
+
+**TOCFutureSource**: *Creates and controls a TOCFuture.*
+
+- `+new`: Returns a new future source controlling a new future.
+
+- `+futureSourceUntil:(TOCCancelToken*)untilCancelledToken`: Returns a new future source controlling a new future, wired to automatically fail with cancellation if the given token is cancelled before the future is set.
+
+- `future`: Returns the future controlled by this source.
+
+- `trySetResult:(id)result`: Sets the controlled future to succeed with the given value. If the result is a future, collapse occurs. Returns false if the future was already set, whereas the force variant raises an exception.
+
+- `trySetFailure:(id)result`: Sets the controlled future to fail with the given value. Returns false if the future was already set, whereas the force variant raises an exception. Variants for cancellation and timeout work similarly.
+
+**TOCCancelToken**: Notifies you when operations should be cancelled.
+
+- `+cancelledToken`: Returns an already cancelled token.
+
+- `+immortalToken`: Returns a token that will never be cancelled. Just a `[TOCCancelToken new]` token, but acts exactly like a nil cancel token.
+
+- `state`: Determines if the cancel token is cancelled, still cancellable, or known to be immortal.
+
+- `isAlreadyCancelled`: Determines if the cancel token is already cancelled.
+
+- `canStillBeCancelled`: Determines if the cancel token is not cancelled and not known to be immortal.
+
+- `whenCancelledDo:(TOCCancelHandler)cancelHandler`, `whenCancelledDo:(TOCCancelHandler)cancelHandler unless:(TOCCancelToken*)unlessCancelledToken`: Registers a void callback to run after the token is cancelled. Runs inline if already cancelled. The unless variant allows the callback to be removed if it has not run and is no longer needed (indicated by the other token being cancelled first).
+
+- `+matchFirstToCancelBetween:(TOCCancelToken*)token1 and:(TOCCancelToken*)token2`: Returns a token that is the minimum of two tokens. It is cancelled as soon as either of them is cancelled.
+
+- `+matchLastToCancelBetween:(TOCCancelToken*)token1 and:(TOCCancelToken*)token2`: Returns a token that is the maximum of two tokens. It is cancelled only when both of them is cancelled.
+
+**TOCCancelTokenSource**: *Creates and controls a cancel token.*
+
+- `+new`: Returns a new cancel token source that controls a new cancel token.
+
+- `+cancelTokenSourceUntil:(TOCCancelToken*)untilCancelledToken`: Returns a cancel token source that controls a new cancel token, but wired to cancel automatically when the given token is cancelled.
+
+- `token`: Returns the cancel token controlled by the source.
+
+- `cancel`: Cancels the token controlled by the source. Does nothing if the token is already cancelled.
+
+- `tryCancel`: Cancels the token controlled by the source, returning false if it was already cancelled.
+
+**NSArray+**: *We are one. We are many. We are more.*
+
+- `toc_thenAll`, `toc_thenAllUnless:(TOCCancelToken*)unless`: Converts from array-of-future to future-of-array. Takes an array of futures and returns a future that succeeds with an array of those futures' results. If any of the futures fails, the returned future fails. Example: `@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithResult:@2]].toc_thenAll` evaluates to `[TOCFuture futureWithResult:@[@1, @2]]`.
+
+- `toc_finallyAll`, `toc_finallyAllUnless:(TOCCancelToken*)unless`: Awaits the completion of many futures. Takes an array of futures and returns a future that completes with an array of the same futures, but only after they have all completed. Example: `@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithFailure:@2]].toc_finallyAll` evaluates to `[TOCFuture futureWithResult:@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithFailure:@2]]]`.
+
+- `toc_orderedByCompletion`, `toc_orderedByCompletionUnless:(TOCCancelToken*)unless`: Returns an array with the "same" futures, except re-ordered so futures that will complete later will come later in the array. Example: `@[[TOCFutureSource new].future, [TOCFuture futureWithResult:@1]].toc_orderedByCompletion` returns `@[[TOCFuture futureWithResult:@1], [TOCFutureSource new].future]`.
+
+- `toc_raceForWinnerLastingUntil:(TOCCancelToken*)untilCancelledToken`: Takes an array of `TOCUntilOperation` blocks. Each block is a cancellable asynchronous operation, returning a future and taking a cancel token that cancels the operations and/or cleans up the operation's result. The returned future completes with the result of the first operation to finish (or else all of their failures). The result of the returned future is cleaned up upon cancellation.
+
 Development
 ===========
 
