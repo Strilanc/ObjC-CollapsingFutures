@@ -140,15 +140,10 @@ API Breakdown
 **TOCFuture**: *An eventual result.*
 
 - `+futureWithResult:(id)resultValue`: Returns a future that has already succeeded with the given value. If the value is a future, collapse occurs and its result/failure is used instead.
-
 - `+futureWithFailure:(id)failureValue`: Returns a future that has already failed with the given value. Variants for timeout and cancel failures work similarly.
-
 - `+new`: Returns an immortal future. (Not very useful.)
-
 - `+futureFromOperation:(id (^)(void))operation dispatchedOnQueue:(dispatch_queue_t)queue`: Dispatches an asynchronous operation, exposing the result as a future.
-
 - `+futureFromOperation:(id(^)(void))operation invokedOnThread:(NSThread*)thread`: Runs an asynchronous operation, exposing the result as a future.
-
 - `+futureWithResult:(id)resultValue afterDelay:(NSTimeInterval)delayInSeconds`: Returns a future the completes after a delay. An `unless:` variant allows the future to be cancelled and the timing stuff cleaned up.
 
 - `+futureFromUntilOperation:withOperationTimeout:until:`: Augments an until-style asynchronous operation with a timeout, returning the may-timeout future. The operation is cancelled if the timeout expires before completion. The operation is cancelled and/or its result cleaned up when the token is cancelled.
@@ -174,11 +169,8 @@ API Breakdown
 - `forceGetFailure`: Returns the future's result, but raises an exception if the future didn't fail.
 
 - `finally[Do]:block [unless:token]`: Runs a callback when the future succeeds or fails. Passes the completed future into the block. The non-Do variants return a future that will eventually contain the result of evaluating the result-returning block.
-
 - `then[Do]:block [unless:token]`: Runs a callback when the future succeeds. Passes the future's result into the block. The non-Do variants return a future that will eventually contain the result of evaluating the result-returning block, or else the same failure as the receiving future.
-
 - `catch[Do]:block [unless:token]`: Runs a callback when the future fails. Passes the future's failure into the block. The non-Do variants return a future that will eventually contain the same result, or else the result of evaluating the result-returning block.
-
 - `isEqualToFuture:(TOCFuture*)other`: Determines if this future is in the same state and, if completed, has the same result/failure as the other future.
 
 - `unless:(TOCCancelToken*)unless`: Returns a future that will have the same result, unless the given token is cancelled first in which case it fails due to cancellation.
