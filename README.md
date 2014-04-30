@@ -207,6 +207,8 @@ Design Philosophy
 
 - **No Undefined Behavior**: Corner cases should be accounted for in the implementation, specification, documentation, and tests of a method. Set a future to be its own result, directly or indirectly? It becomes immortal. Call `whenCancelledDo:unless:` on a cancelled token with a cancelled token? The callback doesn't run. Etc.
 
+- **No Inheritance**: A future source is not a future extended to be writable. A future source *has a* future that it controls. This is fundamental to ensuring consumers can't create memory leaks involving futures. Only producers can sustain those leaks, because as soon as the source is deallocated its future becomes immortal and all its callbacks get discarded.
+
 Development
 ===========
 
