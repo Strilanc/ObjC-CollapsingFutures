@@ -134,6 +134,27 @@ Just creating and using futures is useful, but not what makes them powerful. The
 
 The ability to setup transformations to occur once futures are ready allows you to write truly asynchronous code, that doesn't block precious threads, with very little boilerplate and intuitive propagation of failures.
 
+Design Philosophy
+=================
+
+- **No Blocking**: There are no blocking operations included in the library, because blocking on a future is a great way to introduce deadlocks and UI hangs. Use `then`/`finally`/`catch`/`whenCancelledDo` instead.
+
+- **No @catch-ing Errors**: Raised errors are not caught, even inside handlers given to methods like `then`. In Objective-C, raising an error is generally considered to be a fatal problem. Catching them and packaging them into the future's failure could allow the program to continue despite its state being seriously corrupted.
+
+- **No Garbage**: Registered callbacks aren't just ignored when they stop mattering; they are actively removed and discarded. When a cancel token's source is deallocated before cancelling the token, the handlers are not kept around. When `toc_finallyAll:unless:` is cancelled, it does not forget about the callbacks it registered.
+
+- **No Undefined Behavior**: Corner cases should be accounted for in the implementation, specification, documentation, and tests of a method. Set a future to be its own result, directly or indirectly? It becomes immortal. Call `whenCancelledDo:unless:` on a cancelled token with a cancelled token? The callback doesn't run. Etc.
+
+- **No Inheritance**: A future source is not a future extended to be writable. A future source *has a* future that it controls. This is fundamental to ensuring consumers can't create memory leaks involving futures. Only producers can sustain those leaks, because as soon as the source is deallocated its future becomes immortal and all its callbacks get discarded.
+
+Design Foibles
+==============
+
+Bothing's perfect. This is a list of things that bother me, although they probably cause few or no problems in practice. I might fix them, but only between major versions because they require breaking changes.
+
+- **Mutating Equality**: Completed futures are equated by value, but incomplete futures are equated by reference. Convenient when you want to know if two completed futures are the same, but not so convenient if you put futures in a collection that uses hash codes for faster lookup (because the hash code changes!). If you insert incomplete futures into sets, or use them as dictionary keys, you may be unable to find them in the set after they've completed.
+- **Two cancels**: `TOCCancelTokenSource` has both `tryCancel` and `cancel`. The only difference is the returned value. Would be simpler to just have `cancel`.
+
 API Breakdown
 =============
 
@@ -195,19 +216,6 @@ API Breakdown
 - `toc_finallyAll`, `toc_finallyAllUnless:(TOCCancelToken*)unless`: Awaits the completion of many futures. Takes an array of futures and returns a future that completes with an array of the same futures, but only after they have all completed. Example: `@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithFailure:@2]].toc_finallyAll` evaluates to `[TOCFuture futureWithResult:@[[TOCFuture futureWithResult:@1], [TOCFuture futureWithFailure:@2]]]`.
 - `toc_orderedByCompletion`, `toc_orderedByCompletionUnless:(TOCCancelToken*)unless`: Returns an array with the "same" futures, except re-ordered so futures that will complete later will come later in the array. Example: `@[[TOCFutureSource new].future, [TOCFuture futureWithResult:@1]].toc_orderedByCompletion` returns `@[[TOCFuture futureWithResult:@1], [TOCFutureSource new].future]`.
 - `toc_raceForWinnerLastingUntil:(TOCCancelToken*)untilCancelledToken`: Takes an array of `TOCUntilOperation` blocks. Each block is a cancellable asynchronous operation, returning a future and taking a cancel token that cancels the operations and/or cleans up the operation's result. The returned future completes with the result of the first operation to finish (or else all of their failures). The result of the returned future is cleaned up upon cancellation.
-
-Design Philosophy
-=================
-
-- **No Blocking**: There are no blocking operations included in the library, because blocking on a future is a great way to introduce deadlocks and UI hangs. Use `then`/`finally`/`catch`/`whenCancelledDo` instead.
-
-- **No @catch-ing Errors**: Raised errors are not caught, even inside handlers given to methods like `then`. In Objective-C, raising an error is generally considered to be a fatal problem. Catching them and packaging them into the future's failure could allow the program to continue despite its state being seriously corrupted.
-
-- **No Garbage**: Registered callbacks aren't just ignored when they stop mattering; they are actively removed and discarded. When a cancel token's source is deallocated before cancelling the token, the handlers are not kept around. When `toc_finallyAll:unless:` is cancelled, it does not forget about the callbacks it registered.
-
-- **No Undefined Behavior**: Corner cases should be accounted for in the implementation, specification, documentation, and tests of a method. Set a future to be its own result, directly or indirectly? It becomes immortal. Call `whenCancelledDo:unless:` on a cancelled token with a cancelled token? The callback doesn't run. Etc.
-
-- **No Inheritance**: A future source is not a future extended to be writable. A future source *has a* future that it controls. This is fundamental to ensuring consumers can't create memory leaks involving futures. Only producers can sustain those leaks, because as soon as the source is deallocated its future becomes immortal and all its callbacks get discarded.
 
 Development
 ===========
