@@ -22,7 +22,6 @@
 		A1209B4F180F4F4600D6831C /* TOCInternal_Array+Functional.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B4E180F4F4600D6831C /* TOCInternal_Array+Functional.m */; };
 		A1209B53181084FD00D6831C /* TOCTimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B52181084FD00D6831C /* TOCTimeout.m */; };
 		A19E0C3C17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
-		A19E0C4B17DBB27B00A5FD69 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */; };
 		A19E0C4E17DBB27B00A5FD69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */; };
 		A1A0196D1807641000A052A6 /* TOCFuture+MoreConstructorsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019671807641000A052A6 /* TOCFuture+MoreConstructorsTest.m */; };
 		A1A0196E1807641000A052A6 /* TOCFutureTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A019681807641000A052A6 /* TOCFutureTest.m */; };
@@ -42,6 +41,7 @@
 		A1A134F118BD8C2F0067ECB0 /* TOCInternal_Racer.m in Sources */ = {isa = PBXBuildFile; fileRef = A1209B42180F4A9300D6831C /* TOCInternal_Racer.m */; };
 		A1B6BF261810F04900226FE5 /* TOCInternal_BlockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B6BF251810F04900226FE5 /* TOCInternal_BlockObject.m */; };
 		BA69685D31B3433D8AEDE4FA /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AEC4DB01C146D48E850BE7 /* libPods.a */; };
+		BFD8DA6E19400F16002D37B7 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFD8DA6D19400F16002D37B7 /* XCTest.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,8 +93,7 @@
 		A1209B52181084FD00D6831C /* TOCTimeout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCTimeout.m; sourceTree = "<group>"; };
 		A19E0C3817DBB27B00A5FD69 /* libCollapsingFutures.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCollapsingFutures.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollapsingFuturesTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollapsingFuturesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1A019671807641000A052A6 /* TOCFuture+MoreConstructorsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TOCFuture+MoreConstructorsTest.m"; sourceTree = "<group>"; };
 		A1A019681807641000A052A6 /* TOCFutureTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCFutureTest.m; sourceTree = "<group>"; };
 		A1A019691807641000A052A6 /* Testing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Testing.h; sourceTree = "<group>"; };
@@ -108,6 +107,7 @@
 		A1B6BF251810F04900226FE5 /* TOCInternal_BlockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCInternal_BlockObject.m; sourceTree = "<group>"; };
 		A1E4235818C2760D00A15F74 /* CollapsingFutures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollapsingFutures.h; sourceTree = "<group>"; };
 		B5AEC4DB01C146D48E850BE7 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BFD8DA6D19400F16002D37B7 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,7 +124,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A19E0C4B17DBB27B00A5FD69 /* SenTestingKit.framework in Frameworks */,
+				BFD8DA6E19400F16002D37B7 /* XCTest.framework in Frameworks */,
 				A19E0C4E17DBB27B00A5FD69 /* Foundation.framework in Frameworks */,
 				BA69685D31B3433D8AEDE4FA /* libPods.a in Frameworks */,
 			);
@@ -164,7 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				A19E0C3817DBB27B00A5FD69 /* libCollapsingFutures.a */,
-				A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.octest */,
+				A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -172,8 +172,8 @@
 		A19E0C3A17DBB27B00A5FD69 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BFD8DA6D19400F16002D37B7 /* XCTest.framework */,
 				A19E0C3B17DBB27B00A5FD69 /* Foundation.framework */,
-				A19E0C4A17DBB27B00A5FD69 /* SenTestingKit.framework */,
 				B5AEC4DB01C146D48E850BE7 /* libPods.a */,
 			);
 			name = Frameworks;
@@ -268,8 +268,8 @@
 			);
 			name = CollapsingFuturesTests;
 			productName = CollapsingFuturesTests;
-			productReference = A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productReference = A19E0C4917DBB27B00A5FD69 /* CollapsingFuturesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -277,6 +277,7 @@
 		A19E0C3017DBB27B00A5FD69 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastTestingUpgradeCheck = 0510;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Twisted Oak Studios";
 			};
@@ -601,11 +602,12 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_WARN_PEDANTIC = NO;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
@@ -616,11 +618,12 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_WARN_PEDANTIC = NO;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};

@@ -1,4 +1,4 @@
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <Foundation/Foundation.h>
 #import "TOCFutureAndSource.h"
 #import <mach/mach.h>
@@ -11,10 +11,10 @@ bool futureHasFailure(TOCFuture* future, id failure);
 int testTargetHits;
 bool equals(id obj1, id obj2);
 
-#define test(expressionExpectedToBeTrue) STAssertTrue(expressionExpectedToBeTrue, @"")
+#define test(expressionExpectedToBeTrue) XCTAssertTrue(expressionExpectedToBeTrue, @"")
 #define testEq(value1, value2) test(equals(value1, value2))
 
-#define testThrows(expressionExpectedToThrow) STAssertThrows(expressionExpectedToThrow, @"")
+#define testThrows(expressionExpectedToThrow) XCTAssertThrows(expressionExpectedToThrow, @"")
 #define testCompletesConcurrently(future) test(testCompletesConcurrently_helper(future, 2.0))
 #define testDoesNotCompleteConcurrently(future) test(!testCompletesConcurrently_helper(future, 0.01))
 #define testChurnUntil(condition) \

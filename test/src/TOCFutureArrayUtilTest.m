@@ -4,7 +4,7 @@
 #define fut(X) [TOCFuture futureWithResult:X]
 #define futfail(X) [TOCFuture futureWithFailure:X]
 
-@interface TOCFutureArrayUtilTest : SenTestCase
+@interface TOCFutureArrayUtilTest : XCTestCase
 @end
 
 @implementation TOCFutureArrayUtilTest

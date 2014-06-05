@@ -3,7 +3,7 @@
 #import "TOCInternal_BlockObject.h"
 #import <libkern/OSAtomic.h>
 
-@interface TOCCancelTokenTest : SenTestCase
+@interface TOCCancelTokenTest : XCTestCase
 @end
 
 @implementation TOCCancelTokenTest

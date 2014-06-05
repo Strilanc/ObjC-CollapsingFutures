@@ -1,14 +1,10 @@
 PODS:
-  - UnionFind (1.0.0)
+  - UnionFind (1.0.1)
 
 DEPENDENCIES:
-  - UnionFind (from `https://raw.github.com/Strilanc/UnionFind-ObjC/master/UnionFind.podspec`)
-
-EXTERNAL SOURCES:
-  UnionFind:
-    :podspec: https://raw.github.com/Strilanc/UnionFind-ObjC/master/UnionFind.podspec
+  - UnionFind (~> 1.0)
 
 SPEC CHECKSUMS:
-  UnionFind: 0de40c254e8ad977569a748bf5e9a48026b220e3
+  UnionFind: 45777a8b6878d3a602af3654cc3a09b87389d356
 
-COCOAPODS: 0.29.0
+COCOAPODS: 0.33.1

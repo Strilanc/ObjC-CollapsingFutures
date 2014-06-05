@@ -1,7 +1,7 @@
 #import "Testing.h"
 #import "TOCCancelToken+MoreConstructors.h"
 
-@interface TOCCancelToken_MoreConstructorsTest : SenTestCase
+@interface TOCCancelToken_MoreConstructorsTest : XCTestCase
 @end
 
 @implementation TOCCancelToken_MoreConstructorsTest

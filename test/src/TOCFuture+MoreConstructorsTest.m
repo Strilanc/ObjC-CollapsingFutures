@@ -2,7 +2,7 @@
 #import "TOCFuture+MoreContructors.h"
 #import "TOCFuture+MoreContinuations.h"
 
-@interface TOCFutureExtraTest : SenTestCase
+@interface TOCFutureExtraTest : XCTestCase
 @end
 
 @implementation TOCFutureExtraTest {

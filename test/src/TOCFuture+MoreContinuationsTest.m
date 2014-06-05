@@ -1,7 +1,7 @@
 #import "Testing.h"
 #import "TOCFuture+MoreContinuations.h"
 
-@interface TOCFutureMoreContinuationsTest : SenTestCase
+@interface TOCFutureMoreContinuationsTest : XCTestCase
 @end
 
 @implementation TOCFutureMoreContinuationsTest

@@ -1,7 +1,7 @@
 #import "Testing.h"
 #import "CollapsingFutures.h"
 
-@interface TOCFutureSourceTest : SenTestCase
+@interface TOCFutureSourceTest : XCTestCase
 @end
 
 @implementation TOCFutureSourceTest {
