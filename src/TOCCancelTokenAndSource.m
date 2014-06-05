@@ -242,7 +242,7 @@ typedef void (^SettledHandler)(void);
     [token _ForSource_tryImmortalize];
 }
 -(void) cancel {
-    [self tryCancel];
+    [token _ForSource_tryCancel];
 }
 -(bool)tryCancel {
     return [token _ForSource_tryCancel];

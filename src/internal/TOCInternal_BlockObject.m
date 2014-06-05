@@ -22,7 +22,7 @@
 +(void) performBlock:(void(^)(void))block onThread:(NSThread*)thread {
     TOCInternal_need(block != nil);
     
-    if (thread == [NSThread currentThread]) {
+    if (thread == NSThread.currentThread) {
         block();
         return;
     }

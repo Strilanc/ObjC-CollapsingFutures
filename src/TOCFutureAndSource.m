@@ -181,11 +181,7 @@ enum StartUnwrapResult {
           unless:(TOCCancelToken *)unlessCancelledToken {
     TOCInternal_need(completionHandler != nil);
     
-    // It is safe to reference 'self' here, despite it creating a reference cycle. The cycle is not self-sustaining.
-    // The reason comes down to future sources and tokens sources causing their future/token to discard callbacks when the source is deallocated.
-    // The cycle this call creates would be broken by a source being deallocated, but the source is not part of the created cycle.
-    // So it should be safe. The created cycle is still dependent.
-    // (If completionHandler has a closure including a source, the cycle would be self-sustaining whether or not we added this extra bit.)
+    // Reference cycle is fine. It is not self-sustaining. It gets removed if our source is deallocated.
     [_completionToken whenCancelledDo:^{ completionHandler(self); }
                                unless:unlessCancelledToken];
 }
@@ -194,9 +190,10 @@ enum StartUnwrapResult {
        unless:(TOCCancelToken *)unlessCancelledToken {
     TOCInternal_need(resultHandler != nil);
     
-    [self finallyDo:^(TOCFuture *completed) {
-        if (completed->_ifDoneHasSucceeded) {
-            resultHandler(completed->_value);
+    // Reference cycle is fine. It is not self-sustaining. It gets removed if our source is deallocated.
+    [_completionToken whenCancelledDo:^{
+        if (self->_ifDoneHasSucceeded) {
+            resultHandler(self->_value);
         }
     } unless:unlessCancelledToken];
 }
@@ -205,9 +202,10 @@ enum StartUnwrapResult {
         unless:(TOCCancelToken *)unlessCancelledToken {
     TOCInternal_need(failureHandler != nil);
     
-    [self finallyDo:^(TOCFuture *completed) {
-        if (!completed->_ifDoneHasSucceeded) {
-            failureHandler(completed->_value);
+    // Reference cycle is fine. It is not self-sustaining. It gets removed if our source is deallocated.
+    [_completionToken whenCancelledDo:^{
+        if (!self->_ifDoneHasSucceeded) {
+            failureHandler(self->_value);
         }
     } unless:unlessCancelledToken];
 }
@@ -218,7 +216,8 @@ enum StartUnwrapResult {
     
     TOCFutureSource* resultSource = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
     
-    [self finallyDo:^(TOCFuture *completed) { [resultSource trySetResult:completionContinuation(completed)]; }
+    // Reference cycle is fine. It is not self-sustaining. It gets removed if our source is deallocated.
+    [_completionToken whenCancelledDo:^{ [resultSource trySetResult:completionContinuation(self)]; }
              unless:unlessCancelledToken];
     
     return resultSource.future;
@@ -228,26 +227,34 @@ enum StartUnwrapResult {
             unless:(TOCCancelToken *)unlessCancelledToken {
     TOCInternal_need(resultContinuation != nil);
     
-    return [self finally:^id(TOCFuture *completed) {
-        if (completed->_ifDoneHasSucceeded) {
-            return resultContinuation(completed->_value);
+    TOCFutureSource* resultSource = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
+    
+    // Reference cycle is fine. It is not self-sustaining. It gets removed if our source is deallocated.
+    [_completionToken whenCancelledDo:^{
+        if (self->_ifDoneHasSucceeded) {
+            [resultSource trySetResult:resultContinuation(self->_value)];
         } else {
-            return completed;;
+            [resultSource trySetFailure:self->_value];
         }
     } unless:unlessCancelledToken];
+    
+    return resultSource.future;
 }
 
 -(TOCFuture *)catch:(TOCFutureCatchContinuation)failureContinuation
              unless:(TOCCancelToken *)unlessCancelledToken {
     TOCInternal_need(failureContinuation != nil);
     
-    return [self finally:^(TOCFuture *completed) {
-        if (completed->_ifDoneHasSucceeded) {
-            return completed->_value;
-        } else {
-            return failureContinuation(completed->_value);
-        }
+    TOCFutureSource* resultSource = [TOCFutureSource futureSourceUntil:unlessCancelledToken];
+    
+    // Reference cycle is fine. It is not self-sustaining. It gets removed if our source is deallocated.
+    [_completionToken whenCancelledDo:^{
+        id v = self->_value;
+        if (!self->_ifDoneHasSucceeded) v = failureContinuation(v);
+        [resultSource trySetResult:v];
     } unless:unlessCancelledToken];
+    
+    return resultSource.future;
 }
 
 -(NSString*) description {
