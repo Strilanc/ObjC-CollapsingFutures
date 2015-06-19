@@ -13,7 +13,9 @@
     return b;
 }
 -(void)run {
-    block();
+    if (block) {
+        block();
+    }
 }
 -(SEL)runSelector {
     return @selector(run);
